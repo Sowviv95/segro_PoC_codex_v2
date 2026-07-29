@@ -1,0 +1,4 @@
+version: foundation-placeholder
+currency: USD
+unit: per_1m_tokens
+models: {}

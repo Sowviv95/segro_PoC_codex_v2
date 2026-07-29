@@ -1,0 +1,9 @@
+environment_name: development
+log_level: INFO
+hosted_llm_enabled: false
+hosted_vlm_enabled: false
+text_model_name: gpt-5
+vision_model_name: gpt-5
+pricing_config_path: configs/model_pricing.yaml
+local_cache_path: data/cache
+local_index_path: data/indexes

@@ -3,8 +3,12 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.pytest_tmp/
+.pytest_run_tmp/
+pytest-cache-files-*/
 .mypy_cache/
 .ruff_cache/
+.cache/
 .coverage
 htmlcov/
 
