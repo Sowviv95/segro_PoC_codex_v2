@@ -9,6 +9,13 @@ from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
+from segro_evidence_extraction.parsing import (
+    ParseOptions,
+    ParsingConfig,
+    ParsingError,
+    inspect_parse_manifest,
+    parse_sources,
+)
 from segro_evidence_extraction.source_ingestion import (
     ArchiveLimits,
     ingest_source_pack,
@@ -18,6 +25,7 @@ from segro_evidence_extraction.source_ingestion import (
 UNIMPLEMENTED_EXIT_CODE = 3
 DICTIONARY_VALIDATION_ERROR_EXIT_CODE = 2
 DICTIONARY_REJECTED_ROWS_EXIT_CODE = 4
+PARSING_ERROR_EXIT_CODE = 5
 
 app = typer.Typer(
     help="SEGRO evidence-first extraction foundation. Extraction is not implemented yet.",
@@ -25,8 +33,10 @@ app = typer.Typer(
 )
 dictionary_app = typer.Typer(help="Dictionary inspection and target normalization commands.")
 sources_app = typer.Typer(help="Source pack inspection and document classification commands.")
+parse_app = typer.Typer(help="Bounded parsing and page-level evidence classification commands.")
 app.add_typer(dictionary_app, name="dictionary")
 app.add_typer(sources_app, name="sources")
+app.add_typer(parse_app, name="parse")
 
 
 @app.command()
@@ -160,6 +170,67 @@ def sources_ingest(
         fail_on_unreadable=fail_on_unreadable,
         progress=_progress,
     )
+    typer.echo(result.summary.model_dump_json(indent=2))
+
+
+@parse_app.command("inspect")
+def parse_inspect(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ],
+) -> None:
+    """Inspect parseable registered sources without parsing document pages."""
+
+    try:
+        typer.echo(_json_dumps(inspect_parse_manifest(source_manifest)))
+    except ParsingError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(PARSING_ERROR_EXIT_CODE) from exc
+
+
+@parse_app.command("run")
+def parse_run(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ],
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = Path("output/sprint4_parsing"),
+    cache_dir: Annotated[Path, typer.Option("--cache-dir")] = Path("data/cache/parsing"),
+    source_id: Annotated[str | None, typer.Option("--source-id")] = None,
+    page_start: Annotated[int | None, typer.Option("--page-start", min=1)] = None,
+    page_end: Annotated[int | None, typer.Option("--page-end", min=1)] = None,
+    max_pages: Annotated[int | None, typer.Option("--max-pages", min=1)] = None,
+    no_cache: Annotated[bool, typer.Option("--no-cache")] = False,
+    resume: Annotated[bool, typer.Option("--resume/--no-resume")] = True,
+    progress_every: Annotated[int, typer.Option("--progress-every", min=1)] = 25,
+    max_seconds_per_page_warning: Annotated[
+        float,
+        typer.Option("--max-seconds-per-page-warning", min=0.01),
+    ] = 5.0,
+) -> None:
+    """Parse registered sources incrementally and write page/sheet evidence artifacts."""
+
+    try:
+        result = parse_sources(
+            source_manifest,
+            output_dir=output_dir,
+            cache_dir=cache_dir,
+            config=ParsingConfig(max_seconds_per_page_warning=max_seconds_per_page_warning),
+            options=ParseOptions(
+                source_id=source_id,
+                page_start=page_start,
+                page_end=page_end,
+                max_pages=max_pages,
+                use_cache=not no_cache,
+                resume=resume,
+                progress_every=progress_every,
+            ),
+            progress=_progress,
+        )
+    except ParsingError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(PARSING_ERROR_EXIT_CODE) from exc
     typer.echo(result.summary.model_dump_json(indent=2))
 
 
