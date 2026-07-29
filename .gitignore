@@ -35,3 +35,21 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+
+# Customer and evaluation data
+data/input/data_dictionary/*
+!data/input/data_dictionary/.gitkeep
+!data/input/data_dictionary/README.md
+
+data/input/source_packs/*
+!data/input/source_packs/.gitkeep
+!data/input/source_packs/README.md
+
+data/manifests/*
+!data/manifests/.gitkeep
+
+data/indexes/*
+!data/indexes/.gitkeep
+
+data/cache/*
+!data/cache/.gitkeep
