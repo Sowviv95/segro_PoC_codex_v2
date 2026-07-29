@@ -42,6 +42,8 @@ Source registration
 ## Module Boundaries
 
 - `config`: safe local/environment settings. API keys remain environment-only.
+- `dictionary`: XLSX/CSV dictionary reading, configurable column mapping, target
+  normalization, validation and artifact reporting.
 - `models`: target, source, index, bundle and candidate schemas.
 - `interfaces`: provider-neutral extraction capability protocols.
 - `services`: small reusable foundation utilities such as hashing.
@@ -52,6 +54,19 @@ Source registration
 ## Retrieval and Extraction
 
 Retrieval and extraction are separate. Retrieval selects documents, sections, pages, sheets, text blocks, tables, drawings and image regions. Extraction capabilities receive bounded evidence bundles and produce candidates only. They do not decide final acceptance.
+
+## Dictionary Ingestion
+
+Dictionary ingestion reads XLSX or CSV inputs, preserves physical row numbers, applies a versioned
+YAML column mapping and converts candidate rows into deterministic `TargetSpecification` records.
+Every physical row is accounted for as normalized, normalized with warnings, rejected or ignored as
+blank/non-target. Stable target identities include dictionary identity, worksheet/source, physical row,
+requirement ID and expected field; this is stable for repeated ingestion of the same workbook layout,
+but does not overclaim stability after arbitrary workbook restructuring.
+
+Validation issues are serializable and include issue code, severity, source row/column, raw value and
+suggested action. Sprint 2 intentionally stops at target normalization and does not read source packs,
+classify documents, build a PageIndex, retrieve evidence or extract values.
 
 ## Hierarchical Indexing
 

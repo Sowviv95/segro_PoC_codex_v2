@@ -34,6 +34,14 @@ The `.env` file is local and excluded from Git. Keep API keys environment-only. 
 ```powershell
 python -m segro_evidence_extraction --help
 python -m segro_evidence_extraction config-check --config-path configs/default.yaml
+python -m segro_evidence_extraction dictionary inspect `
+  --dictionary-path "data/input/data_dictionary/SEGRO_Extraction_Template.xlsx" `
+  --sheet-name "Extraction Template"
+python -m segro_evidence_extraction dictionary validate `
+  --dictionary-path "data/input/data_dictionary/SEGRO_Extraction_Template.xlsx" `
+  --sheet-name "Extraction Template" `
+  --mapping-config "configs/dictionaries/segro_extraction_template_v1.yaml" `
+  --output-dir "output/sprint2_dictionary_validation"
 python -m segro_evidence_extraction extract `
   --dictionary-path "data/input/data_dictionary/SEGRO_Extraction_Template.xlsx" `
   --asset-config "configs/assets/example.yaml" `
@@ -74,6 +82,9 @@ Implemented:
 
 - Python `src` package foundation
 - safe configuration loading
+- XLSX and CSV dictionary ingestion
+- configurable dictionary column mapping
+- deterministic target normalization artifacts
 - target specification models
 - source registry models
 - hierarchical evidence index contracts
@@ -87,7 +98,6 @@ Implemented:
 
 Not implemented:
 
-- dictionary parsing
 - source-pack parsing
 - OCR, embedding, retrieval or reranking engines
 - deterministic, table, LLM, VLM or OCR extraction

@@ -12,6 +12,11 @@ class DictionaryProvenance(StrictBaseModel):
     sheet_name: str | None = None
     row_number: int | None = Field(default=None, ge=1)
     column_map: dict[str, str] = Field(default_factory=dict)
+    mapping_version: str | None = None
+    ingestion_version: str | None = None
+    raw_requirement_id: str | None = None
+    normalization_warnings: list[str] = Field(default_factory=list)
+    raw_value_provenance: dict[str, str] = Field(default_factory=dict)
 
 
 class TargetSpecification(StrictBaseModel):

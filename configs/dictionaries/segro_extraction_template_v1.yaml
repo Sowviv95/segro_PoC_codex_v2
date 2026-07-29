@@ -1,0 +1,68 @@
+mapping_version: segro-extraction-template-v1
+dictionary_id: segro_extraction_template
+header_row: 1
+required_source_columns:
+  - Field Name
+  - Term Name
+  - Sub-Domain
+  - Field Label
+columns:
+  expected_field:
+    aliases:
+      - Field Name
+  requirement_id:
+    aliases:
+      - Data Requirement id
+      - Data Requirement ID
+  requirement_name:
+    aliases:
+      - Term Name
+  sub_domain:
+    aliases:
+      - Sub-Domain
+      - Sub Domain
+  field_label:
+    aliases:
+      - Field Label
+  requirement_text:
+    aliases:
+      - Business Definition
+  source_guidance:
+    aliases:
+      - Notes
+  component_type:
+    aliases:
+      - Component Type Mapping (comes from component list)
+  component_subtype:
+    aliases:
+      - Sub-Type Mapping (comes from component sub-type list)
+  cardinality:
+    aliases:
+      - Multiple Records Possible (Y/N)
+  example:
+    aliases:
+      - Example
+metadata_columns:
+  - requirement_name
+  - field_label
+  - example
+accepted_values_columns:
+  - source_guidance
+likely_evidence_type_rules:
+  source_guidance:
+    certificate:
+      - certificate
+      - warranty
+      - test certificate
+    table:
+      - schedule
+      - matrix
+      - list
+    drawing:
+      - drawing
+      - plan
+      - layout
+    spreadsheet:
+      - spreadsheet
+      - workbook
+      - csv
