@@ -42,6 +42,11 @@ python -m segro_evidence_extraction dictionary validate `
   --sheet-name "Extraction Template" `
   --mapping-config "configs/dictionaries/segro_extraction_template_v1.yaml" `
   --output-dir "output/sprint2_dictionary_validation"
+python -m segro_evidence_extraction sources inspect `
+  --source-path "data/input/source_packs/enfield_unit1"
+python -m segro_evidence_extraction sources ingest `
+  --source-path "data/input/source_packs/enfield_unit1" `
+  --output-dir "output/sprint3_source_ingestion"
 python -m segro_evidence_extraction extract `
   --dictionary-path "data/input/data_dictionary/SEGRO_Extraction_Template.xlsx" `
   --asset-config "configs/assets/example.yaml" `
@@ -85,6 +90,11 @@ Implemented:
 - XLSX and CSV dictionary ingestion
 - configurable dictionary column mapping
 - deterministic target normalization artifacts
+- recursive source-pack discovery and registration
+- streaming source hashing and stable source-instance IDs
+- bounded ZIP inspection/extraction safeguards
+- deterministic document-level classification
+- duplicate source grouping
 - target specification models
 - source registry models
 - hierarchical evidence index contracts
@@ -99,6 +109,7 @@ Implemented:
 Not implemented:
 
 - source-pack parsing
+- page/evidence classification
 - OCR, embedding, retrieval or reranking engines
 - deterministic, table, LLM, VLM or OCR extraction
 - output template writing

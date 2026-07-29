@@ -1,11 +1,12 @@
 # SEGRO Evidence-First Working Sprint Plan
 
-Plan version: 1.1
+Plan version: 1.2
 
 Last updated: 2026-07-29
 
-Current sprint status: Sprint 2 complete. The repository contains dictionary ingestion and target
-normalization plus foundation contracts. Extraction is not implemented, and Sprint 3 has not started.
+Current sprint status: Sprint 3 complete. The repository contains dictionary ingestion, source-pack
+discovery/registration, bounded ZIP handling, duplicate grouping and document classification.
+Extraction is not implemented, and Sprint 4 has not started.
 
 ## Purpose And Principles
 
@@ -60,6 +61,7 @@ Principles:
 |---|---|---|
 | 1.0 | 2026-07-29 | Initial authoritative Sprint 2-19 working plan recorded at Foundation Sprint 1 closure. |
 | 1.1 | 2026-07-29 | Sprint 2 dictionary ingestion and target normalization marked complete; Sprint 3 not started. |
+| 1.2 | 2026-07-29 | Sprint 3 source ingestion and document classification marked complete; Sprint 4 not started. |
 
 This file is the authoritative working plan and must be revised whenever sprint scope or ordering
 changes.

@@ -68,6 +68,24 @@ Validation issues are serializable and include issue code, severity, source row/
 suggested action. Sprint 2 intentionally stops at target normalization and does not read source packs,
 classify documents, build a PageIndex, retrieve evidence or extract values.
 
+## Source Ingestion
+
+Source ingestion recursively discovers files under a supplied source-pack root, preserving relative
+paths and accounting for every file as registered, registered with warnings, rejected or explicitly
+ignored. It detects file type from lightweight signatures and extensions, streams SHA-256 hashing,
+assigns stable source-instance IDs from content hash plus logical path/archive provenance, and records
+content identity separately from source-instance identity.
+
+ZIP handling is bounded by archive depth, member count, uncompressed bytes, member size and compression
+ratio limits. Archive members retain parent source ID, member path, depth, compressed/uncompressed
+sizes and CRC. Extraction is limited to a managed ignored cache directory and never modifies the
+original archive.
+
+Document classification is rule-based in Sprint 3 and uses filenames, paths, extensions and cheap
+metadata only. It emits the shared `ClassificationResult` contract at the source/document stage. It is
+not page classification and does not parse pages, perform OCR, build a hierarchy, retrieve evidence or
+extract facts.
+
 ## Hierarchical Indexing
 
 The foundation adopts an independent PageIndex-style hierarchy, not the external PageIndex

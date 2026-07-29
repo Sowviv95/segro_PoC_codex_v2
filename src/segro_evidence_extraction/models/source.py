@@ -12,8 +12,10 @@ from segro_evidence_extraction.models.base import StrictBaseModel
 class FileType(StrEnum):
     PDF = "pdf"
     XLSX = "xlsx"
+    XLS = "xls"
     CSV = "csv"
     TEXT = "text"
+    JSON = "json"
     ZIP = "zip"
     IMAGE = "image"
     UNKNOWN = "unknown"
@@ -21,8 +23,11 @@ class FileType(StrEnum):
 
 class ExtractionStatus(StrEnum):
     REGISTERED = "registered"
+    REGISTERED_WITH_WARNINGS = "registered_with_warnings"
     INDEX_PENDING = "index_pending"
     INDEXED = "indexed"
+    IGNORED = "ignored"
+    REJECTED = "rejected"
     UNSUPPORTED = "unsupported"
     FAILED = "failed"
 
@@ -33,14 +38,23 @@ class SourceRegistryEntry(StrictBaseModel):
     logical_path: str
     logical_role: str | None = None
     file_type: FileType = FileType.UNKNOWN
+    extension: str | None = None
+    mime_type: str | None = None
     file_hash: str
+    hash_algorithm: str = "sha256"
     size_bytes: int = Field(ge=0)
+    bytes_read: int = Field(default=0, ge=0)
+    hash_duration_ms: float = Field(default=0, ge=0)
     page_count: int | None = Field(default=None, ge=0)
     sheet_count: int | None = Field(default=None, ge=0)
     extraction_status: ExtractionStatus = ExtractionStatus.REGISTERED
     classification: str | None = None
     warnings: list[str] = Field(default_factory=list)
     parent_archive_source_id: str | None = None
+    archive_member_path: str | None = None
+    archive_depth: int = Field(default=0, ge=0)
+    content_identity: str | None = None
+    ingestion_version: str | None = None
     metadata: dict[str, str | int | float | bool | None] = Field(default_factory=dict)
 
     @field_validator("source_id", "original_path", "logical_path", "file_hash")
