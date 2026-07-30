@@ -9,6 +9,13 @@ from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
+from segro_evidence_extraction.escalation_text_reextract import (
+    DEFAULT_COST_CEILING_USD as DEFAULT_ESCALATION_TEXT_COST_CEILING_USD,
+)
+from segro_evidence_extraction.escalation_text_reextract import (
+    DEFAULT_ESCALATION_TEXT_REEXTRACT_OUTPUT_DIR,
+    run_escalation_text_reextract_v1,
+)
 from segro_evidence_extraction.evidence_escalation import (
     DEFAULT_ESCALATION_OUTPUT_DIR,
     DEFAULT_SOURCE_MANIFEST,
@@ -615,6 +622,57 @@ def evidence_escalation_v1(
         output_dir=output_dir,
         source_manifest=source_manifest,
         cache_root=cache_root,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("evidence-escalation-text-reextract-v1")
+def evidence_escalation_text_reextract_v1(
+    escalation_dir: Annotated[
+        Path,
+        typer.Option("--escalation-dir"),
+    ] = DEFAULT_ESCALATION_OUTPUT_DIR,
+    reextract_v2_dir: Annotated[
+        Path,
+        typer.Option("--reextract-v2-dir"),
+    ] = DEFAULT_REEXTRACT_V2_OUTPUT_DIR,
+    batch_v1_dir: Annotated[Path, typer.Option("--batch-v1-dir")] = DEFAULT_BATCH_V1_DIR,
+    v1_reextract_dir: Annotated[
+        Path,
+        typer.Option("--v1-reextract-dir"),
+    ] = DEFAULT_REEXTRACT_V1_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_ESCALATION_TEXT_REEXTRACT_OUTPUT_DIR,
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_MANIFEST,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    cost_ceiling_usd: Annotated[
+        float,
+        typer.Option("--cost-ceiling-usd", min=0.0),
+    ] = DEFAULT_ESCALATION_TEXT_COST_CEILING_USD,
+) -> None:
+    """Run the two-target text-only escalation re-extraction pass."""
+
+    settings = load_settings(config_path)
+    result = run_escalation_text_reextract_v1(
+        escalation_dir=escalation_dir,
+        reextract_v2_dir=reextract_v2_dir,
+        batch_v1_dir=batch_v1_dir,
+        reextract_v1_dir=v1_reextract_dir,
+        output_dir=output_dir,
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        settings=settings,
+        cost_ceiling_usd=cost_ceiling_usd,
+        print_preflight=True,
     )
     typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
 
