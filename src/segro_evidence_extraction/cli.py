@@ -9,6 +9,11 @@ from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
+from segro_evidence_extraction.evidence_escalation import (
+    DEFAULT_ESCALATION_OUTPUT_DIR,
+    DEFAULT_SOURCE_MANIFEST,
+    run_evidence_escalation_v1,
+)
 from segro_evidence_extraction.extraction_batch import (
     DEFAULT_BATCH_OUTPUT_DIR,
     DEFAULT_COST_CEILING_USD,
@@ -28,6 +33,15 @@ from segro_evidence_extraction.parsing import (
 from segro_evidence_extraction.parsing.batch_worker import BatchWorkerConfig
 from segro_evidence_extraction.parsing.page_cache import run_cached_bounded_parse
 from segro_evidence_extraction.parsing.service import load_source_registry
+from segro_evidence_extraction.reextract_pass import (
+    DEFAULT_REEXTRACT_COST_CEILING_USD,
+    DEFAULT_REEXTRACT_OUTPUT_DIR,
+    DEFAULT_REEXTRACT_V1_OUTPUT_DIR,
+    DEFAULT_REEXTRACT_V2_COST_CEILING_USD,
+    DEFAULT_REEXTRACT_V2_OUTPUT_DIR,
+    run_reextract_pass_v1,
+    run_reextract_pass_v2,
+)
 from segro_evidence_extraction.retrieval_diagnostics import (
     DEFAULT_BATCH_V1_DIR,
     DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
@@ -496,6 +510,111 @@ def evidence_first_batch_v1_retrieval_diagnostic(
         source_manifest=source_manifest,
         cache_root=cache_root,
         settings=settings,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("batch-v1-reextract-v1")
+def evidence_first_batch_v1_reextract_v1(
+    batch_v1_dir: Annotated[Path, typer.Option("--batch-v1-dir")] = DEFAULT_BATCH_V1_DIR,
+    diagnostic_dir: Annotated[
+        Path,
+        typer.Option("--diagnostic-dir"),
+    ] = DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_REEXTRACT_OUTPUT_DIR,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    cost_ceiling_usd: Annotated[
+        float,
+        typer.Option("--cost-ceiling-usd", min=0.0),
+    ] = DEFAULT_REEXTRACT_COST_CEILING_USD,
+) -> None:
+    """Run the diagnostic-approved attribute-grounded re-extraction pass."""
+
+    settings = load_settings(config_path)
+    result = run_reextract_pass_v1(
+        batch_v1_dir=batch_v1_dir,
+        diagnostic_dir=diagnostic_dir,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+        cost_ceiling_usd=cost_ceiling_usd,
+        print_preflight=True,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("batch-v1-reextract-v2")
+def evidence_first_batch_v1_reextract_v2(
+    batch_v1_dir: Annotated[Path, typer.Option("--batch-v1-dir")] = DEFAULT_BATCH_V1_DIR,
+    diagnostic_dir: Annotated[
+        Path,
+        typer.Option("--diagnostic-dir"),
+    ] = DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
+    v1_reextract_dir: Annotated[
+        Path,
+        typer.Option("--v1-reextract-dir"),
+    ] = DEFAULT_REEXTRACT_V1_OUTPUT_DIR,
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_REEXTRACT_V2_OUTPUT_DIR,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    cost_ceiling_usd: Annotated[
+        float,
+        typer.Option("--cost-ceiling-usd", min=0.0),
+    ] = DEFAULT_REEXTRACT_V2_COST_CEILING_USD,
+) -> None:
+    """Repair the structured response contract and rerun frozen V1 eligible targets."""
+
+    settings = load_settings(config_path)
+    result = run_reextract_pass_v2(
+        batch_v1_dir=batch_v1_dir,
+        diagnostic_dir=diagnostic_dir,
+        v1_reextract_dir=v1_reextract_dir,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+        cost_ceiling_usd=cost_ceiling_usd,
+        print_preflight=True,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("evidence-escalation-v1")
+def evidence_escalation_v1(
+    reextract_v2_dir: Annotated[
+        Path,
+        typer.Option("--reextract-v2-dir"),
+    ] = DEFAULT_REEXTRACT_V2_OUTPUT_DIR,
+    v1_reextract_dir: Annotated[
+        Path,
+        typer.Option("--v1-reextract-dir"),
+    ] = DEFAULT_REEXTRACT_V1_OUTPUT_DIR,
+    diagnostic_dir: Annotated[
+        Path,
+        typer.Option("--diagnostic-dir"),
+    ] = DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_ESCALATION_OUTPUT_DIR,
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_MANIFEST,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+) -> None:
+    """Diagnose escalation needs for the seven unresolved attribute targets."""
+
+    result = run_evidence_escalation_v1(
+        reextract_v2_dir=reextract_v2_dir,
+        v1_reextract_dir=v1_reextract_dir,
+        diagnostic_dir=diagnostic_dir,
+        output_dir=output_dir,
+        source_manifest=source_manifest,
+        cache_root=cache_root,
     )
     typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
 
