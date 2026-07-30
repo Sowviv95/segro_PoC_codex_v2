@@ -51,7 +51,9 @@ def write_parsing_artifacts(result: ParsingResult, output_dir: Path) -> dict[str
         + result.stage_timings["artifact_writing_ms"]
     )
     result.summary.total_runtime_ms = result.stage_timings["total_ms"]
-    result.summary.total_page_sheet_units = result.summary.pages_parsed + result.summary.sheets_parsed
+    result.summary.total_page_sheet_units = (
+        result.summary.pages_parsed + result.summary.sheets_parsed
+    )
     output_paths = {name: str(path) for name, path in paths.items()}
     result.output_paths = output_paths
     result.summary.artifact_paths = output_paths

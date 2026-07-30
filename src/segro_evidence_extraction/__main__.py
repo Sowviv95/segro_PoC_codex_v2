@@ -2,4 +2,5 @@
 
 from segro_evidence_extraction.cli import app
 
-app()
+if __name__ == "__main__":
+    app()

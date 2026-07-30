@@ -241,7 +241,9 @@ def parse_sources(
         result.stage_timings["artifact_writing_ms"] = 0.0
         result.stage_timings["total_ms"] = (time.perf_counter() - run_start) * 1000
         result.summary.total_runtime_ms = result.stage_timings["total_ms"]
-        result.summary.total_page_sheet_units = result.summary.pages_parsed + result.summary.sheets_parsed
+        result.summary.total_page_sheet_units = (
+            result.summary.pages_parsed + result.summary.sheets_parsed
+        )
     return result
 
 
@@ -364,4 +366,6 @@ def _add_aggregate_stage_timings(
     )
     stage_timings["normalization_ms"] = sum(timing.normalization_ms for timing in document_timings)
     stage_timings["quality_assessment_ms"] = sum(timing.quality_ms for timing in document_timings)
-    stage_timings["classification_ms"] = sum(timing.classification_ms for timing in document_timings)
+    stage_timings["classification_ms"] = sum(
+        timing.classification_ms for timing in document_timings
+    )

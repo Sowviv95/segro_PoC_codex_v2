@@ -10,16 +10,33 @@ from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingErr
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
 from segro_evidence_extraction.parsing import (
+    BatchRequest,
     ParseOptions,
     ParsingConfig,
     ParsingError,
     inspect_parse_manifest,
     parse_sources,
+    run_manifest_bounded_batch,
+    run_parser_benchmark,
 )
+from segro_evidence_extraction.parsing.batch_worker import BatchWorkerConfig
+from segro_evidence_extraction.parsing.page_cache import run_cached_bounded_parse
+from segro_evidence_extraction.parsing.service import load_source_registry
 from segro_evidence_extraction.source_ingestion import (
     ArchiveLimits,
     ingest_source_pack,
     inspect_source_pack,
+)
+from segro_evidence_extraction.vertical_slice import (
+    DEFAULT_CACHE_ROOT,
+    DEFAULT_OUTPUT_DIR,
+    DEFAULT_V2_OUTPUT_DIR,
+    DEFAULT_V3_OUTPUT_DIR,
+    describe_planned_vertical_slice,
+    describe_planned_vertical_slice_v2,
+    run_vertical_slice,
+    run_vertical_slice_v2,
+    run_vertical_slice_v3,
 )
 
 UNIMPLEMENTED_EXIT_CODE = 3
@@ -234,10 +251,272 @@ def parse_run(
     typer.echo(result.summary.model_dump_json(indent=2))
 
 
+@parse_app.command("benchmark")
+def parse_benchmark(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = Path("output/sprint3_source_ingestion/source_pack_manifest.json"),
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = Path(
+        "output/parser_foundation_stage_a_benchmark"
+    ),
+    sample: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--sample",
+            help="Explicit bounded sample as identifier=path:start-end[:anchor|anchor].",
+        ),
+    ] = None,
+    repetitions: Annotated[int, typer.Option("--repetitions", min=1)] = 3,
+    timeout_seconds: Annotated[
+        float,
+        typer.Option("--timeout-seconds", min=0.1),
+    ] = 60.0,
+) -> None:
+    """Run the bounded Stage A parser benchmark in isolated child processes."""
+
+    try:
+        result = run_parser_benchmark(
+            source_manifest=source_manifest,
+            output_dir=output_dir,
+            sample_specs=sample,
+            repetitions=repetitions,
+            timeout_seconds=timeout_seconds,
+        )
+    except ParsingError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(PARSING_ERROR_EXIT_CODE) from exc
+    typer.echo(_json_dumps(result.model_dump(mode="json")))
+
+
+@app.command("vertical-slice-v1")
+def evidence_first_vertical_slice_v1(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = Path("output/sprint3_source_ingestion/source_pack_manifest.json"),
+    dictionary_path: Annotated[
+        Path,
+        typer.Option("--dictionary-path", exists=True, readable=True),
+    ] = Path("data/input/data_dictionary/SEGRO_Extraction_Template.xlsx"),
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_OUTPUT_DIR,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    plan_only: Annotated[bool, typer.Option("--plan-only")] = False,
+) -> None:
+    """Run the bounded evidence-first vertical slice for 12-15 selected targets."""
+
+    settings = load_settings(config_path)
+    plan = describe_planned_vertical_slice(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        settings=settings,
+    )
+    typer.echo(_json_dumps({"planned_vertical_slice": plan}), err=True)
+    if plan_only:
+        return
+    result = run_vertical_slice(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("vertical-slice-v2")
+def evidence_first_vertical_slice_v2(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = Path("output/sprint3_source_ingestion/source_pack_manifest.json"),
+    dictionary_path: Annotated[
+        Path,
+        typer.Option("--dictionary-path", exists=True, readable=True),
+    ] = Path("data/input/data_dictionary/SEGRO_Extraction_Template.xlsx"),
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_V2_OUTPUT_DIR,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    baseline_dir: Annotated[Path, typer.Option("--baseline-dir")] = DEFAULT_OUTPUT_DIR,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    plan_only: Annotated[bool, typer.Option("--plan-only")] = False,
+) -> None:
+    """Run the frozen V2 retrieval/span-grounded vertical-slice comparison."""
+
+    settings = load_settings(config_path)
+    plan = describe_planned_vertical_slice_v2(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+    )
+    typer.echo(_json_dumps({"planned_vertical_slice_v2": plan}), err=True)
+    if plan_only:
+        return
+    result = run_vertical_slice_v2(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+        baseline_dir=baseline_dir,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("vertical-slice-v3")
+def evidence_first_vertical_slice_v3(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = Path("output/sprint3_source_ingestion/source_pack_manifest.json"),
+    dictionary_path: Annotated[
+        Path,
+        typer.Option("--dictionary-path", exists=True, readable=True),
+    ] = Path("data/input/data_dictionary/SEGRO_Extraction_Template.xlsx"),
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = DEFAULT_V3_OUTPUT_DIR,
+    cache_root: Annotated[Path, typer.Option("--cache-root")] = DEFAULT_CACHE_ROOT,
+    v2_baseline_dir: Annotated[Path, typer.Option("--v2-baseline-dir")] = DEFAULT_V2_OUTPUT_DIR,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path", exists=True, readable=True),
+    ] = Path("configs/default.yaml"),
+    plan_only: Annotated[bool, typer.Option("--plan-only")] = False,
+) -> None:
+    """Run V3 value-shape calibrated extraction over the frozen V2 corpus."""
+
+    settings = load_settings(config_path)
+    plan = describe_planned_vertical_slice_v2(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+    )
+    typer.echo(_json_dumps({"planned_vertical_slice_v3": plan}), err=True)
+    if plan_only:
+        return
+    result = run_vertical_slice_v3(
+        source_manifest=source_manifest,
+        dictionary_path=dictionary_path,
+        output_dir=output_dir,
+        cache_root=cache_root,
+        settings=settings,
+        v2_baseline_dir=v2_baseline_dir,
+    )
+    typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@parse_app.command("batch")
+def parse_batch(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ],
+    source_id: Annotated[str, typer.Option("--source-id")],
+    page_start: Annotated[int, typer.Option("--page-start", min=1)],
+    page_end: Annotated[int, typer.Option("--page-end", min=1)],
+    output_dir: Annotated[Path, typer.Option("--output-dir")] = Path(
+        "output/parser_foundation_stage_b_batch"
+    ),
+    stall_threshold_seconds: Annotated[
+        float,
+        typer.Option("--stall-threshold-seconds", min=0.1),
+    ] = 5.0,
+    startup_timeout_seconds: Annotated[
+        float,
+        typer.Option("--startup-timeout-seconds", min=0.1),
+    ] = 20.0,
+    max_restarts: Annotated[int, typer.Option("--max-restarts", min=0)] = 1,
+) -> None:
+    """Run one safe bounded PyMuPDF batch worker with checkpointed resume."""
+
+    try:
+        result = run_manifest_bounded_batch(
+            source_manifest=source_manifest,
+            source_id=source_id,
+            output_dir=output_dir,
+            page_start=page_start,
+            page_end=page_end,
+            config=BatchWorkerConfig(
+                stall_threshold_seconds=stall_threshold_seconds,
+                startup_timeout_seconds=startup_timeout_seconds,
+                max_restarts=max_restarts,
+            ),
+        )
+    except ParsingError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(PARSING_ERROR_EXIT_CODE) from exc
+    typer.echo(_json_dumps(result.model_dump(mode="json")))
+
+
+@parse_app.command("cached-batch")
+def parse_cached_batch(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ],
+    source_id: Annotated[str, typer.Option("--source-id")],
+    page_start: Annotated[int, typer.Option("--page-start", min=1)],
+    page_end: Annotated[int, typer.Option("--page-end", min=1)],
+    cache_root: Annotated[Path, typer.Option("--cache-root")],
+    output_dir: Annotated[Path, typer.Option("--output-dir")],
+    stall_threshold_seconds: Annotated[
+        float,
+        typer.Option("--stall-threshold-seconds", min=0.1),
+    ] = 5.0,
+    startup_timeout_seconds: Annotated[
+        float,
+        typer.Option("--startup-timeout-seconds", min=0.1),
+    ] = 20.0,
+    max_restarts: Annotated[int, typer.Option("--max-restarts", min=0)] = 1,
+) -> None:
+    """Run a bounded cached PyMuPDF batch parse with canonical page persistence."""
+
+    try:
+        source = next(
+            (
+                entry
+                for entry in load_source_registry(source_manifest)
+                if entry.source_id == source_id
+            ),
+            None,
+        )
+        if source is None:
+            raise ParsingError(f"Source ID not found in manifest: {source_id}")
+        result = run_cached_bounded_parse(
+            request=BatchRequest(
+                source=source,
+                source_path=source.original_path,
+                output_dir=str(output_dir),
+                page_start=page_start,
+                page_end=page_end,
+            ),
+            cache_root=cache_root,
+            batch_config=BatchWorkerConfig(
+                stall_threshold_seconds=stall_threshold_seconds,
+                startup_timeout_seconds=startup_timeout_seconds,
+                max_restarts=max_restarts,
+            ),
+        )
+    except ParsingError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(PARSING_ERROR_EXIT_CODE) from exc
+    typer.echo(_json_dumps(result.model_dump(mode="json")))
+
+
 def _json_dumps(value: object) -> str:
     import json
 
-    return json.dumps(value, indent=2)
+    return json.dumps(value, indent=2, ensure_ascii=True, sort_keys=True)
 
 
 def _progress(stage: str, subject: str) -> None:
