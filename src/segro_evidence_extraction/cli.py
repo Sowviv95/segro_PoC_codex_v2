@@ -15,6 +15,13 @@ from segro_evidence_extraction.batch_selection_strategy import (
     DEFAULT_HIERARCHY_PATH,
     run_batch_v2_selection_pack,
 )
+from segro_evidence_extraction.batch_v2_cache_expansion import (
+    DEFAULT_CACHE_EXPANSION_OUTPUT_DIR,
+    run_batch_v2_cache_expansion_v1,
+)
+from segro_evidence_extraction.batch_v2_cache_expansion import (
+    DEFAULT_SOURCE_MANIFEST as DEFAULT_BATCH_V2_EXPANSION_SOURCE_MANIFEST,
+)
 from segro_evidence_extraction.batch_v2_evidence_readiness import (
     DEFAULT_PAGE_CACHE_ROOT as DEFAULT_BATCH_V2_READINESS_PAGE_CACHE_ROOT,
 )
@@ -825,6 +832,46 @@ def audit_batch_v2_false_positives(
         output_dir=output_dir,
     )
     typer.echo(_json_dumps(result["false_positive_metrics"]))
+
+
+@app.command("batch-v2-cache-expansion-v1")
+def batch_v2_cache_expansion_v1(
+    false_positive_dir: Annotated[
+        Path,
+        typer.Option("--false-positive-dir", exists=True, readable=True),
+    ] = DEFAULT_FALSE_POSITIVE_OUTPUT_DIR,
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_BATCH_V2_EXPANSION_SOURCE_MANIFEST,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_BATCH_V2_READINESS_PAGE_CACHE_ROOT,
+    selection_dir: Annotated[
+        Path,
+        typer.Option("--selection-dir", exists=True, readable=True),
+    ] = DEFAULT_BATCH_V2_SELECTION_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_CACHE_EXPANSION_OUTPUT_DIR,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Plan and audit without invoking parser workers."),
+    ] = False,
+) -> None:
+    """Run targeted Batch V2 cache expansion over selected false-positive candidates."""
+
+    result = run_batch_v2_cache_expansion_v1(
+        false_positive_dir=false_positive_dir,
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        selection_dir=selection_dir,
+        output_dir=output_dir,
+        dry_run=dry_run,
+    )
+    typer.echo(_json_dumps(result["cache_expansion_metrics"]))
 
 
 @parse_app.command("batch")
