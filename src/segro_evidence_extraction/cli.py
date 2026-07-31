@@ -5,6 +5,10 @@ from typing import Annotated
 
 import typer
 
+from segro_evidence_extraction.batch_adjudication import (
+    DEFAULT_FINAL_ADJUDICATION_OUTPUT_DIR,
+    run_batch_v1_final_adjudication,
+)
 from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
@@ -675,6 +679,48 @@ def evidence_escalation_text_reextract_v1(
         print_preflight=True,
     )
     typer.echo(_json_dumps(result.telemetry.model_dump(mode="json")))
+
+
+@app.command("batch-v1-final-adjudication")
+def evidence_first_batch_v1_final_adjudication(
+    batch_v1_dir: Annotated[Path, typer.Option("--batch-v1-dir")] = DEFAULT_BATCH_V1_DIR,
+    diagnostic_dir: Annotated[
+        Path,
+        typer.Option("--diagnostic-dir"),
+    ] = DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
+    reextract_v1_dir: Annotated[
+        Path,
+        typer.Option("--reextract-v1-dir"),
+    ] = DEFAULT_REEXTRACT_V1_OUTPUT_DIR,
+    reextract_v2_dir: Annotated[
+        Path,
+        typer.Option("--reextract-v2-dir"),
+    ] = DEFAULT_REEXTRACT_V2_OUTPUT_DIR,
+    escalation_dir: Annotated[
+        Path,
+        typer.Option("--escalation-dir"),
+    ] = DEFAULT_ESCALATION_OUTPUT_DIR,
+    escalation_text_dir: Annotated[
+        Path,
+        typer.Option("--escalation-text-dir"),
+    ] = DEFAULT_ESCALATION_TEXT_REEXTRACT_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_FINAL_ADJUDICATION_OUTPUT_DIR,
+) -> None:
+    """Consolidate Batch V1 decisions without parsing or making API calls."""
+
+    result = run_batch_v1_final_adjudication(
+        batch_v1_dir=batch_v1_dir,
+        diagnostic_dir=diagnostic_dir,
+        reextract_v1_dir=reextract_v1_dir,
+        reextract_v2_dir=reextract_v2_dir,
+        escalation_dir=escalation_dir,
+        escalation_text_dir=escalation_text_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result.final_metrics))
 
 
 @parse_app.command("batch")
