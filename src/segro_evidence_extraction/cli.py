@@ -9,6 +9,23 @@ from segro_evidence_extraction.batch_adjudication import (
     DEFAULT_FINAL_ADJUDICATION_OUTPUT_DIR,
     run_batch_v1_final_adjudication,
 )
+from segro_evidence_extraction.batch_selection_strategy import (
+    DEFAULT_BATCH_V2_SELECTION_OUTPUT_DIR,
+    DEFAULT_DICTIONARY_JSONL,
+    DEFAULT_HIERARCHY_PATH,
+    run_batch_v2_selection_pack,
+)
+from segro_evidence_extraction.batch_v2_evidence_readiness import (
+    DEFAULT_PAGE_CACHE_ROOT as DEFAULT_BATCH_V2_READINESS_PAGE_CACHE_ROOT,
+)
+from segro_evidence_extraction.batch_v2_evidence_readiness import (
+    DEFAULT_READINESS_AUDIT_OUTPUT_DIR,
+    run_batch_v2_readiness_audit,
+)
+from segro_evidence_extraction.batch_v2_false_positive_audit import (
+    DEFAULT_FALSE_POSITIVE_OUTPUT_DIR,
+    run_batch_v2_false_positive_audit,
+)
 from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
@@ -721,6 +738,93 @@ def evidence_first_batch_v1_final_adjudication(
         output_dir=output_dir,
     )
     typer.echo(_json_dumps(result.final_metrics))
+
+
+@app.command("build-batch-v2-selection-pack")
+def build_batch_v2_selection_pack(
+    dictionary_jsonl: Annotated[
+        Path,
+        typer.Option("--dictionary-jsonl", exists=True, readable=True),
+    ] = DEFAULT_DICTIONARY_JSONL,
+    batch_v1_dir: Annotated[Path, typer.Option("--batch-v1-dir")] = DEFAULT_BATCH_V1_DIR,
+    adjudication_dir: Annotated[
+        Path,
+        typer.Option("--adjudication-dir"),
+    ] = DEFAULT_FINAL_ADJUDICATION_OUTPUT_DIR,
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_MANIFEST,
+    hierarchy_path: Annotated[
+        Path,
+        typer.Option("--hierarchy-path", exists=True, readable=True),
+    ] = DEFAULT_HIERARCHY_PATH,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_BATCH_V2_SELECTION_OUTPUT_DIR,
+) -> None:
+    """Build the deterministic Batch V2 target-selection readiness pack."""
+
+    result = run_batch_v2_selection_pack(
+        dictionary_jsonl=dictionary_jsonl,
+        batch_v1_dir=batch_v1_dir,
+        adjudication_dir=adjudication_dir,
+        source_manifest=source_manifest,
+        hierarchy_path=hierarchy_path,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["selection_metrics"]))
+
+
+@app.command("audit-batch-v2-evidence-readiness")
+def audit_batch_v2_evidence_readiness(
+    selection_dir: Annotated[
+        Path,
+        typer.Option("--selection-dir", exists=True, readable=True),
+    ] = DEFAULT_BATCH_V2_SELECTION_OUTPUT_DIR,
+    page_cache_root: Annotated[
+        Path,
+        typer.Option("--page-cache-root", exists=True, readable=True),
+    ] = DEFAULT_BATCH_V2_READINESS_PAGE_CACHE_ROOT,
+    adjudication_dir: Annotated[
+        Path,
+        typer.Option("--adjudication-dir", exists=True, readable=True),
+    ] = DEFAULT_FINAL_ADJUDICATION_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_READINESS_AUDIT_OUTPUT_DIR,
+) -> None:
+    """Audit proposed Batch V2 targets against existing cached evidence only."""
+
+    result = run_batch_v2_readiness_audit(
+        selection_dir=selection_dir,
+        page_cache_root=page_cache_root,
+        adjudication_dir=adjudication_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["readiness_metrics"]))
+
+
+@app.command("audit-batch-v2-false-positives")
+def audit_batch_v2_false_positives(
+    readiness_dir: Annotated[
+        Path,
+        typer.Option("--readiness-dir", exists=True, readable=True),
+    ] = DEFAULT_READINESS_AUDIT_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_FALSE_POSITIVE_OUTPUT_DIR,
+) -> None:
+    """Audit retained Batch V2 execution-ready rows for false positives."""
+
+    result = run_batch_v2_false_positive_audit(
+        readiness_dir=readiness_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["false_positive_metrics"]))
 
 
 @parse_app.command("batch")
