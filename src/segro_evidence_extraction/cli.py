@@ -68,6 +68,12 @@ from segro_evidence_extraction.evidence_gap_refinement_v1 import (
     DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
     run_evidence_gap_refinement_v1,
 )
+from segro_evidence_extraction.expanded_bounded_extraction_batch_v1 import (
+    DEFAULT_EXPANDED_ADJUDICATION_OUTPUT_DIR,
+    DEFAULT_EXPANDED_BATCH_OUTPUT_DIR,
+    DEFAULT_EXPANDED_HANDOFF_OUTPUT_DIR,
+    run_expanded_bounded_extraction_batch_v1,
+)
 from segro_evidence_extraction.extraction_batch import (
     DEFAULT_BATCH_OUTPUT_DIR,
     DEFAULT_COST_CEILING_USD,
@@ -1283,6 +1289,46 @@ def bounded_extraction_expansion_preparation_v1(
         output_dir=output_dir,
     )
     typer.echo(_json_dumps(result["selection_summary"]))
+
+
+@app.command("expanded-bounded-extraction-batch-v1")
+def expanded_bounded_extraction_batch_v1(
+    selected_batch: Annotated[
+        Path,
+        typer.Option("--selected-batch", exists=True, readable=True),
+    ] = DEFAULT_EXPANSION_PREP_OUTPUT_DIR / "selected_batch.json",
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
+    batch_output_dir: Annotated[
+        Path,
+        typer.Option("--batch-output-dir"),
+    ] = DEFAULT_EXPANDED_BATCH_OUTPUT_DIR,
+    adjudication_output_dir: Annotated[
+        Path,
+        typer.Option("--adjudication-output-dir"),
+    ] = DEFAULT_EXPANDED_ADJUDICATION_OUTPUT_DIR,
+    handoff_output_dir: Annotated[
+        Path,
+        typer.Option("--handoff-output-dir"),
+    ] = DEFAULT_EXPANDED_HANDOFF_OUTPUT_DIR,
+    dry_run_only: Annotated[
+        bool,
+        typer.Option("--dry-run-only", help="Validate and write artifacts without model calls."),
+    ] = False,
+) -> None:
+    """Execute the prepared three-target expanded bounded extraction batch."""
+
+    result = run_expanded_bounded_extraction_batch_v1(
+        selected_batch_path=selected_batch,
+        source_manifest=source_manifest,
+        batch_output_dir=batch_output_dir,
+        adjudication_output_dir=adjudication_output_dir,
+        handoff_output_dir=handoff_output_dir,
+        dry_run_only=dry_run_only,
+    )
+    typer.echo(_json_dumps(result["batch"]["execution_summary"]))
 
 
 @parse_app.command("batch")
