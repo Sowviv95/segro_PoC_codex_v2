@@ -20,7 +20,6 @@ from segro_evidence_extraction.downstream_handoff_contract_v1 import (
 from segro_evidence_extraction.expanded_bounded_extraction_batch_v1 import (
     CHECKPOINT_REJECTED_TARGET_IDS,
     COMPLETED_TARGET_IDS,
-    EXPECTED_SELECTED_TARGET_IDS,
     build_adjudication_package,
     build_handoff_package,
     read_json_list,
@@ -162,7 +161,12 @@ def run_unit_runner_v1(
             )
         selected = read_json_list(config.selected_batch_path)
         source_paths = source_paths_by_id(config.source_registry_path)
-        preflight = validate_expanded_preflight(selected, source_paths)
+        expected_target_ids = [str(item.get("target_id")) for item in selected]
+        preflight = validate_expanded_preflight(
+            selected,
+            source_paths,
+            expected_target_ids=expected_target_ids,
+        )
         preflight_stage = {
             "status": "passed" if preflight["overall_status"] == "passed" else "failed",
             "counts": {
@@ -239,6 +243,7 @@ def run_unit_runner_v1(
             handoff_output_dir=handoff_output_dir(context),
             extraction_client=extraction_client,
             runner_metadata=runner_metadata(context),
+            expected_target_ids=expected_target_ids,
         )
         stage_results.extend(execution_stage_results(context, extraction_result))
         contract = extraction_result["handoff"]["export_validation"]["contract_validation"]
@@ -405,8 +410,8 @@ def validate_inputs(context: RunnerContext) -> dict[str, Any]:
     if config.selected_batch_path.exists():
         selected = read_json_list(config.selected_batch_path)
         selected_ids = [str(item.get("target_id")) for item in selected]
-        if selected_ids != EXPECTED_SELECTED_TARGET_IDS:
-            errors.append(f"selected targets are not the prepared expanded batch: {selected_ids}")
+        if len(selected_ids) != len(set(selected_ids)):
+            errors.append(f"duplicate selected targets are not allowed: {selected_ids}")
         disallowed = sorted(
             set(selected_ids).intersection(COMPLETED_TARGET_IDS | CHECKPOINT_REJECTED_TARGET_IDS)
         )
@@ -780,14 +785,15 @@ def resume_artifact_conflicts(context: RunnerContext) -> list[str]:
         raw_rows = safe_read_jsonl(raw_path, conflicts)
         request_rows = safe_read_jsonl(request_path, conflicts) if request_path.exists() else []
         raw_ids = [str(row.get("target_id")) for row in raw_rows]
-        if len(raw_ids) != len(EXPECTED_SELECTED_TARGET_IDS):
+        expected_ids = configured_target_ids(context)
+        if len(raw_ids) != len(expected_ids):
             conflicts.append("response-count mismatch")
-        if raw_ids != EXPECTED_SELECTED_TARGET_IDS:
+        if raw_ids != expected_ids:
             conflicts.append(f"missing, duplicate or reordered target responses: {raw_ids}")
         if len(raw_ids) != len(set(raw_ids)):
             conflicts.append("duplicate target responses")
         request_ids = [str(row.get("target_id")) for row in request_rows]
-        if request_rows and request_ids != EXPECTED_SELECTED_TARGET_IDS:
+        if request_rows and request_ids != expected_ids:
             conflicts.append(f"model request set mismatch: {request_ids}")
     stage_4 = context.run_dir / "stage_04_bounded_extraction.json"
     if stage_4.exists() and not raw_path.exists():
@@ -820,7 +826,16 @@ def complete_raw_responses_present(context: RunnerContext) -> bool:
     if not path.exists():
         return False
     rows = read_jsonl(path)
-    return [str(row.get("target_id")) for row in rows] == EXPECTED_SELECTED_TARGET_IDS
+    return [str(row.get("target_id")) for row in rows] == configured_target_ids(context)
+
+
+def configured_target_ids(context: RunnerContext) -> list[str]:
+    if not context.config.selected_batch_path.exists():
+        return []
+    return [
+        str(item.get("target_id"))
+        for item in read_json_list(context.config.selected_batch_path)
+    ]
 
 
 def input_fingerprint_changed(context: RunnerContext) -> bool:
@@ -907,7 +922,8 @@ def build_execution_summary(
         "final_status": final_status,
         "output_path": str(run_dir),
         "selected_target_ids": [item.get("target_id") for item in selected]
-        or EXPECTED_SELECTED_TARGET_IDS,
+        if selected
+        else [],
         "accepted_count": counts.get("accepted", 0),
         "accepted_with_caveat_count": counts.get("accepted_with_caveat", 0),
         "rejected_count": counts.get("rejected", 0),

@@ -1,0 +1,20 @@
+{
+  "asset_record_key": "enfield_unit1",
+  "cache_root": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache",
+  "config_version": "1.0.0",
+  "customer_caveat_policy": "internal_only",
+  "dictionary_artifact_path": "output/enfield_unit1_extraction_batch_construction_v1/normalization_validation_plan.json",
+  "execution_mode": "dry_run",
+  "expected_branch": "feature/evidence-first-foundation",
+  "frozen_customer_contract_version": "1.0.0",
+  "frozen_internal_contract_version": "1.0.0",
+  "max_model_retries": 1,
+  "model_name": "gpt-4o-mini",
+  "model_provider": "openai",
+  "output_root": "output/unit_runs",
+  "repository_root": ".",
+  "schema_version": "segro_unit_runner_v1",
+  "selected_batch_path": "output\\enfield_unit1_evidence_ready_batch_expansion_v2\\selected_batch.json",
+  "source_registry_path": "output\\sprint3_source_ingestion\\source_pack_manifest.json",
+  "unit_id": "enfield_unit1_scale_trial_v2"
+}

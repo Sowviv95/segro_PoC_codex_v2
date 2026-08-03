@@ -97,6 +97,7 @@ def run_expanded_bounded_extraction_batch_v1(
     extraction_client: ReducedExtractionClient | None = None,
     dry_run_only: bool = False,
     runner_metadata: dict[str, Any] | None = None,
+    expected_target_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     selected = read_json_list(selected_batch_path)
@@ -104,7 +105,11 @@ def run_expanded_bounded_extraction_batch_v1(
     provenance = input_provenance(selected_batch_path, source_manifest, source_paths)
     if runner_metadata:
         provenance["runner_metadata"] = runner_metadata
-    dry_run = validate_expanded_preflight(selected, source_paths)
+    dry_run = validate_expanded_preflight(
+        selected,
+        source_paths,
+        expected_target_ids=expected_target_ids,
+    )
     client = extraction_client or build_default_extraction_client(
         settings or load_settings(Path("configs/default.yaml"))
     )
@@ -159,10 +164,13 @@ def run_expanded_bounded_extraction_batch_v1(
 def validate_expanded_preflight(
     selected: list[dict[str, Any]],
     source_paths: dict[str, str],
+    expected_target_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     errors: list[str] = []
     target_ids = [str(item.get("target_id")) for item in selected]
-    if target_ids != EXPECTED_SELECTED_TARGET_IDS:
+    if expected_target_ids is None:
+        expected_target_ids = EXPECTED_SELECTED_TARGET_IDS
+    if expected_target_ids and target_ids != expected_target_ids:
         errors.append(f"selected targets are not exact/deterministic: {target_ids}")
     if len(target_ids) != len(set(target_ids)):
         errors.append("duplicate selected target IDs")
@@ -188,7 +196,7 @@ def validate_expanded_preflight(
     return {
         "schema_version": "segro_expanded_bounded_extraction_dry_run_validation_v1",
         "overall_status": "passed" if not failed_ids and not errors else "failed",
-        "expected_target_ids": EXPECTED_SELECTED_TARGET_IDS,
+        "expected_target_ids": expected_target_ids,
         "observed_target_ids": target_ids,
         "validated_target_count": len(selected) - len(set(failed_ids)),
         "failed_target_count": len(set(failed_ids)),

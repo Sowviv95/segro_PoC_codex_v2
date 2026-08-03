@@ -140,6 +140,49 @@ def test_contract_only_makes_zero_model_calls_and_skips_live_stages(tmp_path: Pa
     assert "contract_only" in result["execution_summary"]["run_id"]
 
 
+def test_contract_only_accepts_configured_empty_scale_trial_batch(tmp_path: Path) -> None:
+    selected_batch = tmp_path / "empty_selected_batch.json"
+    selected_batch.write_text("[]", encoding="utf-8")
+    config_path = write_config(
+        tmp_path,
+        {
+            "unit_id": "empty_scale_trial",
+            "selected_batch_path": str(selected_batch),
+        },
+    )
+    client = MockRunnerClient()
+
+    result = run_unit_runner_v1(
+        config_path=config_path,
+        mode="contract_only",
+        extraction_client=client,
+    )
+
+    assert result["exit_code"] == EXIT_SUCCESS
+    assert result["execution_summary"]["selected_target_ids"] == []
+    assert result["execution_summary"]["model_calls"] == 0
+    assert client.calls == []
+
+
+def test_dry_run_accepts_configured_empty_scale_trial_batch(tmp_path: Path) -> None:
+    selected_batch = tmp_path / "empty_selected_batch.json"
+    selected_batch.write_text("[]", encoding="utf-8")
+    config_path = write_config(
+        tmp_path,
+        {
+            "unit_id": "empty_scale_trial",
+            "selected_batch_path": str(selected_batch),
+        },
+    )
+
+    result = run_unit_runner_v1(config_path=config_path, mode="dry_run")
+
+    assert result["exit_code"] == EXIT_SUCCESS
+    assert result["execution_summary"]["final_status"] == "execution_ready"
+    assert result["execution_summary"]["selected_target_ids"] == []
+    assert result["execution_summary"]["model_calls"] == 0
+
+
 def test_execute_mode_calls_only_selected_three_targets_and_validates_contract(
     tmp_path: Path,
 ) -> None:
@@ -294,7 +337,18 @@ def test_explicit_exit_codes_for_config_input_preflight_and_extraction_failures(
     )
 
     bad_batch_path = tmp_path / "bad_selected.json"
-    bad_batch_path.write_text("[]", encoding="utf-8")
+    bad_batch_path.write_text(
+        json.dumps(
+            [
+                {
+                    "target_id": "trg_bad_preflight",
+                    "requirement_id": "req",
+                    "target": {"expected_field": "field"},
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
     bad_preflight = write_config(tmp_path, {"selected_batch_path": str(bad_batch_path)})
     assert run_unit_runner_v1(config_path=bad_preflight, mode="dry_run")["exit_code"] in {
         EXIT_INPUT_VALIDATION_FAILURE,

@@ -68,6 +68,11 @@ from segro_evidence_extraction.evidence_gap_refinement_v1 import (
     DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
     run_evidence_gap_refinement_v1,
 )
+from segro_evidence_extraction.evidence_ready_batch_expansion_v2 import (
+    DEFAULT_EVIDENCE_READY_BATCH_V2_OUTPUT_DIR,
+    DEFAULT_SCALE_TRIAL_CONFIG_PATH,
+    run_evidence_ready_batch_expansion_v2,
+)
 from segro_evidence_extraction.expanded_bounded_extraction_batch_v1 import (
     DEFAULT_EXPANDED_ADJUDICATION_OUTPUT_DIR,
     DEFAULT_EXPANDED_BATCH_OUTPUT_DIR,
@@ -1295,6 +1300,26 @@ def bounded_extraction_expansion_preparation_v1(
         adjudication_dir=adjudication_dir,
         handoff_export_dir=handoff_export_dir,
         output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["selection_summary"]))
+
+
+@app.command("evidence-ready-batch-expansion-v2")
+def evidence_ready_batch_expansion_v2(
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_EVIDENCE_READY_BATCH_V2_OUTPUT_DIR,
+    config_path: Annotated[
+        Path,
+        typer.Option("--config-path"),
+    ] = DEFAULT_SCALE_TRIAL_CONFIG_PATH,
+) -> None:
+    """Prepare the scale-trial batch from existing evidence-ready artifacts only."""
+
+    result = run_evidence_ready_batch_expansion_v2(
+        output_dir=output_dir,
+        config_path=config_path,
     )
     typer.echo(_json_dumps(result["selection_summary"]))
 
