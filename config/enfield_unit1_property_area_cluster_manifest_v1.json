@@ -1,0 +1,762 @@
+{
+  "schema_version": "segro_evidence_cluster_manifest_v1",
+  "contract_version": "1.0.0",
+  "run_name": "enfield_unit1_property_area_schedule_value_evidence_preparation_v1",
+  "unit_id": "enfield_unit1",
+  "project_number": "W0327",
+  "output_dir": "output/enfield_unit1_property_area_schedule_value_evidence_preparation_v1",
+  "total_page_cap": 11,
+  "allowed_readiness_dispositions": [
+    "evidence_ready",
+    "evidence_present_but_ambiguous",
+    "component_only",
+    "wrong_unit",
+    "wrong_area_concept",
+    "wrong_event",
+    "dictionary_blocked",
+    "semantic_clarification_required",
+    "evidence_not_found"
+  ],
+  "targets": [
+    {
+      "target_id": "trg_ce7b8144166191d0",
+      "field_name": "space_type_ground_floor_factory_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 ground floor factory or warehouse area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "as_built_general_arrangement_drawing"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "as_built_general_arrangement_drawing",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Unit 1 GA Plans and planning conditions",
+          "candidate_page_ranges": [
+            {
+              "page_start": 8,
+              "page_end": 8,
+              "rationale": "Cached Unit 1 as-built GA drawing page identified by the gap plan for ground and first floor space evidence.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_8df0a04e3056c20c",
+      "field_name": "space_type_other_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 other area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "planning_or_as_built_area_statement"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "planning_conditions_or_area_statement",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Unit 1 planning condition and retained parking/turning area text",
+          "candidate_page_ranges": [
+            {
+              "page_start": 17,
+              "page_end": 17,
+              "rationale": "Cached Part 1 planning condition page identified by the gap plan for other area evidence.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_03fa5b5ff45518b6",
+      "field_name": "space_type_first_floor_factory_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 first floor factory or warehouse area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "as_built_general_arrangement_drawing"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "as_built_general_arrangement_drawing",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Unit 1 GA Plans and planning conditions",
+          "candidate_page_ranges": [
+            {
+              "page_start": 8,
+              "page_end": 8,
+              "rationale": "Cached Unit 1 as-built GA drawing page identified by the gap plan for first floor circulation/space evidence.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_118654801147966b",
+      "field_name": "space_type_second_floor_factory_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 second floor factory or warehouse area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "as_built_general_arrangement_drawing"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "as_built_general_arrangement_drawing",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Unit 1 GA Plans and planning conditions",
+          "candidate_page_ranges": [
+            {
+              "page_start": 8,
+              "page_end": 8,
+              "rationale": "Cached Unit 1 as-built GA drawing page identified by the gap plan; used to test whether a second floor area is locally supported.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_37939a89442b0521",
+      "field_name": "space_type_third_floor_factory_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 third floor factory or warehouse area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "as_built_general_arrangement_drawing"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "as_built_general_arrangement_drawing",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Unit 1 GA Plans and planning conditions",
+          "candidate_page_ranges": [
+            {
+              "page_start": 8,
+              "page_end": 8,
+              "rationale": "Cached Unit 1 as-built GA drawing page identified by the gap plan; used to test whether a third floor area is locally supported.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_2bd605533c238c17",
+      "field_name": "space_type_atrium_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 atrium area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "planning_or_as_built_area_statement"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "planning_conditions_or_area_statement",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Planning conditions and supporting information list",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached Part 1 page identified by the gap plan for area-related supporting information and conditions.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_719e3cad647f0f12",
+      "field_name": "space_type_advertising_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 advertising area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "planning_or_as_built_area_statement"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "planning_conditions_or_area_statement",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Planning conditions and supporting information list",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached Part 1 page identified by the gap plan for area-related supporting information and conditions.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_af63282a7413d030",
+      "field_name": "space_type_archives_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 archives area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "planning_or_as_built_area_statement"
+      ],
+      "max_pages_per_target": 8,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "planning_conditions_or_area_statement",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "Planning conditions and supporting information list",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached Part 1 page identified by the gap plan for area-related supporting information and conditions.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    },
+    {
+      "target_id": "trg_2e089bbcbb015145",
+      "field_name": "space_type_car_park_badges_area_value",
+      "domain": "Property",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "Unit 1 car park badges area value",
+      "expected_evidence_families": [
+        "property_area_schedule",
+        "planning_or_as_built_area_statement"
+      ],
+      "max_pages_per_target": 9,
+      "source_assignments": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_role": "building_description_or_planning_statement",
+          "logical_source_path": "Building Manual - Part 1 General.pdf",
+          "section_label": "building description and parking/turning condition pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 5,
+              "page_end": 5,
+              "rationale": "Best cached page contains car parking component text but no value; included to verify whether an area value is locally present.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 17,
+              "page_end": 17,
+              "rationale": "Cached Part 1 planning condition page includes parking and turning area context.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 2
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_role": "building_fabric_schedule_or_drawing",
+          "logical_source_path": "Building Manual - Part 2 Building Fabric.pdf",
+          "section_label": "Building fabric schedule/drawing candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 6,
+              "page_end": 6,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 9,
+              "page_end": 9,
+              "rationale": "Cached building-fabric page identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Cached building-fabric page range identified by the gap plan as a possible schedule/drawing source.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        },
+        {
+          "source_id": "src_289b4022953f308c",
+          "source_document_role": "schedule_of_accommodation_gea_statement",
+          "logical_source_path": "Building Manual - Part 5 The Health & Safety File.pdf",
+          "section_label": "Access and Cleaning Strategy Schedule of Accommodation (GEA)",
+          "candidate_page_ranges": [
+            {
+              "page_start": 21,
+              "page_end": 21,
+              "rationale": "Cached Part 5 Schedule of Accommodation (GEA) page containing Unit 1, First Floor Offices, Total A and site area values.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        }
+      ]
+    }
+  ],
+  "upstream_provenance": [
+    {
+      "artifact_path": "output/enfield_unit1_evidence_coverage_gap_resolution_plan_v1/gap_clusters.json",
+      "artifact_role": "cluster selection and recommended source pages"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_evidence_coverage_gap_resolution_plan_v1/gap_inventory.json",
+      "artifact_role": "target-level exclusion evidence"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_evidence_cluster_portability_foundation_v1/portability_verification.json",
+      "artifact_role": "manifest boundary verification"
+    }
+  ]
+}

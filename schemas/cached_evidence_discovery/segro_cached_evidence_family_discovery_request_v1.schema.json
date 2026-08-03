@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "segro_cached_evidence_family_discovery_request_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_version",
+    "discovery_run_name",
+    "source_inventory_path",
+    "cache_root",
+    "output_path",
+    "descriptors"
+  ],
+  "properties": {
+    "schema_version": { "const": "segro_cached_evidence_family_discovery_request_v1" },
+    "contract_version": { "type": "string", "pattern": "^1\\." },
+    "discovery_run_name": { "type": "string", "minLength": 1 },
+    "source_inventory_path": { "type": "string", "minLength": 1 },
+    "cache_root": { "type": "string", "minLength": 1 },
+    "output_path": { "type": "string", "minLength": 1 },
+    "descriptors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "descriptor_id",
+          "evidence_family",
+          "requested_attribute_phrases",
+          "expected_value_shapes",
+          "unit_patterns",
+          "positive_labels",
+          "negative_labels",
+          "indicators",
+          "max_candidates",
+          "minimum_score"
+        ],
+        "properties": {
+          "descriptor_id": { "type": "string", "minLength": 1 },
+          "evidence_family": { "type": "string", "minLength": 1 },
+          "target_ids": { "type": "array", "items": { "type": "string" } },
+          "field_names": { "type": "array", "items": { "type": "string" } },
+          "requested_attribute_phrases": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "expected_value_shapes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "unit_patterns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "positive_labels": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "negative_labels": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "indicators": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "max_candidates": { "type": "integer", "minimum": 1 },
+          "minimum_score": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

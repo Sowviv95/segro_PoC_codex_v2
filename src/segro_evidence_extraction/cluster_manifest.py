@@ -26,6 +26,8 @@ ReadinessDisposition = Literal[
     "evidence_ready",
     "evidence_present_but_ambiguous",
     "component_only",
+    "wrong_unit",
+    "wrong_area_concept",
     "wrong_event",
     "dictionary_blocked",
     "semantic_clarification_required",
