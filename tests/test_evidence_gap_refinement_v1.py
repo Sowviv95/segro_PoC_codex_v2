@@ -1,20 +1,25 @@
 from __future__ import annotations
 
 import shutil
+from pathlib import Path
 
 from segro_evidence_extraction.evidence_gap_refinement_v1 import (
     DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
-    DEFAULT_PAGE_CACHE_ROOT,
-    DEFAULT_SOURCE_MANIFEST,
     approve_gap_parse_plan,
     build_evidence_gap_baseline,
     build_gap_section_candidates,
+    frontier_gap_templates,
+    load_source_frontier_templates,
     reconcile_cache_provenance,
     run_evidence_gap_refinement_v1,
     split_gap_batches,
     validate_family_text,
 )
-from segro_evidence_extraction.source_coverage_pageindex import validate_parse_batches
+from segro_evidence_extraction.source_coverage_pageindex import (
+    DEFAULT_PAGE_CACHE_ROOT,
+    DEFAULT_SOURCE_MANIFEST,
+    validate_parse_batches,
+)
 
 
 def test_cache_provenance_separates_sprint_and_cumulative_counts() -> None:
@@ -90,6 +95,62 @@ def test_no_unnecessary_parsing_when_families_supported() -> None:
     )
 
     assert candidates == []
+
+
+def test_frontier_gap_templates_are_source_config_driven(tmp_path: Path) -> None:
+    config = tmp_path / "source_config.json"
+    config.write_text(
+        """
+        {
+          "schema_version": "segro_evidence_gap_source_config_v1",
+          "config_version": "1.0.0",
+          "unit_id": "portable_unit",
+          "source_frontier_templates": [
+            {
+              "source_id": "portable_source_a",
+              "source_filename": "Standalone Certificates.pdf",
+              "section": "completion certificates",
+              "trigger_families": ["statutory_compliance"],
+              "evidence_families": ["statutory_compliance"],
+              "recommended_route": "certificate",
+              "priority_score": 70,
+              "page_window_size": 3
+            }
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    rows = frontier_gap_templates(
+        {"statutory_compliance"},
+        {"portable_source_a": 4},
+        {"portable_source_a": 20},
+        load_source_frontier_templates(config),
+    )
+
+    assert rows == [
+        {
+            "source_id": "portable_source_a",
+            "source_filename": "Standalone Certificates.pdf",
+            "section": "completion certificates",
+            "section_label": "",
+            "page_start": 5,
+            "page_end": 7,
+            "page_count": 3,
+            "approved_pages": [5, 6, 7],
+            "evidence_families": ["statutory_compliance"],
+            "expected_evidence": (
+                "approval/certificate authority, date/reference and certified status"
+            ),
+            "recommended_route": "certificate",
+            "priority_score": 70,
+            "current_cache_insufficiency": (
+                "family validation has fewer than two complete evidence sections"
+            ),
+            "selection_basis": "frontier_gap_template",
+        }
+    ]
 
 
 def test_gap_planning_cap_duplicates_cached_pages_and_batches() -> None:

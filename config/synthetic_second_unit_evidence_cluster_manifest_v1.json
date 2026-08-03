@@ -1,0 +1,84 @@
+{
+  "schema_version": "segro_evidence_cluster_manifest_v1",
+  "contract_version": "1.0.0",
+  "run_name": "synthetic_second_unit_portability_fixture",
+  "unit_id": "unit_alpha_warehouse_04",
+  "project_number": "PX-2204",
+  "output_dir": "output/synthetic_second_unit_portability_fixture",
+  "total_page_cap": 8,
+  "allowed_readiness_dispositions": [
+    "evidence_ready",
+    "evidence_present_but_ambiguous",
+    "component_only",
+    "wrong_event",
+    "dictionary_blocked",
+    "semantic_clarification_required",
+    "evidence_not_found",
+    "requires_targeted_parsing",
+    "requires_vlm",
+    "human_review_required",
+    "permanent_exclusion_current_poc"
+  ],
+  "targets": [
+    {
+      "target_id": "alpha_target_a_001",
+      "field_name": "completion_certificate_reference",
+      "domain": "Compliance",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "completion certificate reference",
+      "expected_evidence_families": ["completion_certificate"],
+      "max_pages_per_target": 4,
+      "source_assignments": [
+        {
+          "source_id": "alpha_src_cert_pack",
+          "source_document_role": "standalone_certificate_pdf",
+          "logical_source_path": "Certificates_Final_Alpha.pdf",
+          "section_label": "handover certificate section",
+          "max_pages_for_assignment": 4,
+          "allowed_methods": ["cached_text", "native_parser"],
+          "candidate_page_ranges": [
+            {
+              "page_start": 2,
+              "page_end": 5,
+              "rationale": "Registered certificate PDF index points to the handover certificate section.",
+              "expected_cache_state": "either"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_id": "alpha_target_b_002",
+      "field_name": "equipment_schedule_rating",
+      "domain": "Mechanical",
+      "value_shape": "decimal_measurement",
+      "requested_attribute": "equipment schedule rating",
+      "expected_evidence_families": ["mechanical_schedule"],
+      "max_pages_per_target": 4,
+      "source_assignments": [
+        {
+          "source_id": "alpha_src_schedule",
+          "source_document_role": "standalone_schedule_pdf",
+          "logical_source_path": "Plant_Schedules_Alpha.pdf",
+          "section_label": "mechanical schedule table",
+          "max_pages_for_assignment": 4,
+          "allowed_methods": ["cached_text", "native_parser"],
+          "candidate_page_ranges": [
+            {
+              "page_start": 11,
+              "page_end": 14,
+              "rationale": "Registered schedule document lists equipment rating rows in this bounded section.",
+              "expected_cache_state": "either"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "upstream_provenance": [
+    {
+      "artifact_path": "output/enfield_unit1_source_modularity_hard_coding_audit_v1/portability_thought_experiment.json",
+      "artifact_role": "portability fixture driver"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": "segro_evidence_gap_source_config_v1",
+  "config_version": "1.0.0",
+  "unit_id": "enfield_unit1",
+  "source_frontier_templates": [
+    {
+      "source_id": "src_e6179c196ae66752",
+      "source_filename": "Building Manual - Part 3 Building Services.pdf",
+      "section": "Part 3 commissioning and installation continuation",
+      "trigger_families": ["commissioning_results"],
+      "evidence_families": ["commissioning_results", "installation_details"],
+      "recommended_route": "table",
+      "priority_score": 75,
+      "page_window_size": 10
+    },
+    {
+      "source_id": "src_48403a16aee1d4b3",
+      "source_filename": "Building Manual - Part 6 Appendices.pdf",
+      "section": "Part 6 certificate bodies continuation",
+      "trigger_families": ["commissioning_results"],
+      "evidence_families": ["commissioning_results", "statutory_compliance"],
+      "recommended_route": "certificate",
+      "priority_score": 80,
+      "page_window_size": 10
+    },
+    {
+      "source_id": "src_7216bce3ba88ba2d",
+      "source_filename": "Building Manual - Part 1 General.pdf",
+      "section": "Part 1 statutory certificates continuation",
+      "trigger_families": ["statutory_compliance"],
+      "evidence_families": ["statutory_compliance"],
+      "recommended_route": "certificate",
+      "priority_score": 60,
+      "page_window_size": 2
+    },
+    {
+      "source_id": "src_1fd0bf352104ae02",
+      "source_filename": "Building Manual - Part 2 Building Fabric.pdf",
+      "section": "Part 2 installation detail continuation",
+      "trigger_families": ["installation_details"],
+      "evidence_families": ["installation_details"],
+      "recommended_route": "text",
+      "priority_score": 65,
+      "page_window_size": 8
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "segro_evidence_cluster_manifest_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_version",
+    "run_name",
+    "unit_id",
+    "output_dir",
+    "total_page_cap",
+    "allowed_readiness_dispositions",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": { "const": "segro_evidence_cluster_manifest_v1" },
+    "contract_version": { "type": "string", "pattern": "^1\\." },
+    "run_name": { "type": "string", "minLength": 1 },
+    "unit_id": { "type": "string", "minLength": 1 },
+    "project_number": { "type": "string" },
+    "output_dir": { "type": "string", "minLength": 1 },
+    "total_page_cap": { "type": "integer", "minimum": 1 },
+    "allowed_readiness_dispositions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target_id",
+          "field_name",
+          "domain",
+          "value_shape",
+          "requested_attribute",
+          "expected_evidence_families",
+          "source_assignments",
+          "max_pages_per_target"
+        ],
+        "properties": {
+          "target_id": { "type": "string", "minLength": 1 },
+          "field_name": { "type": "string", "minLength": 1 },
+          "domain": { "type": "string", "minLength": 1 },
+          "value_shape": { "type": "string", "minLength": 1 },
+          "requested_attribute": { "type": "string", "minLength": 1 },
+          "expected_evidence_families": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "source_assignments": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_id",
+                "source_document_role",
+                "section_label",
+                "candidate_page_ranges",
+                "allowed_methods",
+                "max_pages_for_assignment"
+              ],
+              "properties": {
+                "source_id": { "type": "string", "minLength": 1 },
+                "source_document_role": { "type": "string", "minLength": 1 },
+                "logical_source_path": { "type": "string" },
+                "section_label": { "type": "string", "minLength": 1 },
+                "candidate_page_ranges": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["page_start", "page_end", "rationale", "expected_cache_state"],
+                    "properties": {
+                      "page_start": { "type": "integer", "minimum": 1 },
+                      "page_end": { "type": "integer", "minimum": 1 },
+                      "rationale": { "type": "string", "minLength": 1 },
+                      "expected_cache_state": {
+                        "type": "string",
+                        "enum": ["cached", "uncached", "either"]
+                      }
+                    }
+                  }
+                },
+                "allowed_methods": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "enum": ["cached_text", "native_parser", "ocr", "vlm", "human_review"]
+                  }
+                },
+                "max_pages_for_assignment": { "type": "integer", "minimum": 1 }
+              }
+            }
+          },
+          "max_pages_per_target": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "upstream_provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_path", "artifact_role"],
+        "properties": {
+          "artifact_path": { "type": "string", "minLength": 1 },
+          "artifact_role": { "type": "string", "minLength": 1 },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

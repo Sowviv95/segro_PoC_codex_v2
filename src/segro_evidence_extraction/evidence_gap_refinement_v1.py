@@ -41,6 +41,7 @@ from segro_evidence_extraction.source_coverage_pageindex import (
 from segro_evidence_extraction.vertical_slice import _atomic_write_json
 
 DEFAULT_EVIDENCE_GAP_OUTPUT_DIR = Path("output/enfield_unit1_evidence_gap_refinement_v1")
+DEFAULT_GAP_SOURCE_CONFIG_PATH = Path("config/enfield_unit1_evidence_gap_source_config_v1.json")
 GAP_FAMILIES = ["commissioning_results", "statutory_compliance", "installation_details"]
 Family = Literal["commissioning_results", "statutory_compliance", "installation_details"]
 
@@ -51,6 +52,7 @@ def run_evidence_gap_refinement_v1(
     cache_root: Path = DEFAULT_PAGE_CACHE_ROOT,
     v2_output_dir: Path = DEFAULT_HIGH_VALUE_EXPANSION_OUTPUT_DIR,
     hierarchy_path: Path = DEFAULT_HIERARCHY_PATH,
+    source_config_path: Path = DEFAULT_GAP_SOURCE_CONFIG_PATH,
     output_dir: Path = DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
     max_new_pages: int = 60,
     dry_run: bool = False,
@@ -80,6 +82,7 @@ def run_evidence_gap_refinement_v1(
         baseline=baseline,
         cached_pages=cached_before,
         page_counts=page_counts,
+        source_frontier_templates=load_source_frontier_templates(source_config_path),
     )
     approved = approve_gap_parse_plan(candidates, max_new_pages=max_new_pages)
     batches = split_gap_batches(approved)
@@ -402,6 +405,7 @@ def build_gap_section_candidates(
     baseline: dict[str, Any],
     cached_pages: dict[str, list[dict[str, Any]]],
     page_counts: dict[str, int | None],
+    source_frontier_templates: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     required = set(baseline["families_requiring_parsing"])
     if not required:
@@ -435,7 +439,12 @@ def build_gap_section_candidates(
         rows.append(
             _gap_candidate(candidate, families, pages, len(rows) + 1, "v2_remaining_high_priority")
         )
-    for row in frontier_gap_templates(required, source_frontiers, page_counts):
+    for row in frontier_gap_templates(
+        required,
+        source_frontiers,
+        page_counts,
+        source_frontier_templates or [],
+    ):
         rows.append({**row, "candidate_id": f"gap_{len(rows) + 1:04d}"})
     return sorted(
         rows,
@@ -451,83 +460,73 @@ def frontier_gap_templates(
     required: set[str],
     source_frontiers: dict[str, int],
     page_counts: dict[str, int | None],
+    source_templates: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    source_meta = {
-        "src_e6179c196ae66752": (
-            "Building Manual - Part 3 Building Services.pdf",
-            "Part 3 commissioning and installation continuation",
-        ),
-        "src_48403a16aee1d4b3": (
-            "Building Manual - Part 6 Appendices.pdf",
-            "Part 6 certificate bodies continuation",
-        ),
-        "src_7216bce3ba88ba2d": (
-            "Building Manual - Part 1 General.pdf",
-            "Part 1 statutory certificates continuation",
-        ),
-        "src_1fd0bf352104ae02": (
-            "Building Manual - Part 2 Building Fabric.pdf",
-            "Part 2 installation detail continuation",
-        ),
-    }
     templates = []
-    for source_id, (filename, section) in source_meta.items():
+    for source in source_templates:
+        source_id = str(source["source_id"])
+        filename = str(source["source_filename"])
+        section = str(source["section"])
         start = source_frontiers.get(source_id, 0) + 1
         total = page_counts.get(source_id) or 0
         if start <= 1 or start > total:
             continue
-        if "commissioning_results" in required and "Part 6" in section:
-            templates.append(
-                _frontier_gap(
-                    source_id,
-                    filename,
-                    section,
-                    start,
-                    min(start + 9, total),
-                    ["commissioning_results", "statutory_compliance"],
-                    "certificate",
-                    80,
-                )
+        trigger_families = {str(family) for family in source.get("trigger_families", [])}
+        if not required & trigger_families:
+            continue
+        families = [
+            str(family)
+            for family in source.get("evidence_families", [])
+            if str(family) in GAP_FAMILIES
+        ]
+        families = [
+            family for family in families if family in required or family in trigger_families
+        ]
+        if not families:
+            continue
+        page_window_size = int(source.get("page_window_size") or 1)
+        templates.append(
+            _frontier_gap(
+                source_id,
+                filename,
+                section,
+                start,
+                min(start + page_window_size - 1, total),
+                families,
+                str(source.get("recommended_route") or "text"),
+                int(source.get("priority_score") or 50),
             )
-        if "commissioning_results" in required and "Part 3" in section:
-            templates.append(
-                _frontier_gap(
-                    source_id,
-                    filename,
-                    section,
-                    start,
-                    min(start + 9, total),
-                    ["commissioning_results", "installation_details"],
-                    "table",
-                    75,
-                )
-            )
-        if "installation_details" in required and "Part 2" in section:
-            templates.append(
-                _frontier_gap(
-                    source_id,
-                    filename,
-                    section,
-                    start,
-                    min(start + 7, total),
-                    ["installation_details"],
-                    "text",
-                    65,
-                )
-            )
-        if "statutory_compliance" in required and "Part 1" in section:
-            templates.append(
-                _frontier_gap(
-                    source_id,
-                    filename,
-                    section,
-                    start,
-                    min(start + 1, total),
-                    ["statutory_compliance"],
-                    "certificate",
-                    60,
-                )
-            )
+        )
+    return templates
+
+
+def load_source_frontier_templates(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Expected source frontier configuration object: {path}")
+    rows = payload.get("source_frontier_templates", [])
+    if not isinstance(rows, list):
+        raise ValueError(f"Expected source_frontier_templates list: {path}")
+    templates = []
+    for index, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"Invalid source_frontier_templates[{index}] in {path}")
+        required_keys = {
+            "source_id",
+            "source_filename",
+            "section",
+            "trigger_families",
+            "evidence_families",
+            "recommended_route",
+            "priority_score",
+            "page_window_size",
+        }
+        missing = sorted(required_keys - set(row))
+        if missing:
+            raise ValueError(f"Missing source frontier keys {missing} in {path}")
+        templates.append(dict(row))
     return templates
 
 

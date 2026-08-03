@@ -1,0 +1,84 @@
+{
+  "schema_version": "segro_evidence_cluster_manifest_v1",
+  "contract_version": "1.0.0",
+  "run_name": "enfield_unit1_building_services_certificate_foundation_fixture",
+  "unit_id": "enfield_unit1",
+  "project_number": "enfield_unit1_poc",
+  "output_dir": "output/enfield_unit1_evidence_cluster_portability_foundation_v1/enfield_fixture",
+  "total_page_cap": 6,
+  "allowed_readiness_dispositions": [
+    "evidence_ready",
+    "evidence_present_but_ambiguous",
+    "component_only",
+    "wrong_event",
+    "dictionary_blocked",
+    "semantic_clarification_required",
+    "evidence_not_found",
+    "requires_targeted_parsing",
+    "requires_vlm",
+    "human_review_required",
+    "permanent_exclusion_current_poc"
+  ],
+  "targets": [
+    {
+      "target_id": "trg_30093f2f106d4cb3",
+      "field_name": "epc_certificate_number",
+      "domain": "Sustainability",
+      "value_shape": "integer_count",
+      "requested_attribute": "EPC certificate number",
+      "expected_evidence_families": ["energy_performance_certificate"],
+      "max_pages_per_target": 3,
+      "source_assignments": [
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_role": "appendix_certificate_pack",
+          "logical_source_path": "Building Manual - Part 6 Appendices.pdf",
+          "section_label": "certificate appendix window",
+          "max_pages_for_assignment": 3,
+          "allowed_methods": ["cached_text", "native_parser", "vlm"],
+          "candidate_page_ranges": [
+            {
+              "page_start": 17,
+              "page_end": 19,
+              "rationale": "Small compatibility fixture drawn from the prior building-services certificate window.",
+              "expected_cache_state": "cached"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target_id": "trg_6790fedc7a5d7574",
+      "field_name": "sustainability_cert_number",
+      "domain": "Sustainability",
+      "value_shape": "integer_count",
+      "requested_attribute": "sustainability certificate number",
+      "expected_evidence_families": ["sustainability_certificate"],
+      "max_pages_per_target": 3,
+      "source_assignments": [
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_role": "appendix_certificate_pack",
+          "logical_source_path": "Building Manual - Part 6 Appendices.pdf",
+          "section_label": "certificate appendix window",
+          "max_pages_for_assignment": 3,
+          "allowed_methods": ["cached_text", "native_parser", "vlm"],
+          "candidate_page_ranges": [
+            {
+              "page_start": 18,
+              "page_end": 20,
+              "rationale": "Overlapping compatibility fixture to verify deduplication.",
+              "expected_cache_state": "cached"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "upstream_provenance": [
+    {
+      "artifact_path": "output/enfield_unit1_source_modularity_hard_coding_audit_v1/recommended_refactors.json",
+      "artifact_role": "audit recommendation"
+    }
+  ]
+}
