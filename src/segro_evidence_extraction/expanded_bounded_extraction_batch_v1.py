@@ -96,11 +96,14 @@ def run_expanded_bounded_extraction_batch_v1(
     settings: Settings | None = None,
     extraction_client: ReducedExtractionClient | None = None,
     dry_run_only: bool = False,
+    runner_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     selected = read_json_list(selected_batch_path)
     source_paths = source_paths_by_id(source_manifest)
     provenance = input_provenance(selected_batch_path, source_manifest, source_paths)
+    if runner_metadata:
+        provenance["runner_metadata"] = runner_metadata
     dry_run = validate_expanded_preflight(selected, source_paths)
     client = extraction_client or build_default_extraction_client(
         settings or load_settings(Path("configs/default.yaml"))
@@ -139,6 +142,11 @@ def run_expanded_bounded_extraction_batch_v1(
         source_paths=source_paths,
         batch_output_dir=batch_output_dir,
         adjudication_output_dir=adjudication_output_dir,
+        asset_record_key=(
+            str(runner_metadata["asset_record_key"])
+            if runner_metadata and runner_metadata.get("asset_record_key")
+            else None
+        ),
     )
     write_handoff_outputs(handoff, handoff_output_dir)
     return {
@@ -413,6 +421,7 @@ def build_handoff_package(
     source_paths: dict[str, str],
     batch_output_dir: Path,
     adjudication_output_dir: Path,
+    asset_record_key: str | None = None,
 ) -> dict[str, Any]:
     batch_by_id = {item["target_id"]: item for item in selected}
     repair_by_id = {item["target_id"]: item for item in repair_audit}
@@ -421,7 +430,9 @@ def build_handoff_package(
         internal_handoff_record(row, batch_by_id[row["target_id"]], source_paths, input_provenance)
         for row in final_adjudication
     ]
-    customer = [customer_handoff_record(record) for record in internal]
+    customer = [
+        customer_handoff_record(record, asset_record_key=asset_record_key) for record in internal
+    ]
     validation = validate_downstream_handoff_contract_v1(
         internal_records=internal,
         customer_records=customer,
@@ -536,12 +547,16 @@ def internal_handoff_record(
     }
 
 
-def customer_handoff_record(record: dict[str, Any]) -> dict[str, Any]:
+def customer_handoff_record(
+    record: dict[str, Any],
+    *,
+    asset_record_key: str | None = None,
+) -> dict[str, Any]:
     return {
         "schema_version": "segro_customer_candidate_handoff_v1",
         "trace_id": record["trace_id"],
-        "asset_record_key": None,
-        "asset_record_key_status": "mapping_required",
+        "asset_record_key": asset_record_key,
+        "asset_record_key_status": "provided" if asset_record_key else "mapping_required",
         "requirement_id": record["requirement_id"],
         "target_id": record["target_id"],
         "field_name": record["field_name"],

@@ -147,6 +147,14 @@ from segro_evidence_extraction.source_ingestion import (
     ingest_source_pack,
     inspect_source_pack,
 )
+from segro_evidence_extraction.unit_runner_v1 import (
+    DEFAULT_RUNNER_CONFIG_PATH,
+    EXIT_CONFIG_VALIDATION_FAILURE,
+    EXIT_SUCCESS,
+    ExecutionMode,
+    print_console_summary,
+    run_unit_runner_v1,
+)
 from segro_evidence_extraction.vertical_slice import (
     DEFAULT_CACHE_ROOT,
     DEFAULT_OUTPUT_DIR,
@@ -1329,6 +1337,45 @@ def expanded_bounded_extraction_batch_v1(
         dry_run_only=dry_run_only,
     )
     typer.echo(_json_dumps(result["batch"]["execution_summary"]))
+
+
+@app.command("run-unit")
+def run_unit(
+    config: Annotated[
+        Path,
+        typer.Option("--config", exists=True, readable=True),
+    ] = DEFAULT_RUNNER_CONFIG_PATH,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Run validation stages without model calls."),
+    ] = False,
+    execute: Annotated[
+        bool,
+        typer.Option("--execute", help="Run the bounded extraction and exports."),
+    ] = False,
+    contract_only: Annotated[
+        bool,
+        typer.Option("--contract-only", help="Validate contracts without model calls."),
+    ] = False,
+    resume: Annotated[
+        bool,
+        typer.Option("--resume", help="Resume from completed stages where safe."),
+    ] = False,
+) -> None:
+    """Run the bounded Enfield Unit 1 workflow from one command."""
+
+    selected_modes = [dry_run, execute, contract_only]
+    if sum(bool(item) for item in selected_modes) != 1:
+        typer.echo("Specify exactly one of --dry-run, --execute or --contract-only.", err=True)
+        raise typer.Exit(EXIT_CONFIG_VALIDATION_FAILURE)
+    mode: ExecutionMode = (
+        "contract_only" if contract_only else ("execute" if execute else "dry_run")
+    )
+    result = run_unit_runner_v1(config_path=config, mode=mode, resume=resume)
+    typer.echo(print_console_summary(result))
+    exit_code = int(result["exit_code"])
+    if exit_code != EXIT_SUCCESS:
+        raise typer.Exit(exit_code)
 
 
 @parse_app.command("batch")

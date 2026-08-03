@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "segro_unit_runner_v1.schema.json",
+  "title": "SEGRO Unit Runner V1 Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "config_version",
+    "unit_id",
+    "asset_record_key",
+    "repository_root",
+    "selected_batch_path",
+    "source_registry_path",
+    "cache_root",
+    "dictionary_artifact_path",
+    "output_root",
+    "model_provider",
+    "model_name",
+    "execution_mode",
+    "customer_caveat_policy",
+    "max_model_retries",
+    "expected_branch",
+    "frozen_internal_contract_version",
+    "frozen_customer_contract_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "segro_unit_runner_v1"
+    },
+    "config_version": {
+      "type": "string",
+      "pattern": "^1\\."
+    },
+    "unit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "asset_record_key": {
+      "type": ["string", "null"]
+    },
+    "repository_root": {
+      "type": "string"
+    },
+    "selected_batch_path": {
+      "type": "string"
+    },
+    "source_registry_path": {
+      "type": "string"
+    },
+    "cache_root": {
+      "type": "string"
+    },
+    "dictionary_artifact_path": {
+      "type": "string"
+    },
+    "output_root": {
+      "type": "string"
+    },
+    "model_provider": {
+      "type": "string",
+      "enum": ["openai", "mock"]
+    },
+    "model_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": ["dry_run", "execute", "contract_only"]
+    },
+    "customer_caveat_policy": {
+      "type": "string",
+      "enum": ["internal_only", "include"]
+    },
+    "max_model_retries": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "expected_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "frozen_internal_contract_version": {
+      "const": "1.0.0"
+    },
+    "frozen_customer_contract_version": {
+      "const": "1.0.0"
+    }
+  }
+}

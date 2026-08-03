@@ -285,9 +285,15 @@ def validate_customer_record(
             trace,
             "Non-promotable customer candidate contains a value.",
         )
-    if record.get("asset_record_key") is not None:
+    if (
+        record.get("asset_record_key") is not None
+        and record.get("asset_record_key_status") != "provided"
+    ):
         add_error(
-            errors, "fabricated_mapping", trace, "asset_record_key must remain null until mapped."
+            errors,
+            "fabricated_mapping",
+            trace,
+            "asset_record_key must be null unless supplied by authoritative config.",
         )
     if record.get("customer_field_label") is not None:
         add_error(
