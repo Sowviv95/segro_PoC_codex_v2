@@ -6,7 +6,11 @@ import csv
 import json
 import re
 from collections import Counter
+from collections.abc import Set
+from dataclasses import dataclass, field
+from functools import cache
 from pathlib import Path
+from re import Pattern
 from typing import Any, Literal
 
 from segro_evidence_extraction.batch_selection_strategy import (
@@ -43,6 +47,70 @@ NON_EVIDENCE_CLASSES = {
     "defer_dictionary_clarification",
     "defer_low_evidence_readiness",
 }
+
+WORD_PATTERN = re.compile(r"[a-z0-9]+")
+
+
+@dataclass
+class PreparedExcerpt:
+    excerpt: str
+    lower: str
+    words: frozenset[str]
+    page_number: Any
+    source_file: str | None
+    value_pattern_matches: dict[str, bool] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class CompiledQuery:
+    component_terms: tuple[str, ...]
+    attribute_terms: tuple[str, ...]
+    value_patterns: tuple[Pattern[str], ...]
+    field_name: str
+
+
+class ReadinessScanCache:
+    """Prepares cached page text once and memoizes best-signal scans per query."""
+
+    def __init__(self, pages_by_source: dict[str, list[dict[str, Any]]]) -> None:
+        self.excerpts_by_source = {
+            source: tuple(
+                excerpt
+                for page in pages
+                for excerpt in prepare_page_excerpts(page)
+            )
+            for source, pages in pages_by_source.items()
+        }
+        self._best_signals: dict[tuple[str, tuple[Any, ...], str], dict[str, Any]] = {}
+        self._compiled_queries: dict[tuple[Any, ...], CompiledQuery] = {}
+
+    def best_signal(
+        self,
+        source: str,
+        query: dict[str, list[str]],
+        value_shape: str,
+    ) -> dict[str, Any]:
+        key = (source, query_cache_key(query), value_shape)
+        if key not in self._best_signals:
+            query_key = key[1]
+            if query_key not in self._compiled_queries:
+                self._compiled_queries[query_key] = compile_query(query)
+            self._best_signals[key] = find_best_prepared_signal(
+                self.excerpts_by_source.get(source, ()),
+                self._compiled_queries[query_key],
+                value_shape,
+            )
+        return clone_signal(self._best_signals[key])
+
+    def all_signals(
+        self,
+        query: dict[str, list[str]],
+        value_shape: str,
+    ) -> dict[str, dict[str, Any]]:
+        return {
+            source: self.best_signal(source, query, value_shape)
+            for source in self.excerpts_by_source
+        }
 
 
 class BatchV2ReadinessError(ValueError):
@@ -102,6 +170,7 @@ def load_readiness_inputs(
 
 
 def build_readiness_audit(inputs: dict[str, Any], *, target_count: int) -> dict[str, Any]:
+    inputs = {**inputs, "_readiness_scan_cache": scan_cache_for(inputs)}
     selected = _as_list(inputs["selected_targets"], "selected targets")
     candidates = _as_list(inputs["candidate_scores"], "candidate scores")
     if len({str(item["target_id"]) for item in selected}) != len(selected):
@@ -216,14 +285,12 @@ def audit_target(
     value_shape = str(target["value_shape"])
     proposed_source = str(target.get("likely_source_file") or "")
     pages_by_source: dict[str, list[dict[str, Any]]] = inputs["cached_pages"]
+    scan_cache = scan_cache_for(inputs)
     query = build_query_terms(field_name, str(target.get("definition") or ""), value_shape)
     source_pages = pages_by_source.get(proposed_source, [])
     source_has_cache = bool(source_pages)
-    source_evidence = find_best_signal(source_pages, query, value_shape)
-    all_signals = {
-        source: find_best_signal(pages, query, value_shape)
-        for source, pages in pages_by_source.items()
-    }
+    source_evidence = scan_cache.best_signal(proposed_source, query, value_shape)
+    all_signals = scan_cache.all_signals(query, value_shape)
     better_source, better_signal = best_alternate_source(
         proposed_source, source_evidence, all_signals
     )
@@ -381,18 +448,29 @@ def find_best_signal(
     query: dict[str, list[str]],
     value_shape: str,
 ) -> dict[str, Any]:
+    prepared_excerpts = tuple(
+        excerpt
+        for page in pages
+        for excerpt in prepare_page_excerpts(page)
+    )
+    return find_best_prepared_signal(prepared_excerpts, compile_query(query), value_shape)
+
+
+def find_best_prepared_signal(
+    excerpts: tuple[PreparedExcerpt, ...],
+    query: CompiledQuery,
+    value_shape: str,
+) -> dict[str, Any]:
     best = empty_signal()
-    for page in pages:
-        text = str(page.get("extracted_text") or "")
-        for excerpt in candidate_excerpts(text):
-            signal = score_excerpt(excerpt, query, value_shape)
-            if signal["score"] > best["score"]:
-                best = {
-                    **signal,
-                    "excerpt": trim_excerpt(excerpt),
-                    "page_number": page.get("page_number"),
-                    "source_file": page.get("source_file"),
-                }
+    for excerpt in excerpts:
+        signal = score_prepared_excerpt(excerpt, query, value_shape)
+        if signal["score"] > best["score"]:
+            best = {
+                **signal,
+                "excerpt": trim_excerpt(excerpt.excerpt),
+                "page_number": excerpt.page_number,
+                "source_file": excerpt.source_file,
+            }
     return best
 
 
@@ -401,23 +479,32 @@ def score_excerpt(
     query: dict[str, list[str]],
     value_shape: str,
 ) -> dict[str, Any]:
-    lower = excerpt.lower()
-    words = set(re.findall(r"[a-z0-9]+", lower))
+    prepared = prepare_excerpt(excerpt, page_number=None, source_file=None)
+    return score_prepared_excerpt(prepared, compile_query(query), value_shape)
+
+
+def score_prepared_excerpt(
+    excerpt: PreparedExcerpt,
+    query: CompiledQuery,
+    value_shape: str,
+) -> dict[str, Any]:
+    lower = excerpt.lower
+    words = excerpt.words
     component_hits = [
-        term for term in query["component_terms"] if term_matches(term, lower, words)
+        term for term in query.component_terms if term_matches(term, lower, words)
     ]
     attribute_hits = [
-        term for term in query["attribute_terms"] if term_matches(term, lower, words)
+        term for term in query.attribute_terms if term_matches(term, lower, words)
     ]
     value_hits = [
         pattern
-        for pattern in query["value_patterns"]
-        if re.search(pattern, excerpt, flags=re.IGNORECASE)
+        for pattern in query.value_patterns
+        if value_pattern_matches(excerpt, pattern)
     ]
-    component = bool(component_hits) if query["component_terms"] else True
+    component = bool(component_hits) if query.component_terms else True
     attribute = bool(attribute_hits)
     value = bool(value_hits) and value_allowed(value_shape, lower, attribute)
-    field_name = query.get("field_terms", [""])[0]
+    field_name = query.field_name
     if "model" in field_name and not (
         term_matches("model", lower, words) or term_matches("type", lower, words)
     ):
@@ -439,6 +526,78 @@ def score_excerpt(
     }
 
 
+def prepare_page_excerpts(page: dict[str, Any]) -> tuple[PreparedExcerpt, ...]:
+    text = str(page.get("extracted_text") or "")
+    return tuple(
+        prepare_excerpt(
+            excerpt,
+            page_number=page.get("page_number"),
+            source_file=page.get("source_file"),
+        )
+        for excerpt in candidate_excerpts(text)
+    )
+
+
+def prepare_excerpt(
+    excerpt: str,
+    *,
+    page_number: Any,
+    source_file: str | None,
+) -> PreparedExcerpt:
+    lower = excerpt.lower()
+    return PreparedExcerpt(
+        excerpt=excerpt,
+        lower=lower,
+        words=frozenset(WORD_PATTERN.findall(lower)),
+        page_number=page_number,
+        source_file=source_file,
+    )
+
+
+def value_pattern_matches(excerpt: PreparedExcerpt, pattern: Pattern[str]) -> bool:
+    pattern_text = pattern.pattern
+    if pattern_text not in excerpt.value_pattern_matches:
+        excerpt.value_pattern_matches[pattern_text] = bool(pattern.search(excerpt.excerpt))
+    return excerpt.value_pattern_matches[pattern_text]
+
+
+def compile_query(query: dict[str, list[str]]) -> CompiledQuery:
+    return CompiledQuery(
+        component_terms=tuple(query["component_terms"]),
+        attribute_terms=tuple(query["attribute_terms"]),
+        value_patterns=tuple(
+            re.compile(pattern, flags=re.IGNORECASE) for pattern in query["value_patterns"]
+        ),
+        field_name=query.get("field_terms", [""])[0],
+    )
+
+
+def query_cache_key(query: dict[str, list[str]]) -> tuple[Any, ...]:
+    return (
+        tuple(query["component_terms"]),
+        tuple(query["attribute_terms"]),
+        tuple(query["value_patterns"]),
+        tuple(query.get("field_terms", [""])),
+    )
+
+
+def scan_cache_for(inputs: dict[str, Any]) -> ReadinessScanCache:
+    cached = inputs.get("_readiness_scan_cache")
+    if isinstance(cached, ReadinessScanCache):
+        return cached
+    pages_by_source: dict[str, list[dict[str, Any]]] = inputs["cached_pages"]
+    scan_cache = ReadinessScanCache(pages_by_source)
+    inputs["_readiness_scan_cache"] = scan_cache
+    return scan_cache
+
+
+def clone_signal(signal: dict[str, Any]) -> dict[str, Any]:
+    cloned = dict(signal)
+    cloned["component_hits"] = list(signal.get("component_hits", []))
+    cloned["attribute_hits"] = list(signal.get("attribute_hits", []))
+    return cloned
+
+
 def value_allowed(value_shape: str, lower_excerpt: str, attribute: bool) -> bool:
     if value_shape in {"identifier_or_reference", "integer_count", "decimal_measurement"}:
         return attribute
@@ -447,12 +606,17 @@ def value_allowed(value_shape: str, lower_excerpt: str, attribute: bool) -> bool
     return True
 
 
-def term_matches(term: str, lower_excerpt: str, words: set[str]) -> bool:
+def term_matches(term: str, lower_excerpt: str, words: Set[str]) -> bool:
     if not term.strip():
         return False
-    if re.fullmatch(r"[a-z0-9]+", term):
+    if is_single_word_term(term):
         return term in words or f"{term}s" in words
     return term in lower_excerpt
+
+
+@cache
+def is_single_word_term(term: str) -> bool:
+    return bool(re.fullmatch(r"[a-z0-9]+", term))
 
 
 def best_alternate_source(

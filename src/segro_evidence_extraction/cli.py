@@ -49,11 +49,28 @@ from segro_evidence_extraction.evidence_escalation import (
     DEFAULT_SOURCE_MANIFEST,
     run_evidence_escalation_v1,
 )
+from segro_evidence_extraction.evidence_gap_refinement_v1 import (
+    DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
+    run_evidence_gap_refinement_v1,
+)
 from segro_evidence_extraction.extraction_batch import (
     DEFAULT_BATCH_OUTPUT_DIR,
     DEFAULT_COST_CEILING_USD,
     describe_planned_extraction_batch_v1,
     run_extraction_batch_v1,
+)
+from segro_evidence_extraction.extraction_batch_construction_v1 import (
+    DEFAULT_EXTRACTION_BATCH_CONSTRUCTION_OUTPUT_DIR,
+    DEFAULT_NORMALIZED_TARGETS_JSONL,
+    run_extraction_batch_construction_v1,
+)
+from segro_evidence_extraction.high_value_section_expansion_v2 import (
+    DEFAULT_HIGH_VALUE_EXPANSION_OUTPUT_DIR,
+    run_high_value_section_expansion_v2,
+)
+from segro_evidence_extraction.index_guided_section_expansion import (
+    DEFAULT_INDEX_EXPANSION_OUTPUT_DIR,
+    run_index_guided_section_expansion_v1,
 )
 from segro_evidence_extraction.parsing import (
     BatchRequest,
@@ -81,6 +98,19 @@ from segro_evidence_extraction.retrieval_diagnostics import (
     DEFAULT_BATCH_V1_DIR,
     DEFAULT_DIAGNOSTIC_OUTPUT_DIR,
     run_batch_retrieval_diagnostic,
+)
+from segro_evidence_extraction.source_coverage_pageindex import (
+    DEFAULT_HIERARCHY_PATH as DEFAULT_SOURCE_COVERAGE_HIERARCHY_PATH,
+)
+from segro_evidence_extraction.source_coverage_pageindex import (
+    DEFAULT_PAGE_CACHE_ROOT as DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+)
+from segro_evidence_extraction.source_coverage_pageindex import (
+    DEFAULT_SOURCE_COVERAGE_OUTPUT_DIR,
+    run_source_coverage_pageindex_v1,
+)
+from segro_evidence_extraction.source_coverage_pageindex import (
+    DEFAULT_SOURCE_MANIFEST as DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
 )
 from segro_evidence_extraction.source_ingestion import (
     ArchiveLimits,
@@ -872,6 +902,201 @@ def batch_v2_cache_expansion_v1(
         dry_run=dry_run,
     )
     typer.echo(_json_dumps(result["cache_expansion_metrics"]))
+
+
+@app.command("source-coverage-pageindex-v1")
+def source_coverage_pageindex_v1(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    hierarchy_path: Annotated[
+        Path,
+        typer.Option("--hierarchy-path", readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_HIERARCHY_PATH,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_SOURCE_COVERAGE_OUTPUT_DIR,
+    max_new_pages: Annotated[int, typer.Option("--max-new-pages", min=0)] = 60,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Build reports without invoking parser workers."),
+    ] = False,
+) -> None:
+    """Build source-first coverage inventory and PageIndex evidence-section map."""
+
+    result = run_source_coverage_pageindex_v1(
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        hierarchy_path=hierarchy_path,
+        output_dir=output_dir,
+        max_new_pages=max_new_pages,
+        dry_run=dry_run,
+    )
+    typer.echo(_json_dumps(result["coverage_metrics"]))
+
+
+@app.command("index-guided-section-expansion-v1")
+def index_guided_section_expansion_v1(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    v1_output_dir: Annotated[
+        Path,
+        typer.Option("--v1-output-dir", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_OUTPUT_DIR,
+    hierarchy_path: Annotated[
+        Path,
+        typer.Option("--hierarchy-path", readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_HIERARCHY_PATH,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_INDEX_EXPANSION_OUTPUT_DIR,
+    max_new_pages: Annotated[int, typer.Option("--max-new-pages", min=0)] = 120,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Build reports without invoking parser workers."),
+    ] = False,
+) -> None:
+    """Expand high-value evidence sections using cached indexes and hierarchy."""
+
+    result = run_index_guided_section_expansion_v1(
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        v1_output_dir=v1_output_dir,
+        hierarchy_path=hierarchy_path,
+        output_dir=output_dir,
+        max_new_pages=max_new_pages,
+        dry_run=dry_run,
+    )
+    typer.echo(_json_dumps(result["coverage_metrics"]))
+
+
+@app.command("high-value-section-expansion-v2")
+def high_value_section_expansion_v2(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    index_v1_output_dir: Annotated[
+        Path,
+        typer.Option("--index-v1-output-dir", exists=True, readable=True),
+    ] = DEFAULT_INDEX_EXPANSION_OUTPUT_DIR,
+    hierarchy_path: Annotated[
+        Path,
+        typer.Option("--hierarchy-path", readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_HIERARCHY_PATH,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_HIGH_VALUE_EXPANSION_OUTPUT_DIR,
+    max_new_pages: Annotated[int, typer.Option("--max-new-pages", min=0)] = 160,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Build reports without invoking parser workers."),
+    ] = False,
+) -> None:
+    """Expand high-value evidence sections using gap-aware adaptive windows."""
+
+    result = run_high_value_section_expansion_v2(
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        index_v1_output_dir=index_v1_output_dir,
+        hierarchy_path=hierarchy_path,
+        output_dir=output_dir,
+        max_new_pages=max_new_pages,
+        dry_run=dry_run,
+    )
+    typer.echo(_json_dumps(result["coverage_metrics"]))
+
+
+@app.command("evidence-gap-refinement-v1")
+def evidence_gap_refinement_v1(
+    source_manifest: Annotated[
+        Path,
+        typer.Option("--source-manifest", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_SOURCE_MANIFEST,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    v2_output_dir: Annotated[
+        Path,
+        typer.Option("--v2-output-dir", exists=True, readable=True),
+    ] = DEFAULT_HIGH_VALUE_EXPANSION_OUTPUT_DIR,
+    hierarchy_path: Annotated[
+        Path,
+        typer.Option("--hierarchy-path", readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_HIERARCHY_PATH,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
+    max_new_pages: Annotated[int, typer.Option("--max-new-pages", min=0)] = 60,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Build reports without invoking parser workers."),
+    ] = False,
+) -> None:
+    """Refine commissioning, statutory and installation evidence family gaps."""
+
+    result = run_evidence_gap_refinement_v1(
+        source_manifest=source_manifest,
+        cache_root=cache_root,
+        v2_output_dir=v2_output_dir,
+        hierarchy_path=hierarchy_path,
+        output_dir=output_dir,
+        max_new_pages=max_new_pages,
+        dry_run=dry_run,
+    )
+    typer.echo(_json_dumps(result["coverage_metrics"]))
+
+
+@app.command("extraction-batch-construction-v1")
+def extraction_batch_construction_v1(
+    evidence_dir: Annotated[
+        Path,
+        typer.Option("--evidence-dir", exists=True, readable=True),
+    ] = DEFAULT_EVIDENCE_GAP_OUTPUT_DIR,
+    dictionary_jsonl: Annotated[
+        Path,
+        typer.Option("--dictionary-jsonl", exists=True, readable=True),
+    ] = DEFAULT_NORMALIZED_TARGETS_JSONL,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_EXTRACTION_BATCH_CONSTRUCTION_OUTPUT_DIR,
+    max_targets: Annotated[int, typer.Option("--max-targets", min=1, max=30)] = 30,
+) -> None:
+    """Construct a bounded extraction batch from already-observed evidence."""
+
+    result = run_extraction_batch_construction_v1(
+        evidence_dir=evidence_dir,
+        dictionary_jsonl=dictionary_jsonl,
+        cache_root=cache_root,
+        output_dir=output_dir,
+        max_targets=max_targets,
+    )
+    typer.echo(_json_dumps(result["batch_metrics"]))
 
 
 @parse_app.command("batch")

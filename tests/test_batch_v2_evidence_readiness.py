@@ -8,9 +8,11 @@ from segro_evidence_extraction.batch_v2_evidence_readiness import (
     DEFAULT_ADJUDICATION_DIR,
     DEFAULT_BATCH_V2_SELECTION_OUTPUT_DIR,
     DEFAULT_PAGE_CACHE_ROOT,
+    ReadinessScanCache,
     audit_target,
     build_readiness_audit,
     load_readiness_inputs,
+    prepare_page_excerpts,
     run_batch_v2_readiness_audit,
 )
 
@@ -178,6 +180,47 @@ def test_replacements_blocked_readiness_and_deterministic_outputs() -> None:
     blocked = build_readiness_audit(inputs, target_count=3)
     assert blocked["corrected_batch_v2_run_readiness"]["overall_status"] == "blocked"
     assert blocked["corrected_batch_v2_run_readiness"]["additional_ready_targets_needed"] == 1
+
+
+def test_prepared_excerpts_normalize_text_once() -> None:
+    excerpts = prepare_page_excerpts(
+        page("Pump schedule\nModel Number: ABC-123", page_number=7)
+    )
+
+    assert len(excerpts) == 2
+    assert excerpts[0].lower == excerpts[0].excerpt.lower()
+    assert "pump" in excerpts[0].words
+    assert excerpts[0].page_number == 7
+    assert excerpts[0].source_file == "Building Manual - Part 1 General.pdf"
+
+
+def test_readiness_scan_cache_reuses_and_clones_best_signal() -> None:
+    pages = {
+        "Building Manual - Part 1 General.pdf": [
+            page("Pump schedule Model Number: ABC-123 Pump reference P-01.")
+        ]
+    }
+    cache = ReadinessScanCache(pages)
+    query = {
+        "component_terms": ["pump"],
+        "attribute_terms": ["model", "model number", "reference"],
+        "value_patterns": [r"\b[A-Z]{1,6}[-/]?[A-Z0-9]{2,}(?:[-/][A-Z0-9]{2,})*\b"],
+        "field_terms": ["pump_model_number"],
+    }
+
+    first = cache.best_signal(
+        "Building Manual - Part 1 General.pdf", query, "identifier_or_reference"
+    )
+    first["component_hits"].append("mutated")
+    second = cache.best_signal(
+        "Building Manual - Part 1 General.pdf", query, "identifier_or_reference"
+    )
+
+    assert second["score"] == 12
+    assert second["component_hits"] == ["pump"]
+    assert second["page_number"] == 1
+    prepared = cache.excerpts_by_source["Building Manual - Part 1 General.pdf"][0]
+    assert query["value_patterns"][0] in prepared.value_pattern_matches
 
 
 def test_real_readiness_audit_loads_and_reconciles() -> None:
