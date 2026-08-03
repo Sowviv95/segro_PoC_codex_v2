@@ -1,7 +1,7 @@
 """CLI skeleton for the evidence-first extraction engine."""
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, cast
 
 import typer
 
@@ -37,6 +37,12 @@ from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
+from segro_evidence_extraction.downstream_handoff_exporter_v1 import (
+    DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR,
+    DEFAULT_HANDOFF_REVIEW_DIR,
+    CustomerCaveatPolicy,
+    run_downstream_handoff_exporter_v1,
+)
 from segro_evidence_extraction.escalation_text_reextract import (
     DEFAULT_COST_CEILING_USD as DEFAULT_ESCALATION_TEXT_COST_CEILING_USD,
 )
@@ -1161,6 +1167,43 @@ def reduced_extraction_adjudication_v1(
         output_dir=output_dir,
     )
     typer.echo(_json_dumps(result["adjudication_summary"]))
+
+
+@app.command("downstream-handoff-exporter-v1")
+def downstream_handoff_exporter_v1(
+    adjudication_dir: Annotated[
+        Path,
+        typer.Option("--adjudication-dir", exists=True, readable=True),
+    ] = DEFAULT_REDUCED_ADJUDICATION_OUTPUT_DIR,
+    reduced_batch_dir: Annotated[
+        Path,
+        typer.Option("--reduced-batch-dir", exists=True, readable=True),
+    ] = DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
+    review_dir: Annotated[
+        Path,
+        typer.Option("--review-dir", exists=True, readable=True),
+    ] = DEFAULT_HANDOFF_REVIEW_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR,
+    customer_caveat_policy: Annotated[
+        str,
+        typer.Option("--customer-caveat-policy", help="internal_only or include."),
+    ] = "internal_only",
+) -> None:
+    """Export adjudicated results into internal and customer handoff records."""
+
+    if customer_caveat_policy not in {"internal_only", "include"}:
+        raise typer.BadParameter("customer-caveat-policy must be internal_only or include")
+    result = run_downstream_handoff_exporter_v1(
+        adjudication_dir=adjudication_dir,
+        reduced_batch_dir=reduced_batch_dir,
+        review_dir=review_dir,
+        output_dir=output_dir,
+        customer_caveat_policy=cast(CustomerCaveatPolicy, customer_caveat_policy),
+    )
+    typer.echo(_json_dumps(result["execution_summary"]))
 
 
 @parse_app.command("batch")
