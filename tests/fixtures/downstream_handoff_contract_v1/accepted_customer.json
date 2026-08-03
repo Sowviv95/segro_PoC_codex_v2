@@ -1,0 +1,23 @@
+{
+  "schema_version": "segro_customer_candidate_handoff_v1",
+  "trace_id": "trg_fixture_accepted",
+  "asset_record_key": null,
+  "requirement_id": "req_fixture",
+  "target_id": "trg_fixture_accepted",
+  "field_name": "fixture_field",
+  "customer_field_label": null,
+  "display_value": "Y",
+  "status": "accepted",
+  "reason_code": "accepted",
+  "caveat": null,
+  "source_reference": {
+    "source_id": "src_fixture",
+    "source_file": "fixture.pdf",
+    "page_number": 1,
+    "source_url": null,
+    "source_url_status": "mapping_required"
+  },
+  "internal_record_identity": "run_fixture:trg_fixture_accepted",
+  "transformation_status": "mapping_required"
+}
+

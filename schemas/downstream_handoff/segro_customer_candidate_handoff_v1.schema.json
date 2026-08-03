@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["abstained", "rejected"]}}},
+      "then": {"properties": {"display_value": {"type": "null"}}}
+    }
+  ],
+  "contract_version": "1.0.0",
+  "properties": {
+    "asset_record_key": {"type": ["string", "null"]},
+    "caveat": {"type": ["string", "null"]},
+    "customer_field_label": {"type": ["string", "null"]},
+    "display_value": {"type": ["string", "number", "boolean", "null"]},
+    "field_name": {"type": "string"},
+    "internal_record_identity": {"type": "string"},
+    "reason_code": {"type": "string"},
+    "requirement_id": {"type": "string"},
+    "schema_version": {"const": "segro_customer_candidate_handoff_v1"},
+    "source_reference": {
+      "additionalProperties": true,
+      "properties": {
+        "page_number": {"type": ["integer", "null"]},
+        "source_file": {"type": ["string", "null"]},
+        "source_id": {"type": ["string", "null"]},
+        "source_url": {"type": "null"},
+        "source_url_status": {"const": "mapping_required"}
+      },
+      "required": ["source_id", "source_file", "page_number", "source_url", "source_url_status"],
+      "type": "object"
+    },
+    "status": {"enum": ["accepted", "accepted_with_caveat", "abstained", "rejected"]},
+    "target_id": {"type": "string"},
+    "trace_id": {"type": "string"},
+    "transformation_status": {"type": "string"}
+  },
+  "required": [
+    "schema_version", "trace_id", "asset_record_key", "requirement_id",
+    "target_id", "field_name", "customer_field_label", "display_value",
+    "status", "reason_code", "caveat", "source_reference",
+    "internal_record_identity", "transformation_status"
+  ],
+  "schema_name": "segro_customer_candidate_handoff_v1",
+  "schema_version": "1",
+  "type": "object"
+}

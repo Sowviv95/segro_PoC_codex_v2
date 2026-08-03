@@ -33,10 +33,19 @@ from segro_evidence_extraction.batch_v2_false_positive_audit import (
     DEFAULT_FALSE_POSITIVE_OUTPUT_DIR,
     run_batch_v2_false_positive_audit,
 )
+from segro_evidence_extraction.bounded_extraction_expansion_preparation_v1 import (
+    DEFAULT_EXPANSION_PREP_OUTPUT_DIR,
+    run_bounded_extraction_expansion_preparation_v1,
+)
 from segro_evidence_extraction.config import load_settings
 from segro_evidence_extraction.dictionary.column_mapping import ColumnMappingError
 from segro_evidence_extraction.dictionary.readers import DictionaryReadError
 from segro_evidence_extraction.dictionary.service import ingest_dictionary, inspect_dictionary
+from segro_evidence_extraction.downstream_handoff_contract_v1 import (
+    DEFAULT_CONTRACT_SCHEMA_DIR,
+    DEFAULT_CONTRACT_VALIDATION_OUTPUT_DIR,
+    run_downstream_handoff_contract_validation_v1,
+)
 from segro_evidence_extraction.downstream_handoff_exporter_v1 import (
     DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR,
     DEFAULT_HANDOFF_REVIEW_DIR,
@@ -1204,6 +1213,76 @@ def downstream_handoff_exporter_v1(
         customer_caveat_policy=cast(CustomerCaveatPolicy, customer_caveat_policy),
     )
     typer.echo(_json_dumps(result["execution_summary"]))
+
+
+@app.command("validate-downstream-handoff-contract-v1")
+def validate_downstream_handoff_contract_v1(
+    internal_handoff: Annotated[
+        Path,
+        typer.Option("--internal-handoff", exists=True, readable=True),
+    ] = DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR / "internal_handoff.json",
+    customer_handoff: Annotated[
+        Path,
+        typer.Option("--customer-handoff", exists=True, readable=True),
+    ] = DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR / "customer_candidate_handoff.json",
+    schema_dir: Annotated[
+        Path,
+        typer.Option("--schema-dir", exists=True, readable=True),
+    ] = DEFAULT_CONTRACT_SCHEMA_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_CONTRACT_VALIDATION_OUTPUT_DIR,
+) -> None:
+    """Validate downstream handoff records against the frozen V1 contract."""
+
+    result = run_downstream_handoff_contract_validation_v1(
+        internal_path=internal_handoff,
+        customer_path=customer_handoff,
+        schema_dir=schema_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["contract_validation"]))
+
+
+@app.command("bounded-extraction-expansion-preparation-v1")
+def bounded_extraction_expansion_preparation_v1(
+    constructed_batch_dir: Annotated[
+        Path,
+        typer.Option("--constructed-batch-dir", exists=True, readable=True),
+    ] = DEFAULT_EXTRACTION_BATCH_CONSTRUCTION_OUTPUT_DIR,
+    checkpoint_dir: Annotated[
+        Path,
+        typer.Option("--checkpoint-dir", exists=True, readable=True),
+    ] = DEFAULT_CHECKPOINT_AUDIT_DIR,
+    reduced_batch_dir: Annotated[
+        Path,
+        typer.Option("--reduced-batch-dir", exists=True, readable=True),
+    ] = DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
+    adjudication_dir: Annotated[
+        Path,
+        typer.Option("--adjudication-dir", exists=True, readable=True),
+    ] = DEFAULT_REDUCED_ADJUDICATION_OUTPUT_DIR,
+    handoff_export_dir: Annotated[
+        Path,
+        typer.Option("--handoff-export-dir", exists=True, readable=True),
+    ] = DEFAULT_HANDOFF_EXPORT_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_EXPANSION_PREP_OUTPUT_DIR,
+) -> None:
+    """Prepare the next bounded extraction expansion batch without executing it."""
+
+    result = run_bounded_extraction_expansion_preparation_v1(
+        constructed_batch_dir=constructed_batch_dir,
+        checkpoint_dir=checkpoint_dir,
+        reduced_batch_dir=reduced_batch_dir,
+        adjudication_dir=adjudication_dir,
+        handoff_export_dir=handoff_export_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["selection_summary"]))
 
 
 @parse_app.command("batch")

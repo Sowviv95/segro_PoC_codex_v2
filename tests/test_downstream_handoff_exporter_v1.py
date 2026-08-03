@@ -144,7 +144,7 @@ def test_validation_rejects_unknown_reason_missing_provenance_and_duplicates() -
         customer_caveat_policy="internal_only",
     )
     assert validation["status"] == "failed"
-    assert any("unknown reason code" in error for error in validation["errors"])
+    assert any("unknown_reason_code" in error for error in validation["errors"])
 
     internal = build_internal_handoff_records(inputs)
     customer = build_customer_candidate_records(internal, customer_caveat_policy="internal_only")
@@ -157,7 +157,7 @@ def test_validation_rejects_unknown_reason_missing_provenance_and_duplicates() -
     )
     assert validation["status"] == "failed"
     assert any(
-        "missing mandatory provenance field source_id" in error
+        "missing_required_value" in error and "source_id" in error
         for error in validation["errors"]
     )
 

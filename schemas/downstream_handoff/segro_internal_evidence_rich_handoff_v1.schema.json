@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {"properties": {"final_decision": {"enum": ["accepted", "accepted_with_caveat"]}}},
+      "then": {
+        "properties": {"promotable": {"const": true}},
+        "required": ["display_value", "final_value", "raw_model_value", "evidence_value"]
+      }
+    },
+    {
+      "if": {"properties": {"final_decision": {"enum": ["abstained", "rejected"]}}},
+      "then": {
+        "properties": {"display_value": {"type": "null"}, "final_value": {"type": "null"}, "promotable": {"const": false}}
+      }
+    }
+  ],
+  "contract_version": "1.0.0",
+  "properties": {
+    "adjudication_run_id": {"type": "string"},
+    "asset_record_key": {"type": ["string", "null"]},
+    "attribute": {"type": ["string", "null"]},
+    "checkpoint_caveat": {"type": ["string", "null"]},
+    "checkpoint_status": {"type": ["string", "null"]},
+    "component": {"type": "object"},
+    "confidence": {"type": ["number", "null"]},
+    "datatype": {"type": ["string", "null"]},
+    "decision_reason": {"type": "string"},
+    "dictionary_validation_status": {"type": "string"},
+    "display_value": {"type": ["string", "number", "boolean", "null"]},
+    "event_validation_status": {"type": "string"},
+    "evidence_containment_status": {"type": "string"},
+    "evidence_span": {"type": "object"},
+    "extraction_run_id": {"type": "string"},
+    "field_name": {"type": "string"},
+    "final_decision": {"enum": ["accepted", "accepted_with_caveat", "abstained", "rejected"]},
+    "final_value": {"type": ["string", "number", "boolean", "array", "object", "null"]},
+    "input_provenance": {"type": "object"},
+    "model": {"type": ["string", "null"]},
+    "page_number": {"type": ["integer", "null"]},
+    "promotable": {"type": "boolean"},
+    "promotion_status": {"enum": ["ready_for_candidate_handoff", "ready_with_caveat", "not_promotable"]},
+    "reason_code": {"type": "string"},
+    "record_identity": {"type": "string"},
+    "requirement_id": {"type": "string"},
+    "schema_version": {"const": "segro_internal_evidence_rich_handoff_v1"},
+    "source_file": {"type": ["string", "null"]},
+    "source_id": {"type": ["string", "null"]},
+    "source_path": {"type": ["string", "null"]},
+    "target_id": {"type": "string"},
+    "trace_id": {"type": "string"}
+  },
+  "required": [
+    "schema_version", "trace_id", "target_id", "requirement_id", "field_name",
+    "final_decision", "reason_code", "promotable", "promotion_status",
+    "evidence_containment_status", "event_validation_status",
+    "dictionary_validation_status", "extraction_run_id", "adjudication_run_id",
+    "input_provenance", "model", "source_id", "source_file", "source_path",
+    "page_number"
+  ],
+  "schema_name": "segro_internal_evidence_rich_handoff_v1",
+  "schema_version": "1",
+  "type": "object"
+}

@@ -9,6 +9,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Literal
 
+from segro_evidence_extraction.downstream_handoff_contract_v1 import (
+    validate_downstream_handoff_contract_v1,
+)
 from segro_evidence_extraction.reduced_bounded_extraction_batch_v1 import (
     DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
 )
@@ -304,12 +307,18 @@ def validate_export(
     customer_caveat_policy: CustomerCaveatPolicy,
 ) -> dict[str, Any]:
     errors: list[str] = []
-    warnings: list[str] = []
-    reason_codes = set(inputs["reason_code_dictionary"])
     target_ids = [record["target_id"] for record in internal_records]
     final_ids = [record["target_id"] for record in inputs["final_adjudication"]]
     promotion_targets = [item["target_id"] for item in inputs["promotion_manifest"]]
     non_promotion_targets = [item["target_id"] for item in inputs["non_promotion_manifest"]]
+    contract_validation = validate_downstream_handoff_contract_v1(
+        internal_records=internal_records,
+        customer_records=customer_records,
+    )
+    errors.extend(
+        f"{error['trace_id']}: {error['code']}: {error['message']}"
+        for error in contract_validation["errors"]
+    )
 
     if target_ids != final_ids:
         errors.append("Internal handoff ordering does not match final adjudication ordering.")
@@ -321,10 +330,6 @@ def validate_export(
         errors.append("Duplicate target IDs found in internal handoff.")
     if [record["target_id"] for record in customer_records] != target_ids:
         errors.append("Customer handoff ordering does not match internal handoff ordering.")
-    for record in internal_records:
-        validate_internal_record(record, reason_codes, errors, warnings)
-    for record in customer_records:
-        validate_customer_record(record, errors)
     counts = Counter(record["promotion_status"] for record in internal_records)
     expected_counts = {
         "ready_for_candidate_handoff": len(
@@ -376,75 +381,17 @@ def validate_export(
         "schema_version": "segro_downstream_handoff_export_validation_v1",
         "status": "passed" if not errors else "failed",
         "errors": errors,
-        "warnings": warnings,
+        "warnings": [
+            f"{warning['trace_id']}: {warning['code']}: {warning['message']}"
+            for warning in contract_validation["warnings"]
+        ],
         "internal_record_count": len(internal_records),
         "customer_record_count": len(customer_records),
         "promotion_counts": dict(counts),
         "customer_caveat_policy": customer_caveat_policy,
         "input_artifact_hashes": artifact_hashes(inputs),
+        "contract_validation": contract_validation,
     }
-
-
-def validate_internal_record(
-    record: dict[str, Any],
-    reason_codes: set[str],
-    errors: list[str],
-    warnings: list[str],
-) -> None:
-    target_id = str(record.get("target_id"))
-    if not record.get("trace_id"):
-        errors.append(f"{target_id}: missing trace_id")
-    if not record.get("record_identity"):
-        errors.append(f"{target_id}: missing internal record identity")
-    if record.get("reason_code") not in reason_codes:
-        errors.append(f"{target_id}: unknown reason code {record.get('reason_code')!r}")
-    if record["final_decision"] == "accepted":
-        if record["reason_code"] != "accepted":
-            errors.append(f"{target_id}: accepted decision must use accepted reason code")
-        if not record.get("display_value") or record.get("final_value") is None:
-            errors.append(f"{target_id}: accepted record missing display/final value")
-    if record["final_decision"] == "accepted_with_caveat":
-        if record["reason_code"] != "accepted_with_caveat":
-            errors.append(
-                f"{target_id}: accepted_with_caveat decision must use "
-                "accepted_with_caveat reason code"
-            )
-        if not record.get("display_value") or record.get("final_value") is None:
-            errors.append(f"{target_id}: accepted_with_caveat record missing display/final value")
-        if not (record.get("checkpoint_caveat") or record.get("extraction_caveat")):
-            errors.append(f"{target_id}: accepted_with_caveat record missing internal caveat")
-    if record["final_decision"] in {"abstained", "rejected"}:
-        if record.get("display_value") is not None or record.get("final_value") is not None:
-            errors.append(f"{target_id}: non-promotable record emitted successful value")
-    for field in [
-        "source_id",
-        "source_file",
-        "page_number",
-        "evidence_span",
-        "evidence_containment_status",
-        "event_validation_status",
-        "dictionary_validation_status",
-        "input_provenance",
-    ]:
-        if record.get(field) in (None, "", {}):
-            errors.append(f"{target_id}: missing mandatory provenance field {field}")
-    if record.get("model") is None:
-        warnings.append(f"{target_id}: model unavailable in exporter inputs; retained as null")
-    if record.get("source_path") is None:
-        warnings.append(f"{target_id}: source_path unavailable; retained as null")
-
-
-def validate_customer_record(record: dict[str, Any], errors: list[str]) -> None:
-    target_id = str(record.get("target_id"))
-    if not record.get("trace_id"):
-        errors.append(f"{target_id}: customer record missing trace_id")
-    if not record.get("internal_record_identity"):
-        errors.append(f"{target_id}: customer record missing internal record link")
-    if record["status"] in {"abstained", "rejected"} and record.get("display_value") is not None:
-        errors.append(f"{target_id}: customer non-value record contains display_value")
-    source_reference = record.get("source_reference") or {}
-    if source_reference.get("source_url") is not None:
-        errors.append(f"{target_id}: customer source URL was fabricated")
 
 
 def reason_code_for_record(row: dict[str, Any], manifest: dict[str, Any]) -> str:

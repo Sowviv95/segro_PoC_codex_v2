@@ -1,0 +1,31 @@
+{
+  "additive_v1_metadata_allowed": true,
+  "artifact_versioning_policy": {
+    "full_runtime_exports_tracked_by_default": false,
+    "golden_fixtures_may_be_tracked": true,
+    "schemas_tracked": true,
+    "validators_tracked": true
+  },
+  "breaking_change_policy": {
+    "major_required_for": ["field removal", "field rename", "semantic repurposing"],
+    "v1_compatible": ["additive nullable metadata fields"]
+  },
+  "contract_version": "1.0.0",
+  "customer_schema": "segro_customer_candidate_handoff_v1",
+  "internal_schema": "segro_internal_evidence_rich_handoff_v1",
+  "missing_metadata_policy": {
+    "model": {
+      "field_required": true,
+      "nullable": true,
+      "warning_code": "missing_model_metadata"
+    },
+    "source_path": {
+      "field_required": true,
+      "nullable": true,
+      "warning_code": "missing_source_path"
+    }
+  },
+  "reason_codes": "reason_codes_v1.json",
+  "schema_name": "segro_downstream_handoff_contract_manifest_v1",
+  "schema_version": "1"
+}

@@ -1,0 +1,43 @@
+{
+  "contract_version": "1.0.0",
+  "reason_codes": {
+    "accepted": {
+      "allowed_decisions": ["accepted"],
+      "description": "Value accepted after deterministic validation with no retained caveat."
+    },
+    "accepted_with_caveat": {
+      "allowed_decisions": ["accepted_with_caveat"],
+      "description": "Value accepted but a checkpoint or extraction caveat must be retained."
+    },
+    "component_only": {
+      "allowed_decisions": ["abstained", "rejected"],
+      "description": "Evidence identifies a component only and not the requested attribute value."
+    },
+    "dictionary_value_not_supported": {
+      "allowed_decisions": ["abstained"],
+      "description": "Approved evidence does not contain a supported dictionary value."
+    },
+    "evidence_containment_failed": {
+      "allowed_decisions": ["rejected"],
+      "description": "Value or quote cannot be strictly contained in the approved evidence bundle."
+    },
+    "insufficient_attribute_evidence": {
+      "allowed_decisions": ["abstained"],
+      "description": "Approved evidence does not clearly support the requested attribute."
+    },
+    "response_schema_invalid": {
+      "allowed_decisions": ["rejected"],
+      "description": "Provider response has a structurally invalid schema value."
+    },
+    "wrong_event": {
+      "allowed_decisions": ["abstained", "rejected"],
+      "description": "Evidence belongs to a different requested event."
+    },
+    "wrong_system": {
+      "allowed_decisions": ["abstained", "rejected"],
+      "description": "Evidence belongs to a different system."
+    }
+  },
+  "schema_name": "segro_downstream_reason_codes_v1",
+  "schema_version": "1"
+}
