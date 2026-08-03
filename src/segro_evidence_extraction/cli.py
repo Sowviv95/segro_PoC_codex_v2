@@ -85,6 +85,15 @@ from segro_evidence_extraction.parsing import (
 from segro_evidence_extraction.parsing.batch_worker import BatchWorkerConfig
 from segro_evidence_extraction.parsing.page_cache import run_cached_bounded_parse
 from segro_evidence_extraction.parsing.service import load_source_registry
+from segro_evidence_extraction.reduced_bounded_extraction_batch_v1 import (
+    DEFAULT_CHECKPOINT_AUDIT_DIR,
+    DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
+    run_reduced_bounded_extraction_batch_v1,
+)
+from segro_evidence_extraction.reduced_extraction_adjudication_v1 import (
+    DEFAULT_REDUCED_ADJUDICATION_OUTPUT_DIR,
+    run_reduced_extraction_adjudication_v1,
+)
 from segro_evidence_extraction.reextract_pass import (
     DEFAULT_REEXTRACT_COST_CEILING_USD,
     DEFAULT_REEXTRACT_OUTPUT_DIR,
@@ -1097,6 +1106,61 @@ def extraction_batch_construction_v1(
         max_targets=max_targets,
     )
     typer.echo(_json_dumps(result["batch_metrics"]))
+
+
+@app.command("reduced-bounded-extraction-batch-v1")
+def reduced_bounded_extraction_batch_v1(
+    checkpoint_dir: Annotated[
+        Path,
+        typer.Option("--checkpoint-dir", exists=True, readable=True),
+    ] = DEFAULT_CHECKPOINT_AUDIT_DIR,
+    constructed_batch_dir: Annotated[
+        Path,
+        typer.Option("--constructed-batch-dir", exists=True, readable=True),
+    ] = DEFAULT_EXTRACTION_BATCH_CONSTRUCTION_OUTPUT_DIR,
+    cache_root: Annotated[
+        Path,
+        typer.Option("--cache-root", exists=True, readable=True),
+    ] = DEFAULT_SOURCE_COVERAGE_PAGE_CACHE_ROOT,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
+    dry_run_only: Annotated[
+        bool,
+        typer.Option("--dry-run-only", help="Build and validate package without model calls."),
+    ] = False,
+) -> None:
+    """Run the reduced bounded extraction batch over checkpoint-approved targets only."""
+
+    result = run_reduced_bounded_extraction_batch_v1(
+        checkpoint_dir=checkpoint_dir,
+        constructed_batch_dir=constructed_batch_dir,
+        cache_root=cache_root,
+        output_dir=output_dir,
+        dry_run_only=dry_run_only,
+    )
+    typer.echo(_json_dumps(result["execution_summary"]))
+
+
+@app.command("reduced-extraction-adjudication-v1")
+def reduced_extraction_adjudication_v1(
+    reduced_run_dir: Annotated[
+        Path,
+        typer.Option("--reduced-run-dir", exists=True, readable=True),
+    ] = DEFAULT_REDUCED_BATCH_OUTPUT_DIR,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir"),
+    ] = DEFAULT_REDUCED_ADJUDICATION_OUTPUT_DIR,
+) -> None:
+    """Adjudicate and deterministically repair the reduced bounded extraction run."""
+
+    result = run_reduced_extraction_adjudication_v1(
+        reduced_run_dir=reduced_run_dir,
+        output_dir=output_dir,
+    )
+    typer.echo(_json_dumps(result["adjudication_summary"]))
 
 
 @parse_app.command("batch")
