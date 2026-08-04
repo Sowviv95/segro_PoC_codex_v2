@@ -521,6 +521,7 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "blank_unusable",
         "low_value_repetitive",
         "maintenance_guidance",
+        "product_datasheet",
         "manufacturer_literature",
         "safety_data",
         "supplier_contact",
@@ -1640,8 +1641,26 @@ def _is_air_conditioning_model_serial_schedule(text: str) -> bool:
 
 
 def _is_mechanical_test_sheet(text: str) -> bool:
-    return any(term in text for term in ["wc extract fan", "ahu supply fan", "indoor unit supply air"]) and any(
-        term in text for term in ["measured volume", "design volume", "commissioning report"]
+    return any(
+        term in text
+        for term in [
+            "wc extract fan",
+            "ahu supply fan",
+            "ahu extract fan",
+            "indoor unit supply air",
+            "system title:",
+            "fan manufacturer",
+        ]
+    ) and any(
+        term
+        in text
+        for term in [
+            "measured volume",
+            "design volume",
+            "commissioning report",
+            "fan total pressure",
+            "commissioning engineer",
+        ]
     )
 
 
@@ -1734,7 +1753,12 @@ def _is_drawing(text: str) -> bool:
     if _is_safety_data(text):
         return False
     explicit_drawing = any(
-        term in text for term in ["drawing no", "dwg no", "title block", "as built drawing"]
+        term
+        in text
+        for term in ["drawing no", "drawing number", "dwg no", "title block", "as built drawing"]
+    )
+    title_block = "revision date:" in text and any(
+        term in text for term in ["panel ref:", "drawn by:", "checked by:", "project:-"]
     )
     scaled_plan = ("scale:" in text or "scale " in text) and any(
         term in text for term in ["plan", "elevation", "layout", "drawing"]
@@ -1743,7 +1767,7 @@ def _is_drawing(text: str) -> bool:
     elevation_with_layout = "elevation" in text and any(
         term in text for term in ["grid", "drawing", "scale", "layout"]
     )
-    return explicit_drawing or scaled_plan or plan_or_elevation or elevation_with_layout
+    return explicit_drawing or title_block or scaled_plan or plan_or_elevation or elevation_with_layout
 
 
 def _drawing_text_extractable(text: str) -> bool:
@@ -1761,7 +1785,7 @@ def _is_product_datasheet(text: str) -> bool:
 
 def _is_project_element_sheet(text: str) -> bool:
     return bool(
-        re.search(r"\belement\s*:\s*\d+\.\d+\.\d+\b", text)
+        re.search(r"\belement\s*:\s*\d+\.\d+(?:\.\d+)?\b", text)
         and "nature of installation" in text
         and "product description" in text
     )
@@ -1798,9 +1822,18 @@ def _is_generic_manufacturer_literature(text: str) -> bool:
     literature_terms = [
         "product data sheet",
         "technical data sheet",
+        "data sheet",
+        "installation manual",
+        "operation manual",
+        "user manual",
+        "limited warranty certificate",
+        "ce declaration of conformity",
         "declaration of performance",
         "certificate of approval",
         "product conformity certification",
+        "terms & conditions",
+        "terms and conditions",
+        "goods returns policy",
         "paving maintenance & repair guide",
     ]
     if not any(term in text for term in literature_terms):

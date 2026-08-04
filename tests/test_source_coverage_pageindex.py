@@ -240,6 +240,33 @@ def test_part6_appendix_certificate_schedule_and_template_classification_rules()
     assert permit["evidence_role"] == "template only"
 
 
+def test_part3_service_element_schedule_and_literature_classification_rules() -> None:
+    element = classify_page_text(
+        "ELEMENT:3.1 BUILDING SERVICES MECHANICAL & PUBLIC HEALTH "
+        "1 NATURE OF INSTALLATION incoming gas and water services. "
+        "3 PRODUCT DESCRIPTION As specialist O&M Manual.",
+        source_filename="Building Manual - Part 3 Building Services.pdf",
+    )
+    test_sheet = classify_page_text(
+        "Contract Title: Segro Park Unit 1 System Title: AHU Supply Fan "
+        "Fan Manufacturer Fan Type Fan Total Pressure Design Volume "
+        "Measured Volume Commissioning Engineer Date",
+        source_filename="Building Manual - Part 3 Building Services.pdf",
+    )
+    literature = classify_page_text(
+        "Installation manual for crystalline solar photovoltaic modules "
+        "Manufacturer model safety precautions warranty conditions.",
+        source_filename="Building Manual - Part 3 Building Services.pdf",
+    )
+
+    assert element["primary_page_type"] == "project_element_sheet"
+    assert element["evidence_role"] == "direct evidence"
+    assert test_sheet["primary_page_type"] == "mechanical_test_sheet"
+    assert test_sheet["recommended_route"] == "table"
+    assert literature["primary_page_type"] == "manufacturer_literature"
+    assert literature["evidence_role"] == "generic reference literature"
+
+
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:
     cached = {
         "src_a": [

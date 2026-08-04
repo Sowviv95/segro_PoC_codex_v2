@@ -1227,6 +1227,123 @@ def test_v3_metadata_mismatch_becomes_dictionary_caveat_not_invalid() -> None:
     assert overall[0].status == "valid_with_dictionary_caveat"
 
 
+def test_part3_project_schedule_beats_generic_literature_for_pv_model() -> None:
+    target = _target(
+        "pv_inverter_model",
+        ExpectedDataType.STRING,
+        "Unit 1 PV inverter model",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Installation manual grid-tie PV inverter model list and safety precautions.",
+            ),
+            _page(
+                2,
+                "Unit 1 PV system installed. Inverters Manufacturer Model "
+                "Maximum AC Power Ginlong Solis 50K 100kW.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 3 Building Services.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.results
+    assert result.results[0].page_start == 2
+
+
+def test_part3_measurement_cells_do_not_satisfy_model_targets() -> None:
+    target = _target(
+        "fan_model",
+        ExpectedDataType.STRING,
+        "Fan model must not come from measured volume pressure current values.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Contract Title: Unit 1 System Title: AHU Supply Fan "
+                "Measured Volume 4.61 m/s Fan Total Pressure 97 Pa Current 3A.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 3 Building Services.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
+def test_part3_certificate_numbers_do_not_satisfy_model_targets() -> None:
+    target = _target(
+        "fire_alarm_panel_model",
+        ExpectedDataType.STRING,
+        "Fire alarm panel model must not come from certificate number.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Commissioning Certificate Certificate Number 43830 "
+                "Certificate of commissioning for the fire alarm system at Unit 1.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 3 Building Services.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
+def test_part3_wrong_system_commissioning_date_is_blocked() -> None:
+    target = _target(
+        "fire_alarm_commissioning_date",
+        ExpectedDataType.DATE,
+        "Unit 1 fire alarm commissioning certificate date.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Commissioning Certificate for Disabled Refuge System at Unit 1 "
+                "Date: 13/03/2020.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 3 Building Services.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
 def test_no_whole_manual_or_worker_when_cached_service_is_fully_warm(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

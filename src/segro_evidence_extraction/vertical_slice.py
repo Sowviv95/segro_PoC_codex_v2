@@ -1137,6 +1137,7 @@ def retrieve_evidence(
         scores, key=lambda item: (-item.score, item.source_file, item.page_start, item.node_id)
     )
     deduped = deduplicate_overlapping_retrievals(ordered)
+    deduped = prefer_explicit_quantity_evidence(target, deduped, page_text)
     strong = [item for item in deduped if item.score >= MIN_RELEVANCE_SCORE]
     if strong:
         selected = strong[:3]
@@ -1159,6 +1160,35 @@ def retrieve_evidence(
         retrieval_time_ms=(time.perf_counter() - started) * 1000,
         top_score=deduped[0].score if deduped else 0,
     )
+
+
+def prefer_explicit_quantity_evidence(
+    target: TargetSpecification,
+    results: list[RetrievedEvidence],
+    page_text: dict[tuple[str, int], str],
+) -> list[RetrievedEvidence]:
+    field = target.expected_field.lower()
+    quantity_target = target.expected_data_type == ExpectedDataType.INTEGER or any(
+        term in field for term in ["count", "quantity"]
+    )
+    if not quantity_target:
+        return results
+    explicit_installed = [
+        item
+        for item in results
+        if "number installed" in page_text.get((item.source_id, item.page_start), "").lower()
+    ]
+    if explicit_installed:
+        return explicit_installed
+    explicit_quantity = [
+        item
+        for item in results
+        if re.search(
+            r"\b(?:qty|quantity|count)\b|\b\d+\s*no\.?\b",
+            page_text.get((item.source_id, item.page_start), "").lower(),
+        )
+    ]
+    return explicit_quantity or results
 
 
 def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
@@ -1263,11 +1293,15 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
         "disabled_refuge": ["disabled refuge", "emergency voice", "evc", "bs5839-9", "bs 5839-9"],
         "evc": ["emergency voice", "evc", "installation certificate", "bs 5839-9"],
         "pv_inverter": ["pv commissioning form", "inverter", "solis", "photovoltaic", "unit 1"],
-        "pv_module": ["solar pv", "pv commissioning form", "array module", "modules", "275wp"],
+        "pv_module": ["solar pv", "pv commissioning form", "array module", "modules"],
         "pv_system_capacity": ["solar pv", "system consists", "modules", "inverters", "kwh", "kw"],
-        "air_conditioning": ["outdoor unit", "indoor unit", "model number", "unit serial number", "pury"],
+        "air_conditioning": ["air conditioning", "model number", "unit serial number"],
         "outdoor_unit": ["outdoor unit", "model number", "unit serial number", "pury-p"],
         "indoor_unit": ["indoor unit", "model number", "unit serial number", "location"],
+        "cold_water_booster": ["cold water", "booster", "model no", "serial number", "commissioning report"],
+        "lift": ["lift no", "owner documentation", "lift"],
+        "electrical_distribution": ["mccb switch panel", "distribution board", "mp1"],
+        "mechanical_contractor": ["installations completed by", "company", "contractor"],
         "bms_controller": ["bms", "outstation", "trend iq", "points schedule", "controller"],
         "wc_extract_fan": ["wc extract fan", "measured volume", "design volume", "fan"],
         "mechanical_fan": ["fan", "measured volume", "design volume", "commissioning report"],
@@ -1438,6 +1472,38 @@ def pattern_score(target: TargetSpecification, text: str) -> float:
         score += 4.0
     if "fan" in field and any(term in text for term in ["measured volume", "design volume"]):
         score += 4.0
+    if "fan" in field and "system title:" in text and any(
+        term in text for term in ["measured volume", "fan total pressure", "commissioning engineer"]
+    ):
+        score += 5.0
+    if "booster" in field and any(term in text for term in ["model no", "serial number"]):
+        score += 6.0
+    if "hot_water" in field and any(
+        term in text for term in ["thermodynamic system", "domestic hot water", "water heater"]
+    ):
+        score += 4.0
+    if "lift" in field and any(term in text for term in ["lift no", "owner documentation"]):
+        score += 6.0
+    if "distribution" in field and any(term in text for term in ["mccb", "switch panel", "distribution board"]):
+        score += 5.0
+    if "contractor" in field and any(
+        term in text for term in ["installations completed by", "company", "contractor"]
+    ):
+        score += 8.0
+    if "indoor" in field and "model" in field and any(
+        term in text for term in ["first letters of model", "serial location", "indoor unit"]
+    ):
+        score += 8.0
+    if "outdoor" in field and "model" in field and any(
+        term in text for term in ["outdoor unit", "system model", "model number"]
+    ):
+        score += 6.0
+    if "pv" in field and any(term in field for term in ["quantity", "count"]) and "number installed" in text:
+        score += 14.0
+    if "pv" in field and "model" in field and "system installed" in text and any(
+        term in text for term in ["manufacturer", "model"]
+    ):
+        score += 6.0
     if "water" in field and any(term in text for term in ["certificate of conformity", "sample date", "test report"]):
         score += 4.0
     if "lifeline" in field and any(term in text for term in ["horizontal lifeline", "system length", "test loads"]):
@@ -1559,6 +1625,8 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "final certificate",
             "practical completion",
             "completion certificate",
+            "commissioning certificate",
+            "certificate number",
             "air permeability test certificate",
         ]
     )
@@ -1580,11 +1648,20 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         for term in [
             "product data sheet",
             "technical data sheet",
+            "data sheet",
+            "installation manual",
+            "operation manual",
+            "user manual",
             "safety data sheet",
             "material safety data",
             "coshh assessment",
+            "limited warranty certificate",
+            "ce declaration of conformity",
             "declaration of performance",
             "product conformity certification",
+            "terms & conditions",
+            "terms and conditions",
+            "goods returns policy",
             "paving maintenance & repair guide",
         ]
     )
@@ -1656,6 +1733,19 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         re.search(r"\bunit\s+1\b", lower)
     )
     unit1_context = bool(re.search(r"\bunit\s+1\b", lower))
+    project_installation_context = unit1_context and any(
+        term in lower
+        for term in [
+            "system installed",
+            "supplied and installed",
+            "commissioning certificate",
+            "commissioning report",
+            "installation certificate",
+            "site:",
+            "project:",
+            "contract title:",
+        ]
+    )
     pv_string_reading_context = "pv commissioning form" in lower and any(
         term in lower for term in ["voc", "isc", "string", "array insulation"]
     )
@@ -1737,6 +1827,12 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 28.0
     if "commissioning_date" in field and design_certificate_context:
         return 24.0
+    if "fire_alarm" in field and "commissioning_date" in field and "disabled refuge" in lower:
+        return 30.0
+    if "indoor" in field and "model" in field and "outdoor unit" in lower and not any(
+        term in lower for term in ["first letters of model", "serial location", "indoor unit"]
+    ):
+        return 30.0
     if date_target and laboratory_report_context and "water" not in field:
         return 24.0
     if installation_date_target and laboratory_report_context:
@@ -1752,6 +1848,8 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 28.0
     if installed_description_target and (generic_guarantee_context or product_guarantee_context):
         return 24.0
+    if "pv" in field and any(term in field for term in ["quantity", "count"]) and "number installed" not in lower:
+        return 50.0
     if installed_quantity_target and maintenance_context:
         return 16.0
     if installed_identity_target and planning_context:
@@ -1785,26 +1883,36 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         term in requirement for term in ["string", "voltage", "current", "measurement"]
     ):
         return 28.0
+    if identity_target and electrical_measurement_context and not any(
+        term in lower for term in ["model", "model no", "model number", "serial no"]
+    ):
+        return 28.0
     if identity_target and supplier_contact_context:
         return 12.0
     if identity_target and emergency_contact_context:
         return 20.0
+    if "model" in field and certificate_context and not any(
+        term in lower for term in ["model", "model no", "model number", "type no"]
+    ):
+        return 32.0
     if "model" in field and not any(
         term in lower
-        for term in ["model", "model no", "model number", "type no", "serial", "reference"]
+        for term in ["model", "model no", "model number", "type no", "serial", "reference", "lift no"]
     ):
-        return 16.0
+        return 30.0
+    if identity_target and generic_reference_context and not project_installation_context:
+        return 32.0
     if installed_identity_target and generic_reference_context:
-        return 6.0
-    if installed_quantity_target and generic_reference_context:
+        return 24.0
+    if installed_quantity_target and generic_reference_context and not project_installation_context:
         return 24.0 if any(term in lower for term in ["safety data sheet", "coshh"]) else 7.0
     if target.expected_data_type == ExpectedDataType.INTEGER and installed_quantity_target and not re.search(
-        r"\b\d+\s*(?:no\.?|number|qty|quantity|cycles|spaces|trees|bollards?)\b",
+        r"\b\d+\s*(?:no\.?|number|qty|quantity|installed|cycles|spaces|trees|bollards?)\b|\bnumber\s+installed\b",
         lower,
     ):
         return 24.0
-    if installed_description_target and generic_reference_context:
-        return 4.0
+    if installed_description_target and generic_reference_context and not project_installation_context:
+        return 20.0
     if installed_description_target and generic_material_list_context:
         return 16.0
     if identity_target and fire_strategy_standard_context:
@@ -1819,6 +1927,19 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 18.0
     if "pv" in field and identity_target and not any(
         term in lower for term in ["pv", "photovoltaic", "inverter", "solar", "solis"]
+    ):
+        return 24.0
+    if "cold_water_booster" in field and not any(
+        term in lower for term in ["booster", "cwb", "pump"]
+    ):
+        return 30.0
+    if "booster" in field and "capacity" in field and not any(
+        term in lower for term in ["booster", "cwb", "pump", "design flow", "design pressure"]
+    ):
+        return 30.0
+    if "electrical_distribution" in field and not (
+        unit1_context
+        and any(term in lower for term in ["mccb", "switch panel", "distribution board", "mp1"])
     ):
         return 24.0
     if "commissioning_date" in field and not any(
