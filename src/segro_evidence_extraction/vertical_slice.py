@@ -1138,6 +1138,7 @@ def retrieve_evidence(
     )
     deduped = deduplicate_overlapping_retrievals(ordered)
     deduped = prefer_explicit_quantity_evidence(target, deduped, page_text)
+    deduped = prefer_project_specific_fabric_evidence(target, deduped, page_text)
     strong = [item for item in deduped if item.score >= MIN_RELEVANCE_SCORE]
     if strong:
         selected = strong[:3]
@@ -1189,6 +1190,82 @@ def prefer_explicit_quantity_evidence(
         )
     ]
     return explicit_quantity or results
+
+
+def prefer_project_specific_fabric_evidence(
+    target: TargetSpecification,
+    results: list[RetrievedEvidence],
+    page_text: dict[tuple[str, int], str],
+) -> list[RetrievedEvidence]:
+    field = target.expected_field.lower()
+    requirement = target.requirement_text.lower()
+    fabric_target = any(
+        term in field or term in requirement
+        for term in [
+            "roof",
+            "rooflight",
+            "cladding",
+            "wall",
+            "curtain",
+            "glazing",
+            "door",
+            "dock",
+            "leveller",
+            "floor",
+            "ceiling",
+            "finish",
+            "frame",
+            "foundation",
+            "slab",
+            "fire_stopping",
+            "fire_protection",
+            "canopy",
+            "tea_point",
+        ]
+    )
+    direct_attribute_target = any(
+        term in field
+        for term in [
+            "description",
+            "finish",
+            "colour",
+            "color",
+            "material",
+            "model",
+            "type",
+            "grade",
+            "construction",
+            "product",
+            "system",
+        ]
+    )
+    if not (fabric_target and direct_attribute_target):
+        return results
+    project_specific = [
+        item
+        for item in results
+        if _has_project_specific_fabric_signal(
+            page_text.get((item.source_id, item.page_start), "")
+        )
+    ]
+    if project_specific:
+        return project_specific
+    return results
+
+
+def _has_project_specific_fabric_signal(text: str) -> bool:
+    lower = text.lower()
+    return (
+        "nature of installation" in lower
+        and "product description" in lower
+        and re.search(r"\belement\s*:\s*\d+\.\d+(?:\.\d+){0,2}\b", lower) is not None
+    ) or (
+        "materials / part schedule" in lower
+        and any(term in lower for term in ["locations used", "units 1", "drawing reference"])
+    ) or (
+        "warranty statement" in lower
+        and any(term in lower for term in ["project:", "client:", "segro park"])
+    )
 
 
 def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
@@ -1307,6 +1384,55 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
         "mechanical_fan": ["fan", "measured volume", "design volume", "commissioning report"],
         "water_test": ["water", "test report", "certificate of conformity", "sample date", "unit 1"],
         "horizontal_lifeline": ["horizontal lifeline", "lifeline system", "soter", "system length", "test loads"],
+        "structural_frame_construction": [
+            "structural steel frame",
+            "steel frame",
+            "viterprime",
+            "primer",
+        ],
+        "rooflight": ["roof lights", "rooflights", "grp roof lights", "t-light", "tc10mx"],
+        "roof_finish": ["roof", "finish", "hps200u", "albatross", "outer panels"],
+        "external_cladding_finish": ["cladding", "finish", "bright white", "outer panels"],
+        "foundation_concrete": ["foundations", "concrete mix", "c32/40"],
+        "ground_floor_slab": [
+            "ground floor slab",
+            "warehouse",
+            "260mm slab",
+            "steel fibres",
+            "acs gas membrane",
+        ],
+        "warehouse_floor": [
+            "ground floor slab",
+            "warehouse",
+            "260mm slab",
+            "steel fibres",
+            "acs gas membrane",
+        ],
+        "fire_protection": [
+            "fire protection",
+            "intumescent coating",
+            "steelmaster",
+            "firemaster",
+            "paraflam",
+        ],
+        "fire_stopping": [
+            "fire protection",
+            "intumescent coating",
+            "steelmaster",
+            "firemaster",
+            "paraflam",
+        ],
+        "curtain_walling": ["curtain walling", "apa tb50", "portal auto sliding door"],
+        "loading_door": ["loading doors", "hormann", "steel roller shutter"],
+        "internal_door": ["internal doors", "ironmongery", "fd30", "fd60", "polyrey", "eatilo"],
+        "raised_access_floor": ["raised access floor", "rmg600", "rg3 simploc", "euro ped"],
+        "soft_flooring": ["soft flooring", "bolon", "forbo", "interface"],
+        "office_floor": ["soft flooring", "bolon", "forbo", "interface"],
+        "polished_concrete": ["polished concrete", "hatcrete", "xylene", "ottoseal"],
+        "ceiling_type": ["suspended ceilings", "armstrong", "dune evo", "peakform", "prelude"],
+        "tea_point": ["tea point", "howdens", "clerkenwell", "worktop"],
+        "warranty_duration": ["warranty statement", "10 years", "guarantee period"],
+        "cladding_warranty": ["warranty statement", "10 years", "trimoterm", "guarantee period"],
     }
     field = target.expected_field.lower()
     component_phrases: set[str] = set()
@@ -1443,6 +1569,17 @@ def score_node_for_target(
 def pattern_score(target: TargetSpecification, text: str) -> float:
     score = 0.0
     field = target.expected_field.lower()
+    project_element_context = (
+        "nature of installation" in text
+        and "product description" in text
+        and re.search(r"\belement\s*:\s*\d+\.\d+(?:\.\d+){0,2}\b", text) is not None
+    )
+    project_schedule_context = "materials / part schedule" in text and any(
+        term in text for term in ["locations used", "drawing reference", "units 1"]
+    )
+    project_warranty_context = "warranty statement" in text and any(
+        term in text for term in ["project:", "segro park", "client:"]
+    )
     if target.expected_data_type == ExpectedDataType.DATE and re.search(
         r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+[a-z]+\s+\d{4}\b", text
     ):
@@ -1508,6 +1645,29 @@ def pattern_score(target: TargetSpecification, text: str) -> float:
         score += 4.0
     if "lifeline" in field and any(term in text for term in ["horizontal lifeline", "system length", "test loads"]):
         score += 4.0
+    if project_element_context and any(
+        term in field
+        for term in [
+            "construction",
+            "description",
+            "finish",
+            "colour",
+            "color",
+            "material",
+            "model",
+            "system",
+            "type",
+            "grade",
+            "product",
+        ]
+    ):
+        score += 8.0
+    if project_schedule_context and any(
+        term in field for term in ["schedule", "product", "material", "finish", "model"]
+    ):
+        score += 7.0
+    if project_warranty_context and any(term in field for term in ["warranty", "guarantee"]):
+        score += 8.0
     return score
 
 
@@ -1652,6 +1812,10 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "installation manual",
             "operation manual",
             "user manual",
+            "application guide",
+            "product information sheet",
+            "technical information paper",
+            "agrément",
             "safety data sheet",
             "material safety data",
             "coshh assessment",
@@ -1665,6 +1829,20 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "paving maintenance & repair guide",
         ]
     )
+    product_range_context = any(
+        term in lower
+        for term in [
+            "available as",
+            "available in",
+            "range of",
+            "options",
+            "product range",
+            "standard programme",
+            "colour range",
+            "size range",
+            "figure ",
+        ]
+    ) and not any(term in lower for term in ["nature of installation", "product description"])
     residual_hazard_context = any(
         term in lower
         for term in [
@@ -1714,6 +1892,10 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "scale drawn checked approved",
             "do not scale",
             "revision",
+            "revision date",
+            "rev:",
+            "drawn by",
+            "checked by",
         ]
     )
     generic_guarantee_context = (
@@ -1727,6 +1909,9 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "this guarantee is given",
             "competent inspector",
             "u-value",
+            "warranty statement",
+            "guarantee period",
+            "date of last shipment",
         ]
     )
     other_unit_context = bool(re.search(r"\bunit\s+[23]\b", lower)) and not bool(
@@ -1813,6 +1998,12 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         term in field
         for term in ["date", "model", "count", "quantity", "description", "type", "finish"]
     )
+    project_element_context = (
+        "nature of installation" in lower
+        and "product description" in lower
+        and re.search(r"\belement\s*:\s*\d+\.\d+(?:\.\d+){0,2}\b", lower) is not None
+    )
+    exact_model_number_target = "model_number" in field or field.endswith("_model")
     if navigation_context and direct_value_target:
         return 20.0
     if certificate_index_context and direct_value_target:
@@ -1846,6 +2037,10 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 24.0
     if installation_date_target and drawing_context:
         return 28.0
+    if installation_date_target and product_guarantee_context:
+        return 32.0
+    if date_target and product_guarantee_context and "warranty" not in field and "guarantee" not in field:
+        return 26.0
     if installed_description_target and (generic_guarantee_context or product_guarantee_context):
         return 24.0
     if "pv" in field and any(term in field for term in ["quantity", "count"]) and "number installed" not in lower:
@@ -1889,13 +2084,32 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 28.0
     if identity_target and supplier_contact_context:
         return 12.0
+    if "identifier" in field and supplier_contact_context:
+        return 26.0
+    if "identifier" in field and not any(
+        term in lower
+        for term in [
+            "product identifier",
+            "product reference",
+            "model no",
+            "model number",
+            "serial no",
+            "serial number",
+            "id no",
+        ]
+    ):
+        return 34.0
     if identity_target and emergency_contact_context:
         return 20.0
     if "model" in field and certificate_context and not any(
         term in lower for term in ["model", "model no", "model number", "type no"]
     ):
         return 32.0
-    if "model" in field and not any(
+    if exact_model_number_target and not any(
+        term in lower for term in ["model no", "model number", "type no", "equipment model"]
+    ):
+        return 36.0
+    if "model" in field and not project_element_context and not any(
         term in lower
         for term in ["model", "model no", "model number", "type no", "serial", "reference", "lift no"]
     ):
@@ -1913,6 +2127,10 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 24.0
     if installed_description_target and generic_reference_context and not project_installation_context:
         return 20.0
+    if installed_description_target and product_range_context:
+        return 28.0
+    if any(term in field for term in ["dimension", "colour", "color", "finish"]) and product_range_context:
+        return 30.0
     if installed_description_target and generic_material_list_context:
         return 16.0
     if identity_target and fire_strategy_standard_context:

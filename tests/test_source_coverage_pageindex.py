@@ -267,6 +267,30 @@ def test_part3_service_element_schedule_and_literature_classification_rules() ->
     assert literature["evidence_role"] == "generic reference literature"
 
 
+def test_part2_index_continuation_and_element_sheet_classification_rules() -> None:
+    index_continuation = classify_page_text(
+        "BUILDING MANUAL 2.8 JOINERY 2.8.1 2ND FIX CARPENTRY "
+        "2.8.2 INTERNAL DOORS INC IRONMONGERY 2.9 INTERNAL FINISHES "
+        "2.9.1 WALL FINISHES 2.9.2 FLOOR FINISHES",
+        source_filename="Building Manual - Part 2 Building Fabric.pdf",
+    )
+    assert index_continuation["primary_page_type"] == "index_or_contents"
+    assert index_continuation["recommended_route"] == "deprioritized"
+    assert index_continuation["evidence_bearing"] is False
+
+    fire_rated_element = classify_page_text(
+        "ELEMENT:2.8.2 JOINERY INTERNAL DOORS INC IRONMONGERY "
+        "1 NATURE OF INSTALLATION Internal doors including ironmongery. "
+        "3 PRODUCT DESCRIPTION FD30 & FD60 solid core American white oak, "
+        "with Polyrey Laminate. Ironmongery is Eatilo range satin stainless steel. "
+        "7 AS BUILT DRAWINGS Refer to Part 6 Appendix F for Architect's drawings.",
+        source_filename="Building Manual - Part 2 Building Fabric.pdf",
+    )
+    assert fire_rated_element["primary_page_type"] == "project_element_sheet"
+    assert fire_rated_element["recommended_route"] == "text"
+    assert fire_rated_element["evidence_role"] == "direct evidence"
+
+
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:
     cached = {
         "src_a": [

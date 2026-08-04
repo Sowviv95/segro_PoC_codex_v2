@@ -1436,6 +1436,160 @@ def test_split_range_never_exceeds_ten_pages() -> None:
     assert split_range(1, 25) == [(1, 10), (11, 20), (21, 25)]
 
 
+def test_part2_project_element_sheet_beats_generic_product_range_for_roof() -> None:
+    target = _target(
+        "roof_construction_description",
+        ExpectedDataType.STRING,
+        "Roof construction description roofing system panels insulation finish.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Technical data sheet. Rooflights are available as single-skin, "
+                "double-skin or multi-skin configurations with a range of options.",
+            ),
+            _page(
+                2,
+                "ELEMENT:2.3.1 ROOF ROOF COVERINGS "
+                "1 NATURE OF INSTALLATION Profiled roofing panels. "
+                "3 PRODUCT DESCRIPTION CA Group Twin Therm system. "
+                "Outer panels to CA32/1000R profile x 0.7mm thick. "
+                "Thermaquilt insulation.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 2 Building Fabric.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.results
+    assert result.results[0].page_start == 2
+
+
+def test_part2_cad_model_space_does_not_satisfy_model_number_target() -> None:
+    target = _target(
+        "dock_leveller_model_number",
+        ExpectedDataType.STRING,
+        "Dock leveller model number must not come from a drawing model-space note.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "As built drawing 5No Dock Levellers. CAD model space information "
+                "shared via DWG files is not set to ordinance survey.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 2 Building Fabric.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
+def test_part2_product_identifier_requires_explicit_identifier_context() -> None:
+    target = _target(
+        "loading_door_product_identifier",
+        ExpectedDataType.STRING,
+        "Supplier phone numbers and contact pages must not qualify as product identifiers.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "ELEMENT:2.6.2 WINDOWS AND DOORS LOADING DOORS COMPANY Hormann "
+                "Tel: 01530 516850 1 NATURE OF INSTALLATION Doors. "
+                "3 PRODUCT DESCRIPTION Electrically-operated insulated sectional overhead doors.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 2 Building Fabric.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
+def test_part2_warranty_issue_date_does_not_satisfy_installation_date() -> None:
+    target = _target(
+        "cladding_installation_date",
+        ExpectedDataType.DATE,
+        "Cladding installation date must not use a warranty statement issue date.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Quality Department Date: 20/02/2020 WARRANTY STATEMENT "
+                "Project: SEGRO PARK-ENFIELD 10 years is given for a product "
+                "starting on date of last shipment, 12.12.2019.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 2 Building Fabric.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.retrieval_status != "evidence_found"
+
+
+def test_part2_project_material_schedule_remains_retrievable() -> None:
+    target = _target(
+        "raised_access_floor_product_schedule",
+        ExpectedDataType.STRING,
+        "Raised access floor RMG600 RG3 Simploc Euro Ped schedule.",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "2 MATERIALS / PART SCHEDULE Material Product Reference "
+                "Name of Supplier Locations Used / Drawing Reference "
+                "RMG600 Raised Floor Panel RG3 Simploc Kingspan Access Floors Units 1,2 & 3 "
+                "Pedestal Euro Ped Kingspan Access Floors Units 1,2 & 3.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 2 Building Fabric.pdf")}
+
+    result = retrieve_evidence(
+        target,
+        build_lightweight_hierarchy(pages, registry),
+        pages,
+        registry,
+        max_evidence_chars=1000,
+    )
+
+    assert result.results
+    assert result.results[0].page_start == 1
+
+
 def _page(page_number: int, text: str, source_id: str = "src-test") -> ParsedPage:
     return ParsedPage(
         page_id=f"{source_id}:p{page_number}",

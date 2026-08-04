@@ -1480,12 +1480,21 @@ def _normalize(text: str) -> str:
 
 
 def _is_index_or_contents(text: str) -> bool:
+    numbered_section_count = len(re.findall(r"\b\d+(?:\.\d+)+\b", text))
+    building_manual_index_continuation = (
+        "building manual" in text
+        and numbered_section_count >= 4
+        and not any(term in text for term in ["nature of installation", "product description"])
+    )
     return bool(
-        re.search(r"\b(contents|index)\b", text)
-        and (
-            len(re.findall(r"\b\d+(\.\d+)*\b", text)) >= 3
-            or len(re.findall(r"\.{3,}|\s\d{1,4}\s", text)) >= 3
+        (
+            re.search(r"\b(contents|index)\b", text)
+            and (
+                len(re.findall(r"\b\d+(\.\d+)*\b", text)) >= 3
+                or len(re.findall(r"\.{3,}|\s\d{1,4}\s", text)) >= 3
+            )
         )
+        or building_manual_index_continuation
     )
 
 
@@ -1730,6 +1739,8 @@ def _is_loading_schedule(text: str) -> bool:
 
 
 def _is_fire_strategy_drawing(text: str) -> bool:
+    if _is_project_element_sheet(text):
+        return False
     return any(term in text for term in ["fd60", "fd30", "fire strategy", "bs 5839"])
 
 
