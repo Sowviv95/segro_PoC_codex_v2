@@ -44,7 +44,11 @@ PageType = Literal[
     "schedule",
     "drawing_text_extractable",
     "drawing_visual_required",
+    "project_element_sheet",
     "product_datasheet",
+    "manufacturer_literature",
+    "safety_data",
+    "supplier_contact",
     "maintenance_guidance",
     "index_or_contents",
     "separator_or_cover",
@@ -312,16 +316,37 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         primary, route = "separator_or_cover", "deprioritized"
     if normalized and _is_index_or_contents(normalized):
         primary, route = "index_or_contents", "deprioritized"
-    if normalized and _is_maintenance_only(normalized, source_filename):
+    if normalized and _is_project_element_sheet(normalized):
+        primary, route = "project_element_sheet", "text"
+        tags.update({"project_specific", "installed_project_evidence", "component_specification"})
+    if normalized and _is_safety_data(normalized):
+        primary, route = "safety_data", "deprioritized"
+        tags.update({"generic_reference_literature", "health_and_safety_only"})
+    elif normalized and _is_generic_manufacturer_literature(normalized):
+        primary, route = "manufacturer_literature", "deprioritized"
+        tags.add("generic_reference_literature")
+    elif normalized and _is_supplier_contact_only(normalized):
+        primary, route = "supplier_contact", "deprioritized"
+        tags.add("supplier_contact_only")
+    if (
+        normalized
+        and primary not in {
+            "project_element_sheet",
+            "manufacturer_literature",
+            "safety_data",
+            "supplier_contact",
+        }
+        and _is_maintenance_only(normalized, source_filename)
+    ):
         primary, route = "maintenance_guidance", "deprioritized"
         tags.add("maintenance_only")
-    if normalized and _is_low_value_repetitive(normalized):
+    if normalized and primary not in {"safety_data"} and _is_low_value_repetitive(normalized):
         primary, route = "low_value_repetitive", "deprioritized"
         tags.add("duplicate_or_repeated_content")
     if normalized and _is_planning_decision(normalized):
         primary, route = "statutory_planning_decision", "text"
         tags.update({"planning_condition", "statutory_compliance", "required_or_approved_status"})
-    elif normalized and _is_certificate(normalized):
+    elif normalized and primary not in {"manufacturer_literature", "safety_data"} and _is_certificate(normalized):
         primary, route = "certificate", "text"
         tags.update({"certificate_date_reference", "statutory_compliance"})
     elif normalized and _is_schedule(normalized):
@@ -329,10 +354,19 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         tags.add("equipment_schedule")
     elif normalized and _is_table(normalized):
         primary, route = "structured_table", "table"
-    if normalized and _is_product_datasheet(normalized):
+    if normalized and primary not in {"project_element_sheet", "safety_data"} and _is_product_datasheet(normalized):
         primary = "product_datasheet"
-        tags.add("manufacturer_model_table")
-    if normalized and _is_drawing(normalized):
+        if _is_project_specific_context(normalized):
+            tags.add("manufacturer_model_table")
+        else:
+            route = "deprioritized"
+            tags.add("generic_reference_literature")
+    if normalized and primary not in {
+        "project_element_sheet",
+        "manufacturer_literature",
+        "safety_data",
+        "supplier_contact",
+    } and _is_drawing(normalized):
         if _drawing_text_extractable(normalized):
             primary, route = "drawing_text_extractable", "drawing_text"
         else:
@@ -349,6 +383,9 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "blank_unusable",
         "low_value_repetitive",
         "maintenance_guidance",
+        "manufacturer_literature",
+        "safety_data",
+        "supplier_contact",
         "unknown",
     }
     evidence_role = "direct evidence" if evidence_bearing else "navigation only"
@@ -356,6 +393,12 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         evidence_role = "supporting/contextual evidence"
     elif primary == "blank_unusable":
         evidence_role = "unusable"
+    elif primary in {"manufacturer_literature", "product_datasheet"} and not _is_project_specific_context(normalized):
+        evidence_role = "generic reference literature"
+    elif primary == "safety_data":
+        evidence_role = "generic reference literature"
+    elif primary == "supplier_contact":
+        evidence_role = "supporting/contextual evidence"
     domains = infer_domains(source_filename, normalized)
     families = infer_target_families(source_filename, normalized)
     if primary in {"separator_or_cover", "index_or_contents"}:
@@ -364,6 +407,14 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
     elif primary == "blank_unusable":
         domains = ["unknown"]
         families = ["section_discovery"]
+    elif primary in {"manufacturer_literature", "product_datasheet", "safety_data"} and not _is_project_specific_context(normalized):
+        families = [
+            family
+            for family in families
+            if family in {"maintenance_only", "materials_finishes", "identifiers_references"}
+        ] or ["maintenance_only"]
+    elif primary == "supplier_contact":
+        families = ["identifiers_references"]
     return {
         "primary_page_type": primary,
         "secondary_tags": sorted(tags),
@@ -416,6 +467,12 @@ def section_title_from_page(page: dict[str, Any]) -> str:
         return "Planning decision evidence"
     if page["primary_page_type"] == "certificate":
         return "Certificate / test evidence"
+    if page["primary_page_type"] == "project_element_sheet":
+        return "Project element sheet evidence"
+    if page["primary_page_type"] in {"manufacturer_literature", "product_datasheet"}:
+        return "Generic manufacturer literature"
+    if page["primary_page_type"] == "safety_data":
+        return "Safety / COSHH data"
     if page["primary_page_type"] in {"schedule", "structured_table"}:
         return "Schedule / table evidence"
     if page["primary_page_type"].startswith("drawing"):
@@ -1209,6 +1266,10 @@ def _is_index_or_contents(text: str) -> bool:
 
 
 def _is_certificate(text: str) -> bool:
+    if _is_generic_manufacturer_literature(text) or _is_safety_data(text):
+        return False
+    if any(term in text for term in ["gradation analysis test report", "concrete cube register"]):
+        return False
     return any(
         term in text
         for term in [
@@ -1253,22 +1314,37 @@ def _is_table(text: str) -> bool:
     table_labels = sum(
         1 for term in ["item", "qty", "quantity", "ref", "description", "model"] if term in text
     )
-    return numeric_cells >= 8 and (len(re.findall(r"\s{2,}|\t|\|", text)) >= 3 or table_labels >= 3)
+    lab_schedule_terms = [
+        "sieve size",
+        "percent passing",
+        "concrete cube register",
+        "sample number",
+        "date of test",
+        "gradation analysis test report",
+        "control limits",
+        "complies",
+    ]
+    return numeric_cells >= 8 and (
+        len(re.findall(r"\s{2,}|\t|\|", text)) >= 3
+        or table_labels >= 3
+        or sum(1 for term in lab_schedule_terms if term in text) >= 2
+    )
 
 
 def _is_drawing(text: str) -> bool:
-    return any(
-        term in text
-        for term in [
-            "drawing no",
-            "scale:",
-            "revision",
-            "title block",
-            "as built drawing",
-            "floor plan",
-            "elevation",
-        ]
+    if _is_safety_data(text):
+        return False
+    explicit_drawing = any(
+        term in text for term in ["drawing no", "dwg no", "title block", "as built drawing"]
     )
+    scaled_plan = ("scale:" in text or "scale " in text) and any(
+        term in text for term in ["plan", "elevation", "layout", "drawing"]
+    )
+    plan_or_elevation = any(term in text for term in ["floor plan", "roof plan", "site plan"])
+    elevation_with_layout = "elevation" in text and any(
+        term in text for term in ["grid", "drawing", "scale", "layout"]
+    )
+    return explicit_drawing or scaled_plan or plan_or_elevation or elevation_with_layout
 
 
 def _drawing_text_extractable(text: str) -> bool:
@@ -1282,6 +1358,71 @@ def _is_product_datasheet(text: str) -> bool:
     return any(
         term in text for term in ["technical data sheet", "product data", "datasheet", "data sheet"]
     ) and any(term in text for term in ["manufacturer", "model", "specification"])
+
+
+def _is_project_element_sheet(text: str) -> bool:
+    return bool(
+        re.search(r"\belement\s*:\s*\d+\.\d+\.\d+\b", text)
+        and "nature of installation" in text
+        and "product description" in text
+    )
+
+
+def _is_project_specific_context(text: str) -> bool:
+    project_terms = [
+        "segro park",
+        "enfield",
+        "east duck lees lane",
+        "unit 1",
+        "project number",
+        "p18-010",
+        "new building",
+    ]
+    return any(term in text for term in project_terms) or _is_project_element_sheet(text)
+
+
+def _is_safety_data(text: str) -> bool:
+    safety_terms = [
+        "safety data sheet",
+        "material safety data",
+        "coshh assessment",
+        "hazards identification",
+        "regulation (ec) no. 1907/2006",
+        "regulation (ec) no 1907/2006",
+        "first aid measures",
+        "exposure controls/personal protection",
+    ]
+    return any(term in text for term in safety_terms)
+
+
+def _is_generic_manufacturer_literature(text: str) -> bool:
+    literature_terms = [
+        "product data sheet",
+        "technical data sheet",
+        "declaration of performance",
+        "certificate of approval",
+        "product conformity certification",
+        "paving maintenance & repair guide",
+    ]
+    if not any(term in text for term in literature_terms):
+        return False
+    project_terms = [
+        "nature of installation",
+        "work description",
+        "scope of works",
+        "site:",
+        "segro park enfield",
+        "new building",
+    ]
+    return not any(term in text for term in project_terms)
+
+
+def _is_supplier_contact_only(text: str) -> bool:
+    contact_terms = sum(
+        1 for term in ["telephone", "tel:", "fax", "email", "supplier", "company"] if term in text
+    )
+    installation_terms = ["nature of installation", "product description", "work description"]
+    return contact_terms >= 3 and not any(term in text for term in installation_terms)
 
 
 def _is_maintenance_only(text: str, source_filename: str) -> bool:

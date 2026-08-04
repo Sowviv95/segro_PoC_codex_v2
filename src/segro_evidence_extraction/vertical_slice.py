@@ -1223,6 +1223,19 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
         "construction_date": ["practical completion", "construction", "certificate"],
         "office_area": ["office area", "office floor area", "offices"],
         "wall": ["wall construction", "external wall", "wall cladding"],
+        "hard_landscaping": ["hard landscaping", "macadam surfacing", "concrete surfacing"],
+        "external_yard": ["external yard", "yard concrete", "concrete slabs"],
+        "soft_landscaping": ["soft landscaping", "grass seeding", "turfing", "trees", "shrubs"],
+        "drainage": ["drainage", "stormwater", "attenuation tanks", "aco road", "qmax"],
+        "bollard": ["bollard", "bollards", "telescopic bollard"],
+        "fencing": ["fencing", "fence", "mesh panel", "gates"],
+        "gate": ["gate", "gates", "manual sliding", "swing gates"],
+        "cycle_shelter": ["cycle shelter", "cycle shelters", "circonomy"],
+        "barrier": ["barrier", "armco barrier", "handrail"],
+        "line_marking": ["line marking", "line markings", "road markings", "thermoplastic"],
+        "retaining_wall": ["retaining wall", "precast", "concrete pour"],
+        "bin_store": ["bin store", "perforated metal sheet", "planters"],
+        "external_steps": ["external steps", "steel stairs", "durbar tread"],
     }
     field = target.expected_field.lower()
     component_phrases: set[str] = set()
@@ -1490,16 +1503,99 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "air permeability test certificate",
         ]
     )
+    maintenance_context = any(
+        term in lower
+        for term in [
+            "maintenance frequency",
+            "planned maintenance",
+            "planned cleaning",
+            "maintenance recommendations",
+            "periodically",
+            "inspect",
+            "clean annually",
+            "cleaning procedures",
+        ]
+    )
+    generic_reference_context = any(
+        term in lower
+        for term in [
+            "product data sheet",
+            "technical data sheet",
+            "safety data sheet",
+            "material safety data",
+            "coshh assessment",
+            "declaration of performance",
+            "product conformity certification",
+            "paving maintenance & repair guide",
+        ]
+    )
+    supplier_contact_context = any(
+        term in lower
+        for term in [
+            "directory of suppliers",
+            "supplier:",
+            "telephone:",
+            "fax no",
+            "email",
+            "company",
+        ]
+    ) and not any(
+        term in lower
+        for term in ["nature of installation", "product description", "work description"]
+    )
+    navigation_context = any(
+        term in lower for term in ["part 4 - index", "building manual index", "contents"]
+    )
     installed_identity_target = any(
         term in field for term in ["model", "manufacturer", "serial"]
     ) and any(term in field for term in ["installed", "installation", "equipment", "charger"])
+    identity_target = any(term in field for term in ["model", "manufacturer", "serial"])
+    installed_description_target = any(
+        term in field for term in ["installed", "installation", "description", "type", "finish"]
+    )
+    installed_quantity_target = any(term in field for term in ["count", "quantity", "number"])
     installation_date_target = "installation_date" in field or (
         "equipment" in field and "date" in field
     )
+    direct_value_target = any(
+        term in field
+        for term in ["date", "model", "count", "quantity", "description", "type", "finish"]
+    )
+    if navigation_context and direct_value_target:
+        return 20.0
     if installed_identity_target and planning_context:
         return 8.0
     if installation_date_target and (planning_context or certificate_context):
         return 8.0
+    if installation_date_target and not any(
+        term in lower for term in ["installation date", "date installed", "installed on"]
+    ):
+        return 24.0
+    if installation_date_target and maintenance_context:
+        return 8.0
+    if installation_date_target and not re.search(
+        r"\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+[a-z]+\s+\d{4}\b",
+        lower,
+    ):
+        return 16.0
+    if identity_target and supplier_contact_context:
+        return 12.0
+    if "model" in field and not any(
+        term in lower
+        for term in ["model", "model no", "model number", "type no", "serial", "reference"]
+    ):
+        return 16.0
+    if installed_identity_target and generic_reference_context:
+        return 6.0
+    if installed_quantity_target and generic_reference_context:
+        return 24.0 if any(term in lower for term in ["safety data sheet", "coshh"]) else 7.0
+    if target.expected_data_type == ExpectedDataType.INTEGER and installed_quantity_target and not re.search(
+        r"\b\d+\s*(?:no\.?|number|qty|quantity|cycles|spaces|trees|bollards?)\b",
+        lower,
+    ):
+        return 24.0
+    if installed_description_target and generic_reference_context:
+        return 4.0
     return 0.0
 
 
@@ -1513,6 +1609,17 @@ def cross_reference_penalty(target: TargetSpecification, text: str) -> float:
     )
     if certificate_or_date_target and "refer to" in lower and "overleaf" in lower:
         return 10.0
+    reference_target = any(term in field for term in ["drawing", "reference", "as_built"])
+    if reference_target and "drawing" in field:
+        has_drawing_identifier = any(
+            term in lower for term in ["drawing number", "drawing no", "dwg no", "drg no"]
+        )
+        if "refer to" in lower and re.search(r"\bpart\s+6\s+appendix\s+[a-z]\b", lower):
+            return 10.0
+        if "as built drawings" in lower and not has_drawing_identifier:
+            return 10.0
+        if not has_drawing_identifier:
+            return 8.0
     return 0.0
 
 

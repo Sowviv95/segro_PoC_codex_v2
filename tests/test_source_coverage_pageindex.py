@@ -92,7 +92,7 @@ def test_deterministic_page_classification_rules() -> None:
         "drawing_visual_required": "Floor plan see drawing symbol legend layout dependency",
         "product_datasheet": "Technical data sheet manufacturer model specification",
         "maintenance_guidance": "Maintenance recommendations inspect monthly clean annually",
-        "low_value_repetitive": "COSHH safety data sheet material safety data",
+        "low_value_repetitive": "copyright notice Â© Â© Â© repeated publisher footer",
         "separator_or_cover": "Building Manual Part 2 Building Fabric",
     }
 
@@ -108,6 +108,47 @@ def test_deterministic_page_classification_rules() -> None:
     assert blank["recommended_route"] == "deprioritized"
     assert blank["evidence_bearing"] is False
     assert blank["evidence_role"] == "unusable"
+
+
+def test_part4_element_safety_literature_and_table_classification_rules() -> None:
+    element = classify_page_text(
+        "ELEMENT:4.1.7 EXTERNAL WORKS BARRIER "
+        "1 NATURE OF INSTALLATION Barrier. "
+        "3 PRODUCT DESCRIPTION 1100mm high Armco barrier with handrail, galvanised finish. "
+        "7 AS BUILT DRAWINGS Refer to Part 6 Appendix F for Architect's drawings.",
+        source_filename="Building Manual - Part 4 External Works.pdf",
+    )
+    assert element["primary_page_type"] == "project_element_sheet"
+    assert element["recommended_route"] == "text"
+    assert element["evidence_bearing"] is True
+    assert element["evidence_role"] == "direct evidence"
+
+    safety = classify_page_text(
+        "SAFETY DATA SHEET according to Regulation (EC) No. 1907/2006 "
+        "Sikafloor CureHard-24 Revision Date 05.01.2016 SECTION 2 Hazards identification",
+        source_filename="Building Manual - Part 4 External Works.pdf",
+    )
+    assert safety["primary_page_type"] == "safety_data"
+    assert safety["recommended_route"] == "deprioritized"
+    assert safety["evidence_bearing"] is False
+    assert safety["evidence_role"] == "generic reference literature"
+
+    literature = classify_page_text(
+        "Declaration of Performance Unique identification code of product type. "
+        "Manufacturer: Hanlon Concrete Products Ltd. Aggregates for Concrete.",
+        source_filename="Building Manual - Part 4 External Works.pdf",
+    )
+    assert literature["primary_page_type"] == "manufacturer_literature"
+    assert literature["recommended_route"] == "deprioritized"
+    assert literature["evidence_role"] == "generic reference literature"
+
+    table = classify_page_text(
+        "Sieve Size (mm) Percent passing Specification Complies Control limits "
+        "8 100 100 6.3 100 95 4 93 87 2 80 1 68 Gradation Analysis Test Report",
+        source_filename="Building Manual - Part 4 External Works.pdf",
+    )
+    assert table["primary_page_type"] == "structured_table"
+    assert table["recommended_route"] == "table"
 
 
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:

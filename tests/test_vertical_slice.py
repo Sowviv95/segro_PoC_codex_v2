@@ -276,6 +276,100 @@ def test_certificate_date_does_not_satisfy_generic_equipment_installation_date()
     assert retrieval.results == []
 
 
+def test_part4_project_element_sheet_beats_generic_manufacturer_literature() -> None:
+    target = _target(
+        "barrier_installed_description",
+        ExpectedDataType.STRING,
+        "Barrier installed description",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Declaration of Performance Product Type Armco barrier. "
+                "Manufacturer generic literature with dimensions and options.",
+            ),
+            _page(
+                2,
+                "ELEMENT:4.1.7 EXTERNAL WORKS BARRIER\n"
+                "NATURE OF INSTALLATION Barrier.\n"
+                "PRODUCT DESCRIPTION 1100mm high Armco barrier with handrail, galvanised finish.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 4 External Works.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status == "evidence_found"
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part4_maintenance_frequency_does_not_satisfy_installation_date() -> None:
+    target = _target(
+        "barrier_installation_date",
+        ExpectedDataType.DATE,
+        "Barrier installation date",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Planned Maintenance Strategy Barrier Periodically Weekly Monthly "
+                "3 Months 6 Months Annually 5 Yearly.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 4 External Works.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part4_supplier_contact_page_does_not_satisfy_model_target() -> None:
+    target = _target("bollard_model_number", ExpectedDataType.STRING, "Bollard model number")
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Directory of Suppliers Bollards Supplier IAE Fencing Ltd Telephone: 01782 "
+                "Fax No: 01782 Email sales@example.com Company address.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 4 External Works.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part4_part6_cross_reference_does_not_satisfy_drawing_target() -> None:
+    target = _target("barrier_as_built_drawing_reference", ExpectedDataType.STRING, "Barrier drawing")
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "ELEMENT:4.1.7 EXTERNAL WORKS BARRIER "
+                "AS BUILT DRAWINGS Refer to Part 6 Appendix F for Architect's drawings.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 4 External Works.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
 def test_retrieval_deduplicates_page_section_and_text_block_overlap() -> None:
     target = _target("dock_leveller_count", ExpectedDataType.INTEGER, "Dock Levellers - Count")
     pages = {"src-test": [_page(1, "Dock Levellers\nThe warehouse has 5No Dock Levellers.")]}
