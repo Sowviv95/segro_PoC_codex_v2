@@ -531,6 +531,87 @@ def test_part5_reference_only_page_does_not_satisfy_equipment_description() -> N
     assert retrieval.results == []
 
 
+def test_part6_certificate_index_ranks_below_actual_certificate() -> None:
+    target = _target(
+        "fire_alarm_commissioning_certificate_number",
+        ExpectedDataType.STRING,
+        "Fire alarm commissioning certificate number",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "D - COMMISSIONING / TEST CERTIFICATES Certificates from the following "
+                "companies are included. Fire alarm commissioning certificate.",
+            ),
+            _page(
+                2,
+                "Clymac Fire & Security Systems Commissioning Certificate. "
+                "Certificate Number: 43830 Certificate Of Commissioning For The Fire "
+                "Detection And Alarm System At: Unit 1.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part6_unit_scope_penalizes_other_unit_commissioning_sheet() -> None:
+    target = _target(
+        "wc_extract_fan_measured_volume_percentage",
+        ExpectedDataType.STRING,
+        "WC Extract Fan Unit 1 measured volume performance percentage commissioning",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Contract Title: Segro Park Unit 3 System Title: WC Extract Fan "
+                "Design Volume m3/s Measured Volume m3/s Performance 103%",
+            ),
+            _page(
+                2,
+                "Contract Title: Segro Park Unit 1 System Title: WC Extract Fan "
+                "Design Volume m3/s Measured Volume m3/s Performance 103%",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part6_bms_point_name_does_not_satisfy_field_equipment_model() -> None:
+    target = _target(
+        "cold_water_booster_set_model_number",
+        ExpectedDataType.STRING,
+        "Cold Water Booster Set model number",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Trend IQ4E Points Schedule Digital Input 10 Cold Water Booster Set Fault "
+                "Digital VFC.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
 def test_retrieval_deduplicates_page_section_and_text_block_overlap() -> None:
     target = _target("dock_leveller_count", ExpectedDataType.INTEGER, "Dock Levellers - Count")
     pages = {"src-test": [_page(1, "Dock Levellers\nThe warehouse has 5No Dock Levellers.")]}

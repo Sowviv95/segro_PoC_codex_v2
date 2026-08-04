@@ -59,6 +59,20 @@ PageType = Literal[
     "loading_schedule",
     "fire_strategy_drawing",
     "hazardous_material_statement",
+    "appendix_index",
+    "certificate_index",
+    "commissioning_certificate",
+    "test_certificate",
+    "installation_completion_certificate",
+    "laboratory_test_report",
+    "equipment_schedule",
+    "model_serial_schedule",
+    "bms_points_schedule",
+    "mechanical_test_sheet",
+    "electrical_test_sheet",
+    "fire_system_certificate",
+    "pv_commissioning_record",
+    "work_permit_template",
     "maintenance_guidance",
     "index_or_contents",
     "separator_or_cover",
@@ -324,8 +338,14 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         primary, route = "blank_unusable", "deprioritized"
     elif _is_cover_or_separator(normalized):
         primary, route = "separator_or_cover", "deprioritized"
-    if normalized and _is_index_or_contents(normalized):
+    if normalized and _is_part6_appendix_index(normalized):
+        primary, route = "appendix_index", "deprioritized"
+        tags.add("appendix_navigation")
+    elif normalized and _is_index_or_contents(normalized):
         primary, route = "index_or_contents", "deprioritized"
+    if normalized and _is_certificate_index(normalized):
+        primary, route = "certificate_index", "deprioritized"
+        tags.add("certificate_navigation")
     if normalized and _is_project_element_sheet(normalized):
         primary, route = "project_element_sheet", "text"
         tags.update({"project_specific", "installed_project_evidence", "component_specification"})
@@ -341,9 +361,36 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
     elif normalized and _is_hazardous_material_statement(normalized):
         primary, route = "hazardous_material_statement", "text"
         tags.update({"health_and_safety_only", "project_specific"})
-    elif normalized and _is_access_cleaning_guidance(normalized):
+    elif normalized and _is_access_cleaning_guidance(normalized) and not _is_work_permit_template(normalized):
         primary, route = "access_cleaning_guidance", "text"
         tags.update({"operational_safety_control", "maintenance_access"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_work_permit_template(normalized):
+        primary, route = "work_permit_template", "deprioritized"
+        tags.add("template_only")
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_pv_commissioning_record(normalized):
+        primary, route = "pv_commissioning_record", "table"
+        tags.update({"commissioning_test_evidence", "project_specific", "unit_scoped"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_bms_points_schedule(normalized):
+        primary, route = "bms_points_schedule", "table"
+        tags.update({"commissioning_test_evidence", "equipment_schedule", "unit_scoped"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_air_conditioning_model_serial_schedule(normalized):
+        primary, route = "model_serial_schedule", "table"
+        tags.update({"commissioning_test_evidence", "manufacturer_model_table", "unit_scoped"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_mechanical_test_sheet(normalized):
+        primary, route = "mechanical_test_sheet", "table"
+        tags.update({"commissioning_test_evidence", "mechanical_test_values", "unit_scoped"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_water_laboratory_report(normalized):
+        primary, route = "laboratory_test_report", "table"
+        tags.update({"commissioning_test_evidence", "laboratory_result"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_fire_system_certificate(normalized):
+        primary, route = "fire_system_certificate", "text"
+        tags.update({"commissioning_test_evidence", "certificate_date_reference", "unit_scoped"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_commissioning_certificate(normalized):
+        primary, route = "commissioning_certificate", "text"
+        tags.update({"commissioning_test_evidence", "certificate_date_reference"})
+    elif normalized and primary not in {"appendix_index", "certificate_index"} and _is_installation_completion_certificate(normalized):
+        primary, route = "installation_completion_certificate", "text"
+        tags.update({"commissioning_test_evidence", "certificate_date_reference"})
     elif normalized and _is_loading_schedule(normalized):
         primary, route = "loading_schedule", "table"
         tags.update({"structural_loading", "component_specification"})
@@ -371,6 +418,20 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "supplier_contact",
         "residual_hazard_schedule",
         "reference_only",
+        "appendix_index",
+        "certificate_index",
+        "work_permit_template",
+        "commissioning_certificate",
+        "test_certificate",
+        "installation_completion_certificate",
+        "laboratory_test_report",
+        "equipment_schedule",
+        "model_serial_schedule",
+        "bms_points_schedule",
+        "mechanical_test_sheet",
+        "electrical_test_sheet",
+        "fire_system_certificate",
+        "pv_commissioning_record",
         "access_cleaning_guidance",
         "hazardous_material_statement",
         "structural_report",
@@ -386,7 +447,17 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
     if normalized and _is_planning_decision(normalized):
         primary, route = "statutory_planning_decision", "text"
         tags.update({"planning_condition", "statutory_compliance", "required_or_approved_status"})
-    elif normalized and primary not in {"manufacturer_literature", "safety_data"} and _is_certificate(normalized):
+    elif (
+        normalized
+        and primary not in {
+            "manufacturer_literature",
+            "safety_data",
+            "appendix_index",
+            "certificate_index",
+            "work_permit_template",
+        }
+        and _is_certificate(normalized)
+    ):
         primary, route = "certificate", "text"
         tags.update({"certificate_date_reference", "statutory_compliance"})
     elif normalized and _is_schedule(normalized):
@@ -409,6 +480,20 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "residual_hazard_schedule",
         "emergency_contacts",
         "reference_only",
+        "appendix_index",
+        "certificate_index",
+        "work_permit_template",
+        "commissioning_certificate",
+        "test_certificate",
+        "installation_completion_certificate",
+        "laboratory_test_report",
+        "equipment_schedule",
+        "model_serial_schedule",
+        "bms_points_schedule",
+        "mechanical_test_sheet",
+        "electrical_test_sheet",
+        "fire_system_certificate",
+        "pv_commissioning_record",
         "access_cleaning_guidance",
         "structural_report",
         "loading_schedule",
@@ -441,6 +526,9 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "supplier_contact",
         "residual_hazard_schedule",
         "reference_only",
+        "appendix_index",
+        "certificate_index",
+        "work_permit_template",
         "unknown",
     }
     evidence_role = "direct evidence" if evidence_bearing else "navigation only"
@@ -460,9 +548,27 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         evidence_role = "supporting/contextual evidence"
     elif primary == "reference_only":
         evidence_role = "cross-reference only"
+    elif primary in {"appendix_index", "certificate_index"}:
+        evidence_role = "navigation only"
+    elif primary == "work_permit_template":
+        evidence_role = "template only"
+    elif primary in {
+        "commissioning_certificate",
+        "test_certificate",
+        "installation_completion_certificate",
+        "laboratory_test_report",
+        "equipment_schedule",
+        "model_serial_schedule",
+        "bms_points_schedule",
+        "mechanical_test_sheet",
+        "electrical_test_sheet",
+        "fire_system_certificate",
+        "pv_commissioning_record",
+    }:
+        evidence_role = "commissioning/test evidence"
     domains = infer_domains(source_filename, normalized)
     families = infer_target_families(source_filename, normalized)
-    if primary in {"separator_or_cover", "index_or_contents"}:
+    if primary in {"separator_or_cover", "index_or_contents", "appendix_index", "certificate_index"}:
         domains = ["general"]
         families = ["section_discovery"]
     elif primary == "blank_unusable":
@@ -478,6 +584,16 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         families = ["identifiers_references"]
     elif primary in {"residual_hazard_schedule", "access_cleaning_guidance"}:
         families = ["maintenance_only", "locations_layout"]
+    elif primary == "work_permit_template":
+        families = ["maintenance_only", "section_discovery"]
+    elif primary in {"pv_commissioning_record"}:
+        families = ["quantities_counts", "identifiers_references", "commissioning_dates"]
+    elif primary in {"model_serial_schedule", "bms_points_schedule"}:
+        families = ["identifiers_references", "equipment_models"]
+    elif primary in {"mechanical_test_sheet", "laboratory_test_report"}:
+        families = ["performance_tests", "commissioning_dates"]
+    elif primary in {"fire_system_certificate", "commissioning_certificate", "installation_completion_certificate"}:
+        families = ["certificate_dates", "identifiers_references", "commissioning_dates"]
     elif primary == "emergency_contacts":
         families = ["identifiers_references"]
     elif primary in {"structural_report", "structural_drawing", "loading_schedule"}:
@@ -549,6 +665,29 @@ def section_title_from_page(page: dict[str, Any]) -> str:
         return "Emergency contacts"
     if page["primary_page_type"] == "reference_only":
         return "Cross-reference only"
+    if page["primary_page_type"] == "appendix_index":
+        return "Part 6 appendix index"
+    if page["primary_page_type"] == "certificate_index":
+        return "Appendix D certificate index"
+    if page["primary_page_type"] == "work_permit_template":
+        return "Appendix E work permit template"
+    if page["primary_page_type"] in {
+        "commissioning_certificate",
+        "test_certificate",
+        "installation_completion_certificate",
+        "fire_system_certificate",
+        "pv_commissioning_record",
+    }:
+        return "Appendix D commissioning / test certificate"
+    if page["primary_page_type"] in {
+        "equipment_schedule",
+        "model_serial_schedule",
+        "bms_points_schedule",
+        "mechanical_test_sheet",
+        "electrical_test_sheet",
+        "laboratory_test_report",
+    }:
+        return "Appendix D test / equipment schedule"
     if page["primary_page_type"] == "access_cleaning_guidance":
         return "Access and cleaning guidance"
     if page["primary_page_type"] in {"structural_report", "structural_calculation"}:
@@ -1443,6 +1582,72 @@ def _is_reference_only_page(text: str) -> bool:
             "drawings",
             "calculation report",
         ]
+    )
+
+
+def _is_part6_appendix_index(text: str) -> bool:
+    return "part 6 - index" in text and "appendices" in text
+
+
+def _is_certificate_index(text: str) -> bool:
+    return (
+        "commissioning / test certificates" in text
+        and "certificates from the following companies are included" in text
+    )
+
+
+def _is_work_permit_template(text: str) -> bool:
+    return (
+        "work permit" in text
+        and "valid for day of issue only" in text
+        and any(term in text for term in ["nature of work", "estimated time period"])
+    )
+
+
+def _is_fire_system_certificate(text: str) -> bool:
+    return (
+        any(term in text for term in ["fire detection", "fire alarm", "disabled refuge"])
+        and "certificate" in text
+        and any(term in text for term in ["commissioning", "bs5839", "bs 5839"])
+    )
+
+
+def _is_commissioning_certificate(text: str) -> bool:
+    return "commissioning certificate" in text or "certificate of commissioning" in text
+
+
+def _is_installation_completion_certificate(text: str) -> bool:
+    return "certificate of installation" in text or "certificate of completion" in text
+
+
+def _is_pv_commissioning_record(text: str) -> bool:
+    return any(term in text for term in ["pv commissioning form", "solar pv certificate"]) and any(
+        term in text for term in ["unit 1", "array module", "inverter", "photovoltaic"]
+    )
+
+
+def _is_bms_points_schedule(text: str) -> bool:
+    return "points schedule" in text and any(
+        term in text for term in ["trend iq", "outstation", "airtech controls", "bms"]
+    )
+
+
+def _is_air_conditioning_model_serial_schedule(text: str) -> bool:
+    return any(term in text for term in ["model number", "unit serial number", "serial no"]) and any(
+        term in text
+        for term in ["outdoor unit", "indoor unit", "bc controller", "mitsubishi", "pury-"]
+    )
+
+
+def _is_mechanical_test_sheet(text: str) -> bool:
+    return any(term in text for term in ["wc extract fan", "ahu supply fan", "indoor unit supply air"]) and any(
+        term in text for term in ["measured volume", "design volume", "commissioning report"]
+    )
+
+
+def _is_water_laboratory_report(text: str) -> bool:
+    return any(term in text for term in ["als environmental", "test report", "certificate of conformity"]) and any(
+        term in text for term in ["sample date", "water", "disinfection", "legionella"]
     )
 
 

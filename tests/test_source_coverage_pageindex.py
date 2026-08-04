@@ -200,6 +200,46 @@ def test_part5_health_safety_structural_and_reference_classification_rules() -> 
     assert fire["recommended_route"] == "drawing_text"
 
 
+def test_part6_appendix_certificate_schedule_and_template_classification_rules() -> None:
+    appendix_index = classify_page_text(
+        "PART 6 - INDEX - APPENDICES A POST CONSTRUCTION ENVIRONMENTAL AUDIT "
+        "D COMMISSIONING / TEST CERTIFICATES E WORK PERMITS",
+        source_filename="Building Manual - Part 6 Appendices.pdf",
+    )
+    certificate_index = classify_page_text(
+        "D - COMMISSIONING / TEST CERTIFICATES Certificates from the following companies "
+        "are included within this section. Building Control Certificate Photovoltaic "
+        "Commissioning Certificates",
+        source_filename="Building Manual - Part 6 Appendices.pdf",
+    )
+    pv_record = classify_page_text(
+        "PV COMMISSIONING FORM - INVERTER 01 Project Segro Park, Enfield - Unit 1 "
+        "Array Module 275Wp Quantity 21 Inverter Solis 50k",
+        source_filename="Building Manual - Part 6 Appendices.pdf",
+    )
+    bms_schedule = classify_page_text(
+        "Segro Park - Enfield Unit 1 OUTSTATION: 11 Trend IQ4E/64/BAC/230 "
+        "Points Schedule Input Device Point Pre Comm Software System Graphic",
+        source_filename="Building Manual - Part 6 Appendices.pdf",
+    )
+    permit = classify_page_text(
+        "ROOF WORK PERMIT VALID FOR DAY OF ISSUE ONLY Nature of work Date "
+        "ESTIMATED TIME PERIOD Start Finish",
+        source_filename="Building Manual - Part 6 Appendices.pdf",
+    )
+
+    assert appendix_index["primary_page_type"] == "appendix_index"
+    assert appendix_index["evidence_bearing"] is False
+    assert certificate_index["primary_page_type"] == "certificate_index"
+    assert certificate_index["evidence_bearing"] is False
+    assert pv_record["primary_page_type"] == "pv_commissioning_record"
+    assert pv_record["recommended_route"] == "table"
+    assert bms_schedule["primary_page_type"] == "bms_points_schedule"
+    assert bms_schedule["recommended_route"] == "table"
+    assert permit["primary_page_type"] == "work_permit_template"
+    assert permit["evidence_role"] == "template only"
+
+
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:
     cached = {
         "src_a": [
