@@ -1,0 +1,495 @@
+{
+  "schema_version": "segro_evidence_cluster_manifest_v1",
+  "contract_version": "1.0.0",
+  "run_name": "enfield_unit1_mechanical_electrical_schedules_cached_evidence_preparation_v1",
+  "unit_id": "enfield_unit1",
+  "project_number": "enfield_unit1_poc",
+  "output_dir": "output/enfield_unit1_mechanical_electrical_schedules_cached_evidence_preparation_v1",
+  "total_page_cap": 12,
+  "allowed_readiness_dispositions": [
+    "evidence_ready",
+    "evidence_present_but_ambiguous",
+    "component_only",
+    "wrong_unit",
+    "wrong_event",
+    "dictionary_blocked",
+    "semantic_clarification_required",
+    "evidence_not_found",
+    "requires_targeted_parsing",
+    "requires_vlm",
+    "permanent_exclusion_current_poc"
+  ],
+  "targets": [
+    {
+      "target_id": "trg_be45c65fa5903112",
+      "field_name": "gas_heating_appliance_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "gas heating appliance model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "O&M element sheet",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "gas heating appliance cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 25,
+              "page_end": 25,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 34,
+              "page_end": 34,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 51,
+              "page_end": 51,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for gas heating appliance after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        }
+      ],
+      "max_pages_per_target": 6
+    },
+    {
+      "target_id": "trg_e704e9ee9516c621",
+      "field_name": "gas_system_component_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "gas system component model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "O&M element sheet",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "gas system component cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 25,
+              "page_end": 25,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 34,
+              "page_end": 34,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 51,
+              "page_end": 51,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for gas system component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        }
+      ],
+      "max_pages_per_target": 6
+    },
+    {
+      "target_id": "trg_6c758c5da37853ad",
+      "field_name": "gas_safety_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "gas safety component model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "gas safety component cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 16,
+              "page_end": 16,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 25,
+              "page_end": 25,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 34,
+              "page_end": 34,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 51,
+              "page_end": 51,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for gas safety component after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 6
+        }
+      ],
+      "max_pages_per_target": 6
+    },
+    {
+      "target_id": "trg_b40d4147a6464558",
+      "field_name": "ev_charge_point_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "EV charge point model number / reference",
+      "expected_evidence_families": [
+        "commissioning record",
+        "manufacturer/model schedule",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "section_label": "EV charge point cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 1,
+              "page_end": 1,
+              "rationale": "Cached-only review window selected for EV charge point after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Enfield - EVC QR - Unit 1.pdf",
+          "section_label": "EV charge point cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 1,
+              "page_end": 3,
+              "rationale": "Cached-only review window selected for EV charge point after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 3
+        }
+      ],
+      "max_pages_per_target": 4
+    },
+    {
+      "target_id": "trg_de5ba0fad4d1b262",
+      "field_name": "ev_charging_infra_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "EV charging infrastructure model number / reference",
+      "expected_evidence_families": [
+        "commissioning record",
+        "manufacturer/model schedule",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "section_label": "EV charging infrastructure cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 1,
+              "page_end": 1,
+              "rationale": "Cached-only review window selected for EV charging infrastructure after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 1
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Enfield - EVC QR - Unit 1.pdf",
+          "section_label": "EV charging infrastructure cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 1,
+              "page_end": 3,
+              "rationale": "Cached-only review window selected for EV charging infrastructure after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 3
+        }
+      ],
+      "max_pages_per_target": 4
+    },
+    {
+      "target_id": "trg_d882e527478fafd3",
+      "field_name": "rwh_valve_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "rainwater harvesting valve model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "O&M element sheet",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "rainwater harvesting valve cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for rainwater harvesting valve after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 59,
+              "page_end": 59,
+              "rationale": "Cached-only review window selected for rainwater harvesting valve after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 74,
+              "page_end": 74,
+              "rationale": "Cached-only review window selected for rainwater harvesting valve after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for rainwater harvesting valve after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 4
+        }
+      ],
+      "max_pages_per_target": 4
+    },
+    {
+      "target_id": "trg_2de9f801bb7895a0",
+      "field_name": "rwh_pump_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "rainwater harvesting pump model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "O&M element sheet",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "rainwater harvesting pump cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for rainwater harvesting pump after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 59,
+              "page_end": 59,
+              "rationale": "Cached-only review window selected for rainwater harvesting pump after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 74,
+              "page_end": 74,
+              "rationale": "Cached-only review window selected for rainwater harvesting pump after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for rainwater harvesting pump after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 4
+        }
+      ],
+      "max_pages_per_target": 4
+    },
+    {
+      "target_id": "trg_ed0439240d771c62",
+      "field_name": "rwh_tank_model_number",
+      "domain": "Component",
+      "value_shape": "identifier_or_reference",
+      "requested_attribute": "rainwater harvesting tank model number / reference",
+      "expected_evidence_families": [
+        "equipment schedule",
+        "manufacturer/model schedule",
+        "O&M element sheet",
+        "technical data"
+      ],
+      "source_assignments": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_role": "cached_services_schedule_or_component_record",
+          "logical_source_path": "Building Manual - Part 3 Building Services.pdf",
+          "section_label": "rainwater harvesting tank cached candidate pages",
+          "candidate_page_ranges": [
+            {
+              "page_start": 41,
+              "page_end": 41,
+              "rationale": "Cached-only review window selected for rainwater harvesting tank after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 59,
+              "page_end": 59,
+              "rationale": "Cached-only review window selected for rainwater harvesting tank after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 74,
+              "page_end": 74,
+              "rationale": "Cached-only review window selected for rainwater harvesting tank after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            },
+            {
+              "page_start": 81,
+              "page_end": 81,
+              "rationale": "Cached-only review window selected for rainwater harvesting tank after high-signal page reconciliation.",
+              "expected_cache_state": "cached"
+            }
+          ],
+          "allowed_methods": [
+            "cached_text"
+          ],
+          "max_pages_for_assignment": 4
+        }
+      ],
+      "max_pages_per_target": 4
+    }
+  ],
+  "upstream_provenance": [
+    {
+      "artifact_path": "output/enfield_unit1_next_evidence_cluster_discovery_selection_v1/selected_cluster.json",
+      "artifact_role": "selected cluster"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_next_evidence_cluster_discovery_selection_v1/recommended_bounded_sprint.json",
+      "artifact_role": "recommended bounded sprint"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_next_evidence_cluster_discovery_selection_v1/cross_corpus_discovery_results.json",
+      "artifact_role": "cached discovery candidates"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_next_evidence_cluster_discovery_selection_v1/omitted_high_signal_pages.json",
+      "artifact_role": "omitted high-signal page reconciliation input"
+    },
+    {
+      "artifact_path": "output/enfield_unit1_evidence_coverage_gap_resolution_plan_v1/gap_inventory.json",
+      "artifact_role": "prior gap target metadata"
+    }
+  ]
+}
