@@ -1,0 +1,1409 @@
+{
+  "schema_version": "mechanical_electrical_evidence_escalation_plan_v1",
+  "contract_version": "1.0.0",
+  "run_name": "enfield_unit1_mechanical_electrical_evidence_escalation_planning_v1",
+  "unit_id": "enfield_unit1",
+  "source_preparation_manifest": "config/enfield_unit1_mechanical_electrical_schedules_cluster_manifest_v1.json",
+  "output_dir": "output/enfield_unit1_mechanical_electrical_evidence_escalation_planning_v1",
+  "allowed_next_actions": [
+    "targeted_parse_uncached_pages",
+    "reparse_text_incomplete_cached_pages",
+    "vlm_review_image_heavy_pages",
+    "semantic_clarification_required",
+    "no_further_action_current_poc"
+  ],
+  "selected_escalation_target_ids": [
+    "trg_b40d4147a6464558",
+    "trg_de5ba0fad4d1b262"
+  ],
+  "selection_cap": 6,
+  "unique_page_cap": 30,
+  "target_page_cap": 12,
+  "target_decisions": [
+    {
+      "target_id": "trg_779ac4844d02cf75",
+      "field_name": "emergency_fire_lift_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "emergency fire lift",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_76101f6e08616a81",
+      "field_name": "air_source_heat_pump_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "air-source heat pump",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_d518ed3f0ddc667d",
+      "field_name": "ground_source_heat_pump_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "ground-source heat pump",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_be45c65fa5903112",
+      "field_name": "gas_heating_appliance_model_number",
+      "current_disposition": "component_only",
+      "exact_component": "gas heating appliance",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p41 (wrong_attribute): manufacturer: Robert Pearson & Co.; Western Automation; descriptive_text: Solenoid Valves; Water & Gas Meters | Building Manual - Part 3 Building Services.pdf p25 (component_only): system_reference: gas main; descriptive_text: solenoid gas shut-off valve; local gas isolating valves",
+      "precise_remaining_evidence_gap": "Installed gas components and manufacturer/supplier names are present, but no local model number or product reference is tied to the gas appliance, gas component, or gas safety component.",
+      "likely_evidence_family": "gas emergency/O&M narrative and manufacturer/supplier schedule already reviewed",
+      "likely_source_document": "Building Manual - Part 3 Building Services.pdf",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            16,
+            23,
+            25,
+            34,
+            41,
+            51,
+            54,
+            81
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 23,
+          "page_end": 25,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 23,
+              "cache_state": "cached_text_available",
+              "text_character_count": 724,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000023.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 24,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1188,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000024.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 25,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1050,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000025.json"
+            }
+          ],
+          "planning_decision": "already_cached_and_sufficiently_text_bearing_but_no_model_reference"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 40,
+          "page_end": 41,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 40,
+              "cache_state": "cached_text_available",
+              "text_character_count": 233,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000040.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 41,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1112,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000041.json"
+            }
+          ],
+          "planning_decision": "already_cached_manufacturer_supplier_schedule_only"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "medium",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_e704e9ee9516c621",
+      "field_name": "gas_system_component_model_number",
+      "current_disposition": "component_only",
+      "exact_component": "gas system component",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p41 (wrong_attribute): manufacturer: Robert Pearson & Co.; Western Automation; descriptive_text: Solenoid Valves; Water & Gas Meters | Building Manual - Part 3 Building Services.pdf p25 (component_only): system_reference: gas main; descriptive_text: solenoid gas shut-off valve; local gas isolating valves",
+      "precise_remaining_evidence_gap": "Installed gas components and manufacturer/supplier names are present, but no local model number or product reference is tied to the gas appliance, gas component, or gas safety component.",
+      "likely_evidence_family": "gas emergency/O&M narrative and manufacturer/supplier schedule already reviewed",
+      "likely_source_document": "Building Manual - Part 3 Building Services.pdf",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            16,
+            23,
+            25,
+            34,
+            41,
+            51,
+            54,
+            81
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 23,
+          "page_end": 25,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 23,
+              "cache_state": "cached_text_available",
+              "text_character_count": 724,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000023.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 24,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1188,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000024.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 25,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1050,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000025.json"
+            }
+          ],
+          "planning_decision": "already_cached_and_sufficiently_text_bearing_but_no_model_reference"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 40,
+          "page_end": 41,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 40,
+              "cache_state": "cached_text_available",
+              "text_character_count": 233,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000040.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 41,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1112,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000041.json"
+            }
+          ],
+          "planning_decision": "already_cached_manufacturer_supplier_schedule_only"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "medium",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_6c758c5da37853ad",
+      "field_name": "gas_safety_model_number",
+      "current_disposition": "component_only",
+      "exact_component": "gas safety component",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p41 (wrong_attribute): manufacturer: Robert Pearson & Co.; Western Automation; descriptive_text: Solenoid Valves; Water & Gas Meters | Building Manual - Part 3 Building Services.pdf p25 (component_only): system_reference: gas main; descriptive_text: solenoid gas shut-off valve; local gas isolating valves | Building Manual - Part 3 Building Services.pdf p81 (evidence_present_but_ambiguous): manufacturer: FuelStop; model: TFV; product_reference: TFV; descriptive_text: overheat protection device",
+      "precise_remaining_evidence_gap": "Installed gas components and manufacturer/supplier names are present, but no local model number or product reference is tied to the gas appliance, gas component, or gas safety component.",
+      "likely_evidence_family": "gas emergency/O&M narrative and manufacturer/supplier schedule already reviewed",
+      "likely_source_document": "Building Manual - Part 3 Building Services.pdf",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            16,
+            23,
+            25,
+            34,
+            41,
+            51,
+            54,
+            81
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 23,
+          "page_end": 25,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 23,
+              "cache_state": "cached_text_available",
+              "text_character_count": 724,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000023.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 24,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1188,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000024.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 25,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1050,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000025.json"
+            }
+          ],
+          "planning_decision": "already_cached_and_sufficiently_text_bearing_but_no_model_reference"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 40,
+          "page_end": 41,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 40,
+              "cache_state": "cached_text_available",
+              "text_character_count": 233,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000040.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 41,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1112,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000041.json"
+            }
+          ],
+          "planning_decision": "already_cached_manufacturer_supplier_schedule_only"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "medium",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_496c0ed2067e136f",
+      "field_name": "lithium_battery_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "lithium battery storage component",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_62ca9cf67966b811",
+      "field_name": "lead_battery_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "lead battery storage component",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_b4727e7fd50d1429",
+      "field_name": "battery_charger_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "battery charger",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "No local target-component evidence recovered from cached text.",
+      "precise_remaining_evidence_gap": "No local component plus requested model/reference evidence was found, and no bounded source family was established.",
+      "likely_evidence_family": "unbounded component model reference family",
+      "likely_source_document": "No credible bounded source family identified from cached evidence.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "mixed",
+          "source_document_name": "cached high-signal pages from preparation audit",
+          "pages": []
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_b40d4147a6464558",
+      "field_name": "ev_charge_point_model_number",
+      "current_disposition": "evidence_present_but_ambiguous",
+      "exact_component": "EV charge point",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf p1 (evidence_present_but_ambiguous): system_reference: EVC 1-6; capacity: 22 kW; quantity: 6 EVC entries, 2 outlets each; descriptive_text: Type Basic; Rolec EV Charger Pre-Commissioning Information Sheet for Winvic | Enfield - EVC QR - Unit 1.pdf p2 (component_only): manufacturer: Rolec; system_reference: EVC No - 1 2 3 4 5 6; quantity: 6; descriptive_text: Rolec EVC Details",
+      "precise_remaining_evidence_gap": "Field asks for model number / reference, but cached evidence provides Type Basic, serial numbers, outlet count, and 22 kW rating. Need semantic decision on whether product type or serial/reference can satisfy the field before further evidence work.",
+      "likely_evidence_family": "EV commissioning record / EV product reference semantic review",
+      "likely_source_document": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf; Enfield - EVC QR - Unit 1.pdf",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_name": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_name": "Enfield - EVC QR - Unit 1.pdf",
+          "pages": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_name": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "page_start": 2,
+          "page_end": 2,
+          "coverage": [
+            {
+              "source_id": "src_b5fc6f325fbe0352",
+              "page_number": 2,
+              "cache_state": "uncached",
+              "text_character_count": 0,
+              "cache_path": null
+            }
+          ],
+          "planning_decision": "not_requested_until_semantics_resolved"
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_name": "Enfield - EVC QR - Unit 1.pdf",
+          "page_start": 4,
+          "page_end": 4,
+          "coverage": [
+            {
+              "source_id": "src_232efc9dd9fca566",
+              "page_number": 4,
+              "cache_state": "uncached",
+              "text_character_count": 0,
+              "cache_path": null
+            }
+          ],
+          "planning_decision": "not_requested_until_semantics_resolved"
+        }
+      ],
+      "proposed_next_action": "semantic_clarification_required",
+      "escalation_justification": "Semantic ambiguity blocks readiness: Type Basic is plausibly a product type, while serial numbers are identifiers but normally distinct from model numbers. Clarification could unlock existing cached evidence or decide whether page 2/page 4 parsing is worthwhile.",
+      "expected_evidence_shape": "Accepted value rule for EV model/reference: model number, product reference, or serial number policy; no evidence extraction requested yet.",
+      "wrong_component_risk": "low",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "high",
+      "estimated_likelihood_of_becoming_evidence_ready": "medium_if_semantics_accept_product_reference_or_serial; low_if_exact_model_number_required",
+      "current_poc_recommendation": "selected_for_semantic_escalation"
+    },
+    {
+      "target_id": "trg_de5ba0fad4d1b262",
+      "field_name": "ev_charging_infra_model_number",
+      "current_disposition": "evidence_present_but_ambiguous",
+      "exact_component": "EV charging infrastructure",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf p1 (evidence_present_but_ambiguous): system_reference: EVC 1-6; capacity: 22 kW; quantity: 6 EVC entries, 2 outlets each; descriptive_text: Type Basic; Rolec EV Charger Pre-Commissioning Information Sheet for Winvic | Enfield - EVC QR - Unit 1.pdf p2 (component_only): manufacturer: Rolec; system_reference: EVC No - 1 2 3 4 5 6; quantity: 6; descriptive_text: Rolec EVC Details",
+      "precise_remaining_evidence_gap": "Field asks for model number / reference, but cached evidence provides Type Basic, serial numbers, outlet count, and 22 kW rating. Need semantic decision on whether product type or serial/reference can satisfy the field before further evidence work.",
+      "likely_evidence_family": "EV commissioning record / EV product reference semantic review",
+      "likely_source_document": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf; Enfield - EVC QR - Unit 1.pdf",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_name": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_name": "Enfield - EVC QR - Unit 1.pdf",
+          "pages": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_name": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "page_start": 2,
+          "page_end": 2,
+          "coverage": [
+            {
+              "source_id": "src_b5fc6f325fbe0352",
+              "page_number": 2,
+              "cache_state": "uncached",
+              "text_character_count": 0,
+              "cache_path": null
+            }
+          ],
+          "planning_decision": "not_requested_until_semantics_resolved"
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_name": "Enfield - EVC QR - Unit 1.pdf",
+          "page_start": 4,
+          "page_end": 4,
+          "coverage": [
+            {
+              "source_id": "src_232efc9dd9fca566",
+              "page_number": 4,
+              "cache_state": "uncached",
+              "text_character_count": 0,
+              "cache_path": null
+            }
+          ],
+          "planning_decision": "not_requested_until_semantics_resolved"
+        }
+      ],
+      "proposed_next_action": "semantic_clarification_required",
+      "escalation_justification": "Semantic ambiguity blocks readiness: Type Basic is plausibly a product type, while serial numbers are identifiers but normally distinct from model numbers. Clarification could unlock existing cached evidence or decide whether page 2/page 4 parsing is worthwhile.",
+      "expected_evidence_shape": "Accepted value rule for EV model/reference: model number, product reference, or serial number policy; no evidence extraction requested yet.",
+      "wrong_component_risk": "low",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "high",
+      "estimated_likelihood_of_becoming_evidence_ready": "medium_if_semantics_accept_product_reference_or_serial; low_if_exact_model_number_required",
+      "current_poc_recommendation": "selected_for_semantic_escalation"
+    },
+    {
+      "target_id": "trg_d882e527478fafd3",
+      "field_name": "rwh_valve_model_number",
+      "current_disposition": "wrong_component",
+      "exact_component": "rainwater harvesting valve",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p59 (wrong_component): manufacturer: Pegler; product_reference: 402; quantity: 12; descriptive_text: TMV3 Valves | Building Manual - Part 3 Building Services.pdf p74 (wrong_component): manufacturer: Cistermiser; model: 6V Latching Valve; capacity: 0.1 - 6.0 bar; quantity: One valve per sensor unit; descriptive_text: solenoid valve",
+      "precise_remaining_evidence_gap": "Recovered values belong to sanitaryware/TMV valves, Cistermiser urinal controls, domestic water boosting, or generic float-valve/tank literature, not a bounded installed RWH system.",
+      "likely_evidence_family": "RWH schedule not located; reviewed evidence is sanitaryware, domestic water boosting, or generic water-control product literature",
+      "likely_source_document": "No credible RWH-specific source bounded from reviewed evidence; Part 3 reviewed pages were sanitary/domestic-water adjacent.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            41,
+            59,
+            60,
+            63,
+            64,
+            66,
+            74,
+            81,
+            83,
+            87
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 59,
+          "page_end": 81,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 59,
+              "cache_state": "cached_text_available",
+              "text_character_count": 706,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000059.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 60,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2782,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000060.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 61,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1362,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000061.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 62,
+              "cache_state": "cached_text_available",
+              "text_character_count": 655,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000062.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 63,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2024,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000063.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 64,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1127,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000064.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 65,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1978,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000065.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 66,
+              "cache_state": "cached_text_available",
+              "text_character_count": 718,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000066.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 67,
+              "cache_state": "cached_text_available",
+              "text_character_count": 636,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000067.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 68,
+              "cache_state": "cached_text_available",
+              "text_character_count": 577,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000068.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 69,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1258,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000069.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 70,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1130,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000070.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 71,
+              "cache_state": "cached_text_available",
+              "text_character_count": 780,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000071.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 72,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1235,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000072.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 73,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1007,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000073.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 74,
+              "cache_state": "cached_text_available",
+              "text_character_count": 875,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000074.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 75,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1505,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000075.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 76,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1998,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000076.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 77,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1318,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000077.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 78,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1788,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000078.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 79,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1530,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000079.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 80,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1279,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000080.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 81,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1601,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000081.json"
+            }
+          ],
+          "planning_decision": "not_requested_wrong_component_or_generic_water_product_literature"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_2de9f801bb7895a0",
+      "field_name": "rwh_pump_model_number",
+      "current_disposition": "wrong_component",
+      "exact_component": "rainwater harvesting pump",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p81 (evidence_present_but_ambiguous): manufacturer: Salamander Pumps; Keraflo; model: homeboost; capacity: flow is less than 12 ltrs/min; descriptive_text: generic pump and float valve literature",
+      "precise_remaining_evidence_gap": "Recovered values belong to sanitaryware/TMV valves, Cistermiser urinal controls, domestic water boosting, or generic float-valve/tank literature, not a bounded installed RWH system.",
+      "likely_evidence_family": "RWH schedule not located; reviewed evidence is sanitaryware, domestic water boosting, or generic water-control product literature",
+      "likely_source_document": "No credible RWH-specific source bounded from reviewed evidence; Part 3 reviewed pages were sanitary/domestic-water adjacent.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            41,
+            59,
+            60,
+            63,
+            64,
+            66,
+            74,
+            81,
+            83,
+            87
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 59,
+          "page_end": 81,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 59,
+              "cache_state": "cached_text_available",
+              "text_character_count": 706,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000059.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 60,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2782,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000060.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 61,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1362,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000061.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 62,
+              "cache_state": "cached_text_available",
+              "text_character_count": 655,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000062.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 63,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2024,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000063.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 64,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1127,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000064.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 65,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1978,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000065.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 66,
+              "cache_state": "cached_text_available",
+              "text_character_count": 718,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000066.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 67,
+              "cache_state": "cached_text_available",
+              "text_character_count": 636,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000067.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 68,
+              "cache_state": "cached_text_available",
+              "text_character_count": 577,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000068.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 69,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1258,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000069.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 70,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1130,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000070.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 71,
+              "cache_state": "cached_text_available",
+              "text_character_count": 780,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000071.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 72,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1235,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000072.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 73,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1007,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000073.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 74,
+              "cache_state": "cached_text_available",
+              "text_character_count": 875,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000074.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 75,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1505,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000075.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 76,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1998,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000076.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 77,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1318,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000077.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 78,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1788,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000078.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 79,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1530,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000079.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 80,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1279,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000080.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 81,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1601,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000081.json"
+            }
+          ],
+          "planning_decision": "not_requested_wrong_component_or_generic_water_product_literature"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_ed0439240d771c62",
+      "field_name": "rwh_tank_model_number",
+      "current_disposition": "wrong_component",
+      "exact_component": "rainwater harvesting tank",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 3 Building Services.pdf p81 (evidence_present_but_ambiguous): manufacturer: Salamander Pumps; Keraflo; model: homeboost; capacity: flow is less than 12 ltrs/min; descriptive_text: generic pump and float valve literature",
+      "precise_remaining_evidence_gap": "Recovered values belong to sanitaryware/TMV valves, Cistermiser urinal controls, domestic water boosting, or generic float-valve/tank literature, not a bounded installed RWH system.",
+      "likely_evidence_family": "RWH schedule not located; reviewed evidence is sanitaryware, domestic water boosting, or generic water-control product literature",
+      "likely_source_document": "No credible RWH-specific source bounded from reviewed evidence; Part 3 reviewed pages were sanitary/domestic-water adjacent.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "pages": [
+            41,
+            59,
+            60,
+            63,
+            64,
+            66,
+            74,
+            81,
+            83,
+            87
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_start": 59,
+          "page_end": 81,
+          "coverage": [
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 59,
+              "cache_state": "cached_text_available",
+              "text_character_count": 706,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000059.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 60,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2782,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000060.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 61,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1362,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000061.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 62,
+              "cache_state": "cached_text_available",
+              "text_character_count": 655,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000062.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 63,
+              "cache_state": "cached_text_available",
+              "text_character_count": 2024,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000063.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 64,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1127,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000064.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 65,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1978,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000065.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 66,
+              "cache_state": "cached_text_available",
+              "text_character_count": 718,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000066.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 67,
+              "cache_state": "cached_text_available",
+              "text_character_count": 636,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000067.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 68,
+              "cache_state": "cached_text_available",
+              "text_character_count": 577,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000068.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 69,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1258,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000069.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 70,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1130,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000070.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 71,
+              "cache_state": "cached_text_available",
+              "text_character_count": 780,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000071.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 72,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1235,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000072.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 73,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1007,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000073.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 74,
+              "cache_state": "cached_text_available",
+              "text_character_count": 875,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000074.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 75,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1505,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000075.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 76,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1998,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000076.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 77,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1318,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000077.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 78,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1788,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000078.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 79,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1530,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000079.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 80,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1279,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000080.json"
+            },
+            {
+              "source_id": "src_e6179c196ae66752",
+              "page_number": 81,
+              "cache_state": "cached_text_available",
+              "text_character_count": 1601,
+              "cache_path": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache\\src_e6179c196ae66752\\6be59e6d6dde9235\\page_000081.json"
+            }
+          ],
+          "planning_decision": "not_requested_wrong_component_or_generic_water_product_literature"
+        }
+      ],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "low",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "medium",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_2e7ef54db727b7a5",
+      "field_name": "internal_luminaire_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "internal warehouse luminaire",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 6 Appendices.pdf p116 (wrong_component): manufacturer: CIAT; EBM RAPST; model: REH 3000 R21; K3G 400 RJ75; K3G 450 PA 23-78; product_reference: 03089159/0001; system_reference: AHU Supply Fan; capacity: 1.100 m3/s design; 1.133 m3/s measured; descriptive_text: fan test sheet | Building Manual - Part 6 Appendices.pdf p103 (wrong_unit): manufacturer: Vent Axia; model: SLPT 400; product_reference: 495739A; 495739B; system_reference: WC Extract Fan; capacity: 0.607 m3/s system design volume; 0.625 m3/s measured; descriptive_text: fan test sheet",
+      "precise_remaining_evidence_gap": "Model-bearing cached evidence belongs to AHU/fan commissioning, including one Unit 3 record, not lighting equipment.",
+      "likely_evidence_family": "lighting schedule not located; reviewed model-bearing evidence is AHU/fan commissioning",
+      "likely_source_document": "No credible lighting model schedule bounded; Part 6 fan commissioning pages are wrong component/unit.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "pages": [
+            103,
+            116,
+            117
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_61c500d7d23e2bea",
+      "field_name": "lighting_busbar_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "lighting busbar",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 6 Appendices.pdf p116 (wrong_component): manufacturer: CIAT; EBM RAPST; model: REH 3000 R21; K3G 400 RJ75; K3G 450 PA 23-78; product_reference: 03089159/0001; system_reference: AHU Supply Fan; capacity: 1.100 m3/s design; 1.133 m3/s measured; descriptive_text: fan test sheet | Building Manual - Part 6 Appendices.pdf p103 (wrong_unit): manufacturer: Vent Axia; model: SLPT 400; product_reference: 495739A; 495739B; system_reference: WC Extract Fan; capacity: 0.607 m3/s system design volume; 0.625 m3/s measured; descriptive_text: fan test sheet",
+      "precise_remaining_evidence_gap": "Model-bearing cached evidence belongs to AHU/fan commissioning, including one Unit 3 record, not lighting equipment.",
+      "likely_evidence_family": "lighting schedule not located; reviewed model-bearing evidence is AHU/fan commissioning",
+      "likely_source_document": "No credible lighting model schedule bounded; Part 6 fan commissioning pages are wrong component/unit.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "pages": [
+            103,
+            116,
+            117
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    },
+    {
+      "target_id": "trg_760442fe5bf8fdb0",
+      "field_name": "emergency_bulkhead_model_number",
+      "current_disposition": "evidence_not_found",
+      "exact_component": "emergency bulkhead light",
+      "exact_requested_attribute": "model number / reference",
+      "evidence_already_recovered": "Building Manual - Part 6 Appendices.pdf p116 (wrong_component): manufacturer: CIAT; EBM RAPST; model: REH 3000 R21; K3G 400 RJ75; K3G 450 PA 23-78; product_reference: 03089159/0001; system_reference: AHU Supply Fan; capacity: 1.100 m3/s design; 1.133 m3/s measured; descriptive_text: fan test sheet | Building Manual - Part 6 Appendices.pdf p103 (wrong_unit): manufacturer: Vent Axia; model: SLPT 400; product_reference: 495739A; 495739B; system_reference: WC Extract Fan; capacity: 0.607 m3/s system design volume; 0.625 m3/s measured; descriptive_text: fan test sheet",
+      "precise_remaining_evidence_gap": "Model-bearing cached evidence belongs to AHU/fan commissioning, including one Unit 3 record, not lighting equipment.",
+      "likely_evidence_family": "lighting schedule not located; reviewed model-bearing evidence is AHU/fan commissioning",
+      "likely_source_document": "No credible lighting model schedule bounded; Part 6 fan commissioning pages are wrong component/unit.",
+      "known_cached_pages_already_reviewed": [
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "pages": [
+            103,
+            116,
+            117
+          ]
+        }
+      ],
+      "uncached_or_text_incomplete_candidate_ranges": [],
+      "proposed_next_action": "no_further_action_current_poc",
+      "escalation_justification": "No bounded escalation is defensible without repeating already reviewed cached evidence or requesting broad section-level parsing.",
+      "expected_evidence_shape": "None for current PoC escalation; no page request selected.",
+      "wrong_component_risk": "high",
+      "wrong_unit_risk": "medium",
+      "wrong_event_risk": "medium",
+      "semantic_ambiguity": "low",
+      "estimated_likelihood_of_becoming_evidence_ready": "very_low",
+      "current_poc_recommendation": "no_further_action_current_poc"
+    }
+  ],
+  "targeted_parsing_requests": [],
+  "reparse_requests": [],
+  "vlm_candidate_requests": [],
+  "semantic_clarification_requests": [
+    {
+      "request_id": "semantic_ev_model_reference_policy_v1",
+      "target_ids": [
+        "trg_b40d4147a6464558",
+        "trg_de5ba0fad4d1b262"
+      ],
+      "fields": [
+        "ev_charge_point_model_number",
+        "ev_charging_infra_model_number"
+      ],
+      "question": "For EV charge-point model/reference targets, can Rolec EVC Type Basic, a serial number, or another product reference satisfy the requested model number / reference field, or must a distinct model identifier be present?",
+      "cached_evidence_basis": [
+        {
+          "source_id": "src_b5fc6f325fbe0352",
+          "source_document_name": "Rolec EV Charger Pre-Commissioning Information Sheet - Enfield U1.pdf",
+          "page_number": 1,
+          "observed_values": [
+            "Type Basic",
+            "Serial No DLC40692/DLC40501/DLC40074/DLD49141/DKL63358/DLC40104",
+            "Rating 22 kW"
+          ]
+        },
+        {
+          "source_id": "src_232efc9dd9fca566",
+          "source_document_name": "Enfield - EVC QR - Unit 1.pdf",
+          "page_number": 2,
+          "observed_values": [
+            "Rolec EVC Details",
+            "EVC No - 1 2 3 4 5 6"
+          ]
+        }
+      ],
+      "assessment": {
+        "evc_type_basic": "plausibly a product type, not defensibly a model number without semantic approval",
+        "serial_numbers": "must remain separate from model numbers unless dictionary/field semantics explicitly allow serial/reference identifiers",
+        "product_reference_or_serial_acceptance": "allowed only after semantic clarification; no reinterpretation performed in this sprint",
+        "further_parsing_likelihood": "uncached Rolec page 2 and EVC QR page 4 may reveal continuation data, but semantic clarification should precede parsing because current evidence may already be sufficient under a broader reference policy"
+      },
+      "recommended_next_action": "semantic_clarification_required"
+    }
+  ],
+  "no_further_action_target_ids": [
+    "trg_779ac4844d02cf75",
+    "trg_76101f6e08616a81",
+    "trg_d518ed3f0ddc667d",
+    "trg_be45c65fa5903112",
+    "trg_e704e9ee9516c621",
+    "trg_6c758c5da37853ad",
+    "trg_496c0ed2067e136f",
+    "trg_62ca9cf67966b811",
+    "trg_b4727e7fd50d1429",
+    "trg_d882e527478fafd3",
+    "trg_2de9f801bb7895a0",
+    "trg_ed0439240d771c62",
+    "trg_2e7ef54db727b7a5",
+    "trg_61c500d7d23e2bea",
+    "trg_760442fe5bf8fdb0"
+  ],
+  "prohibited_actions": [
+    "no parsing",
+    "no OCR",
+    "no VLM",
+    "no extraction",
+    "no adjudication",
+    "no model calls",
+    "no cache expansion",
+    "no dictionary changes",
+    "no threshold changes",
+    "no semantic changes"
+  ]
+}
