@@ -1236,6 +1236,30 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
         "retaining_wall": ["retaining wall", "precast", "concrete pour"],
         "bin_store": ["bin store", "perforated metal sheet", "planters"],
         "external_steps": ["external steps", "steel stairs", "durbar tread"],
+        "roof_access": ["roof access", "cat ladder", "roof hatch", "man-safe", "fall restraint"],
+        "access_method": ["access method", "cat ladder", "roof hatch", "mewp"],
+        "structural_frame": ["structural frame", "steel frame", "s355"],
+        "foundation": [
+            "foundation",
+            "piled foundation",
+            "piled solution",
+            "pile caps",
+            "ground beams",
+            "piles",
+        ],
+        "warehouse_floor_loading": ["warehouse slab", "live warehouse 50kn/m2", "imposed load"],
+        "office_floor_loading": ["office slab", "7.5kn/m2", "imposed load"],
+        "concrete_grade": ["concrete grade", "c32/40", "dc3", "dc-1"],
+        "asbestos": ["asbestos", "asbestos containing products", "asbestos statement"],
+        "emergency_utility": [
+            "emergency contact",
+            "emergency number",
+            "national grid",
+            "uk power networks",
+            "thames water",
+        ],
+        "fire_door": ["fire door", "fd60", "fd30", "fire rating"],
+        "fire_rating": ["fd60", "fd30", "fire resistance", "fire compartment"],
     }
     field = target.expected_field.lower()
     component_phrases: set[str] = set()
@@ -1529,6 +1553,47 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
             "paving maintenance & repair guide",
         ]
     )
+    residual_hazard_context = any(
+        term in lower
+        for term in [
+            "remaining identified hazard",
+            "proposed control measure",
+            "risk assessment / method statement",
+            "work permit to be issued",
+        ]
+    )
+    emergency_contact_context = any(
+        term in lower
+        for term in [
+            "emergency contacts",
+            "emergency number",
+            "gas leak",
+            "uk power networks",
+            "national grid",
+            "thames water",
+        ]
+    )
+    generic_material_list_context = (
+        "hazardous materials used in construction" in lower
+        and "common material types" in lower
+    )
+    fire_strategy_standard_context = any(
+        term in lower
+        for term in ["bs 5839", "refer to m&e", "refer to m & e", "fire alarm detection"]
+    )
+    report_or_drawing_date_context = any(
+        term in lower
+        for term in [
+            "calcs date",
+            "checked date",
+            "approved date",
+            "revision",
+            "rev.",
+            "drawn",
+            "checked by",
+            "issued for construction",
+        ]
+    )
     supplier_contact_context = any(
         term in lower
         for term in [
@@ -1544,7 +1609,7 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         for term in ["nature of installation", "product description", "work description"]
     )
     navigation_context = any(
-        term in lower for term in ["part 4 - index", "building manual index", "contents"]
+        term in lower for term in ["part 4 - index", "part 5 - index", "building manual index", "contents"]
     )
     installed_identity_target = any(
         term in field for term in ["model", "manufacturer", "serial"]
@@ -1565,12 +1630,16 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 20.0
     if installed_identity_target and planning_context:
         return 8.0
+    if installed_identity_target and residual_hazard_context:
+        return 12.0
     if installation_date_target and (planning_context or certificate_context):
         return 8.0
+    if installation_date_target and report_or_drawing_date_context:
+        return 24.0
     if installation_date_target and not any(
         term in lower for term in ["installation date", "date installed", "installed on"]
     ):
-        return 24.0
+        return 44.0
     if installation_date_target and maintenance_context:
         return 8.0
     if installation_date_target and not re.search(
@@ -1580,6 +1649,8 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 16.0
     if identity_target and supplier_contact_context:
         return 12.0
+    if identity_target and emergency_contact_context:
+        return 20.0
     if "model" in field and not any(
         term in lower
         for term in ["model", "model no", "model number", "type no", "serial", "reference"]
@@ -1596,6 +1667,32 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 24.0
     if installed_description_target and generic_reference_context:
         return 4.0
+    if installed_description_target and generic_material_list_context:
+        return 16.0
+    if identity_target and fire_strategy_standard_context:
+        return 18.0
+    if any(term in field for term in ["equipment", "mechanical", "electrical"]) and (
+        residual_hazard_context or fire_strategy_standard_context
+    ):
+        return 14.0
+    if "office_floor_loading" in field and not (
+        "office slab" in lower and ("7.5kn/m" in lower or "designed for imposed load" in lower)
+    ):
+        return 14.0
+    if "warehouse_floor_loading" in field and not (
+        "warehouse" in lower and ("50kn/m" in lower or "live warehouse" in lower)
+    ):
+        return 14.0
+    if "foundation" in field and not any(
+        term in lower
+        for term in [
+            "piled solution",
+            "piled foundation",
+            "foundation type",
+            "adopted to support",
+        ]
+    ):
+        return 10.0
     return 0.0
 
 
@@ -1608,6 +1705,23 @@ def cross_reference_penalty(target: TargetSpecification, text: str) -> float:
         or "reference" in field
     )
     if certificate_or_date_target and "refer to" in lower and "overleaf" in lower:
+        return 10.0
+    equipment_or_value_target = any(
+        term in field
+        for term in ["equipment", "mechanical", "electrical", "model", "manufacturer", "description"]
+    )
+    if equipment_or_value_target and "refer to" in lower and any(
+        term in lower
+        for term in [
+            "part 3",
+            "part 6",
+            "m&e",
+            "m & e",
+            "manual",
+            "drawings overleaf",
+            "calculation report overleaf",
+        ]
+    ):
         return 10.0
     reference_target = any(term in field for term in ["drawing", "reference", "as_built"])
     if reference_target and "drawing" in field:

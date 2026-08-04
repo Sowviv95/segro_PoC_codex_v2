@@ -370,6 +370,167 @@ def test_part4_part6_cross_reference_does_not_satisfy_drawing_target() -> None:
     assert retrieval.results == []
 
 
+def test_part5_roof_access_method_retrieves_access_strategy() -> None:
+    target = _target(
+        "roof_access_method_description",
+        ExpectedDataType.STRING,
+        "Roof access method CAT ladder roof hatch man-safe fall restraint",
+    )
+    pages = {
+        "src-test": [
+            _page(1, "5.8 - ROOF ACCESS GUIDANCE Refer to roof access guidance document overleaf."),
+            _page(
+                2,
+                "Roof Access / Fall Restraint System\n"
+                "Permanent access to the roof is via a CAT ladder leading to a roof hatch. "
+                "From the hatch there is a perimeter linear man-safe cable restraint.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part5_floor_loading_requires_local_component_attribute_linkage() -> None:
+    target = _target(
+        "office_floor_loading_capacity",
+        ExpectedDataType.STRING,
+        "Office floor loading capacity",
+    )
+    pages = {
+        "src-test": [
+            _page(1, "Warehouse slab and office area notes without imposed load value."),
+            _page(
+                2,
+                "OFFICE SLAB: 200 thick R.C. suspended slab designed for imposed load of 7.5KN/m2.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part5_foundation_type_prefers_adopted_solution_over_calculation_index() -> None:
+    target = _target(
+        "foundation_type_description",
+        ExpectedDataType.STRING,
+        "Foundation type description",
+    )
+    pages = {
+        "src-test": [
+            _page(1, "FOUNDATION CALCULATIONS C1 pile load takedown C2 pilecap design."),
+            _page(
+                2,
+                "Design Summary\n"
+                "Piled solution has been adopted to support the steel frame, retaining walls, "
+                "ground floor slabs and dock walls.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part5_access_guidance_does_not_satisfy_installation_date() -> None:
+    target = _target(
+        "roof_access_system_installation_date",
+        ExpectedDataType.DATE,
+        "Roof access system installation date",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Roof Access / Fall Restraint System. Works using this system require a "
+                "risk assessment prior to commencement and periodic inspection.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part5_fire_standard_does_not_satisfy_panel_model() -> None:
+    target = _target(
+        "fire_alarm_panel_model_number",
+        ExpectedDataType.STRING,
+        "Fire alarm panel model number",
+    )
+    pages = {
+        "src-test": [
+            _page(1, "Fire strategy drawing note: alarm detection system to BS 5839.")
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part5_emergency_contact_number_does_not_satisfy_meter_identifier() -> None:
+    target = _target("electric_meter_serial_number", ExpectedDataType.STRING, "Electric meter serial number")
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "5.3 - EMERGENCY CONTACTS Electricity Supplier - UK Power Networks "
+                "Emergency Number 0800 3163 105",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part5_reference_only_page_does_not_satisfy_equipment_description() -> None:
+    target = _target(
+        "mechanical_equipment_component_description",
+        ExpectedDataType.STRING,
+        "Mechanical equipment component description",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Mechanical and electrical equipment - risk of shock. "
+                "Refer to mechanical and electrical contractors' manual and Log Book.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 5 The Health & Safety File.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
 def test_retrieval_deduplicates_page_section_and_text_block_overlap() -> None:
     target = _target("dock_leveller_count", ExpectedDataType.INTEGER, "Dock Levellers - Count")
     pages = {"src-test": [_page(1, "Dock Levellers\nThe warehouse has 5No Dock Levellers.")]}

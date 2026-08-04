@@ -49,6 +49,16 @@ PageType = Literal[
     "manufacturer_literature",
     "safety_data",
     "supplier_contact",
+    "residual_hazard_schedule",
+    "emergency_contacts",
+    "reference_only",
+    "access_cleaning_guidance",
+    "structural_report",
+    "structural_calculation",
+    "structural_drawing",
+    "loading_schedule",
+    "fire_strategy_drawing",
+    "hazardous_material_statement",
     "maintenance_guidance",
     "index_or_contents",
     "separator_or_cover",
@@ -319,6 +329,30 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
     if normalized and _is_project_element_sheet(normalized):
         primary, route = "project_element_sheet", "text"
         tags.update({"project_specific", "installed_project_evidence", "component_specification"})
+    if normalized and primary != "project_element_sheet" and _is_reference_only_page(normalized):
+        primary, route = "reference_only", "deprioritized"
+        tags.add("cross_reference_only")
+    elif normalized and _is_residual_hazard_schedule(normalized):
+        primary, route = "residual_hazard_schedule", "table"
+        tags.update({"health_and_safety_only", "operational_safety_control"})
+    elif normalized and _is_emergency_contacts(normalized):
+        primary, route = "emergency_contacts", "text"
+        tags.add("emergency_contact_details")
+    elif normalized and _is_hazardous_material_statement(normalized):
+        primary, route = "hazardous_material_statement", "text"
+        tags.update({"health_and_safety_only", "project_specific"})
+    elif normalized and _is_access_cleaning_guidance(normalized):
+        primary, route = "access_cleaning_guidance", "text"
+        tags.update({"operational_safety_control", "maintenance_access"})
+    elif normalized and _is_loading_schedule(normalized):
+        primary, route = "loading_schedule", "table"
+        tags.update({"structural_loading", "component_specification"})
+    elif normalized and _is_structural_report(normalized):
+        primary, route = "structural_report", "text"
+        tags.update({"structural_loading", "component_specification", "project_specific"})
+    elif normalized and _is_structural_calculation(normalized):
+        primary, route = "structural_calculation", "table"
+        tags.update({"structural_loading", "calculation_input"})
     if normalized and _is_safety_data(normalized):
         primary, route = "safety_data", "deprioritized"
         tags.update({"generic_reference_literature", "health_and_safety_only"})
@@ -332,9 +366,15 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         normalized
         and primary not in {
             "project_element_sheet",
-            "manufacturer_literature",
-            "safety_data",
-            "supplier_contact",
+        "manufacturer_literature",
+        "safety_data",
+        "supplier_contact",
+        "residual_hazard_schedule",
+        "reference_only",
+        "access_cleaning_guidance",
+        "hazardous_material_statement",
+        "structural_report",
+        "loading_schedule",
         }
         and _is_maintenance_only(normalized, source_filename)
     ):
@@ -366,8 +406,21 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "manufacturer_literature",
         "safety_data",
         "supplier_contact",
+        "residual_hazard_schedule",
+        "emergency_contacts",
+        "reference_only",
+        "access_cleaning_guidance",
+        "structural_report",
+        "loading_schedule",
+        "hazardous_material_statement",
     } and _is_drawing(normalized):
-        if _drawing_text_extractable(normalized):
+        if _is_fire_strategy_drawing(normalized):
+            primary, route = "fire_strategy_drawing", "drawing_text"
+            tags.update({"fire_strategy", "drawing_symbol_dependency"})
+        elif _is_structural_drawing(normalized):
+            primary, route = "structural_drawing", "drawing_text"
+            tags.update({"structural_loading", "drawing_symbol_dependency"})
+        elif _drawing_text_extractable(normalized):
             primary, route = "drawing_text_extractable", "drawing_text"
         else:
             primary, route = "drawing_visual_required", "visual"
@@ -386,6 +439,8 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         "manufacturer_literature",
         "safety_data",
         "supplier_contact",
+        "residual_hazard_schedule",
+        "reference_only",
         "unknown",
     }
     evidence_role = "direct evidence" if evidence_bearing else "navigation only"
@@ -399,6 +454,12 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         evidence_role = "generic reference literature"
     elif primary == "supplier_contact":
         evidence_role = "supporting/contextual evidence"
+    elif primary == "residual_hazard_schedule":
+        evidence_role = "operational or safety guidance"
+    elif primary in {"access_cleaning_guidance", "hazardous_material_statement"}:
+        evidence_role = "supporting/contextual evidence"
+    elif primary == "reference_only":
+        evidence_role = "cross-reference only"
     domains = infer_domains(source_filename, normalized)
     families = infer_target_families(source_filename, normalized)
     if primary in {"separator_or_cover", "index_or_contents"}:
@@ -415,6 +476,15 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         ] or ["maintenance_only"]
     elif primary == "supplier_contact":
         families = ["identifiers_references"]
+    elif primary in {"residual_hazard_schedule", "access_cleaning_guidance"}:
+        families = ["maintenance_only", "locations_layout"]
+    elif primary == "emergency_contacts":
+        families = ["identifiers_references"]
+    elif primary in {"structural_report", "structural_drawing", "loading_schedule"}:
+        domains = sorted(set(domains) | {"building_fabric"})
+        families = sorted(set(families) | {"dimensions_capacities", "materials_finishes"})
+    elif primary == "reference_only":
+        families = ["section_discovery"]
     return {
         "primary_page_type": primary,
         "secondary_tags": sorted(tags),
@@ -473,6 +543,20 @@ def section_title_from_page(page: dict[str, Any]) -> str:
         return "Generic manufacturer literature"
     if page["primary_page_type"] == "safety_data":
         return "Safety / COSHH data"
+    if page["primary_page_type"] == "residual_hazard_schedule":
+        return "Residual hazard schedule"
+    if page["primary_page_type"] == "emergency_contacts":
+        return "Emergency contacts"
+    if page["primary_page_type"] == "reference_only":
+        return "Cross-reference only"
+    if page["primary_page_type"] == "access_cleaning_guidance":
+        return "Access and cleaning guidance"
+    if page["primary_page_type"] in {"structural_report", "structural_calculation"}:
+        return "Structural report / calculations"
+    if page["primary_page_type"] in {"structural_drawing", "fire_strategy_drawing"}:
+        return "Drawing evidence"
+    if page["primary_page_type"] == "loading_schedule":
+        return "Schedule / table evidence"
     if page["primary_page_type"] in {"schedule", "structured_table"}:
         return "Schedule / table evidence"
     if page["primary_page_type"].startswith("drawing"):
@@ -1331,6 +1415,116 @@ def _is_table(text: str) -> bool:
     )
 
 
+def _is_residual_hazard_schedule(text: str) -> bool:
+    return (
+        "remaining identified" in text
+        and "hazard" in text
+        and "proposed control measure" in text
+    )
+
+
+def _is_emergency_contacts(text: str) -> bool:
+    return (
+        "emergency contacts" in text
+        and any(term in text for term in ["emergency number", "gas leak", "supplier"])
+    )
+
+
+def _is_reference_only_page(text: str) -> bool:
+    short_reference = len(text) < 360 and "refer to" in text
+    return short_reference and any(
+        term in text
+        for term in [
+            "overleaf",
+            "part 3",
+            "part 6",
+            "m&e",
+            "manual",
+            "drawings",
+            "calculation report",
+        ]
+    )
+
+
+def _is_hazardous_material_statement(text: str) -> bool:
+    return any(
+        term in text
+        for term in [
+            "hazardous materials used in construction",
+            "asbestos statement",
+            "no asbestos containing products were specified",
+            "no asbestos containing products were specified / used",
+        ]
+    )
+
+
+def _is_access_cleaning_guidance(text: str) -> bool:
+    access_terms = [
+        "access and cleaning strategy",
+        "roof access guidance",
+        "roof access methods",
+        "roof access / fall restraint system",
+        "cat ladder",
+        "roof hatch",
+        "man-safe",
+        "fall restraint",
+        "mewp",
+        "roof work permit",
+    ]
+    return any(term in text for term in access_terms)
+
+
+def _is_structural_report(text: str) -> bool:
+    return (
+        ("segro park, unit 1" in text and "129896" in text)
+        and any(term in text for term in ["structural material use", "design summary", "fairhurst"])
+        and not _is_structural_calculation(text)
+    )
+
+
+def _is_structural_calculation(text: str) -> bool:
+    return (
+        "fairhurst" in text
+        and "calcs for" in text
+        and any(term in text for term in ["tedds calculation", "design shear", "load combination"])
+    )
+
+
+def _is_loading_schedule(text: str) -> bool:
+    loading_terms = [
+        "office slab",
+        "warehouse ground slab specification",
+        "live warehouse 50kn/m2",
+        "designed for imposed load",
+        "imposed loads",
+        "load per pile",
+        "construction loads",
+    ]
+    return any(term in text for term in loading_terms) and (
+        _is_table(text) or any(term in text for term in ["kn/m", "imposed load", "load per pile"])
+    )
+
+
+def _is_fire_strategy_drawing(text: str) -> bool:
+    return any(term in text for term in ["fd60", "fd30", "fire strategy", "bs 5839"])
+
+
+def _is_structural_drawing(text: str) -> bool:
+    return any(
+        term in text
+        for term in [
+            "piling layout",
+            "pile cap",
+            "ground beam",
+            "warehouse ground slab specification",
+            "office slab",
+            "foundation loads",
+            "structural drawings",
+            "fairhurst drawing",
+        ]
+    ) and any(term in text for term in ["drwg", "drawing", "notes:", "grid"])
+
+
 def _is_drawing(text: str) -> bool:
     if _is_safety_data(text):
         return False
@@ -1428,7 +1622,14 @@ def _is_supplier_contact_only(text: str) -> bool:
 def _is_maintenance_only(text: str, source_filename: str) -> bool:
     lower = f"{source_filename} {text}".lower()
     return "maintenance" in lower and not any(
-        term in lower for term in ["certificate", "schedule", "commission"]
+        term in lower
+        for term in [
+            "certificate",
+            "schedule",
+            "commission",
+            "roof access guidance",
+            "access and cleaning strategy",
+        ]
     )
 
 

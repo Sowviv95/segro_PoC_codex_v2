@@ -151,6 +151,55 @@ def test_part4_element_safety_literature_and_table_classification_rules() -> Non
     assert table["recommended_route"] == "table"
 
 
+def test_part5_health_safety_structural_and_reference_classification_rules() -> None:
+    hazard = classify_page_text(
+        "5.1 REMAINING IDENTIFIED HAZARDS REMAINING IDENTIFIED HAZARD "
+        "PROPOSED CONTROL MEASURE SECTION Roof access by cat ladder danger of falls",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert hazard["primary_page_type"] == "residual_hazard_schedule"
+    assert hazard["recommended_route"] == "table"
+    assert hazard["evidence_role"] == "operational or safety guidance"
+
+    reference = classify_page_text(
+        "5.4 - FIRE SAFETY STRATEGY Refer to Michael Sparks Associates drawings overleaf.",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert reference["primary_page_type"] == "reference_only"
+    assert reference["evidence_bearing"] is False
+    assert reference["evidence_role"] == "cross-reference only"
+
+    contacts = classify_page_text(
+        "5.3 - EMERGENCY CONTACTS Gas Supplier - National Grid "
+        "Electricity Supplier - UK Power Networks Emergency Number 0800 3163 105",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert contacts["primary_page_type"] == "emergency_contacts"
+    assert contacts["evidence_role"] == "direct evidence"
+
+    asbestos = classify_page_text(
+        "ASBESTOS STATEMENT The designers / principal contractor have confirmed "
+        "that no asbestos containing products were specified / used within the contract.",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert asbestos["primary_page_type"] == "hazardous_material_statement"
+
+    loading = classify_page_text(
+        "OFFICE SLAB 200 THICK R.C. SUSPENDED SLAB designed for imposed load of 7.5KN/m2. "
+        "WAREHOUSE GROUND SLAB SPECIFICATION Live warehouse 50kN/m2.",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert loading["primary_page_type"] == "loading_schedule"
+    assert loading["recommended_route"] == "table"
+
+    fire = classify_page_text(
+        "Fire strategy drawing FD60s FD30s BS 5839 Drawing No MSA-0700 Scale 1:100",
+        source_filename="Building Manual - Part 5 The Health & Safety File.pdf",
+    )
+    assert fire["primary_page_type"] == "fire_strategy_drawing"
+    assert fire["recommended_route"] == "drawing_text"
+
+
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:
     cached = {
         "src_a": [
