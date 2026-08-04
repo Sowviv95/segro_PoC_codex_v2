@@ -612,6 +612,130 @@ def test_part6_bms_point_name_does_not_satisfy_field_equipment_model() -> None:
     assert retrieval.results == []
 
 
+def test_part6_generic_guarantee_does_not_prove_installation_description() -> None:
+    target = _target(
+        "roof_system_installation_description",
+        ExpectedDataType.STRING,
+        "Roof system installation description generic guarantee maintenance data",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "CAG Guarantee Ref: SP0095-EI-Unit 1. This Guarantee is given for "
+                "the building envelope system. All inspections and maintenance are "
+                "to be carried out by a competent inspector.",
+            ),
+            _page(
+                2,
+                "As built roof drawing note: built-up curved standing roofing system "
+                "with Class B non-fragile rooflights.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_part6_pv_string_measurements_do_not_satisfy_model_probe() -> None:
+    target = _target(
+        "pv_inverter_model_number",
+        ExpectedDataType.STRING,
+        "PV inverter model string voltage current measurements",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "PV COMMISSIONING FORM String Test Voc (V) 725 Isc(A) 2.7 "
+                "Test Voltage 1000V Array Insulation Resistance.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part6_explicit_pv_model_field_remains_retrievable() -> None:
+    target = _target(
+        "pv_inverter_model_number",
+        ExpectedDataType.STRING,
+        "PV inverter model Unit 1 photovoltaic commissioning form inverter",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "PV COMMISSIONING FORM Project Segro Park Unit 1 Connected to "
+                "Inverter Ginlong Solis 50k 50kW 3-Ph Inverter S/N 110610199110002.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 1
+
+
+def test_part6_work_permit_template_does_not_satisfy_event_date() -> None:
+    target = _target(
+        "roof_work_permit_approval_date",
+        ExpectedDataType.DATE,
+        "Roof work permit approval date blank template valid for day of issue",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "ROOF WORK PERMIT VALID FOR DAY OF ISSUE ONLY Nature of work Date "
+                "Estimated time period Start Finish.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_part6_completed_certificate_date_remains_retrievable() -> None:
+    target = _target(
+        "fire_alarm_commissioning_date",
+        ExpectedDataType.DATE,
+        "Fire alarm commissioning date Unit 1 Clymac fire detection alarm system",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Clymac Fire & Security Systems Commissioning Certificate. "
+                "Certificate Of Commissioning For The Fire Detection And Alarm System "
+                "At Unit 1. Date: 13/03/2020.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 6 Appendices.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 1
+
+
 def test_retrieval_deduplicates_page_section_and_text_block_overlap() -> None:
     target = _target("dock_leveller_count", ExpectedDataType.INTEGER, "Dock Levellers - Count")
     pages = {"src-test": [_page(1, "Dock Levellers\nThe warehouse has 5No Dock Levellers.")]}

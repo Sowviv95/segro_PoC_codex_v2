@@ -1640,8 +1640,17 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         ]
     )
     generic_guarantee_context = (
-        "guarantee" in lower
+        ("guarantee" in lower or "guarantee ref" in lower)
         and any(term in lower for term in ["inspection", "maintenance", "appendix"])
+    )
+    product_guarantee_context = any(
+        term in lower
+        for term in [
+            "guarantee ref",
+            "this guarantee is given",
+            "competent inspector",
+            "u-value",
+        ]
     )
     other_unit_context = bool(re.search(r"\bunit\s+[23]\b", lower)) and not bool(
         re.search(r"\bunit\s+1\b", lower)
@@ -1649,6 +1658,18 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
     unit1_context = bool(re.search(r"\bunit\s+1\b", lower))
     pv_string_reading_context = "pv commissioning form" in lower and any(
         term in lower for term in ["voc", "isc", "string", "array insulation"]
+    )
+    electrical_measurement_context = any(
+        term in lower
+        for term in [
+            "voc",
+            "isc",
+            "test voltage",
+            "array insulation",
+            "irradiance",
+            "meter reading",
+            "earth continuity",
+        ]
     )
     bms_point_context = "points schedule" in lower and any(
         term in lower for term in ["fault", "status", "input device", "output ref"]
@@ -1690,7 +1711,9 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
     installed_description_target = any(
         term in field for term in ["installed", "installation", "description", "type", "finish"]
     )
-    installed_quantity_target = any(term in field for term in ["count", "quantity", "number"])
+    installed_quantity_target = any(term in field for term in ["count", "quantity"]) or (
+        "number" in field and "model_number" not in field and "serial_number" not in field
+    )
     unit1_requested = "unit1" in field.replace("_", "") or "unit 1" in requirement
     installation_date_target = "installation_date" in field or (
         "equipment" in field and "date" in field
@@ -1710,6 +1733,8 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 24.0
     if target.expected_data_type == ExpectedDataType.DATE and work_permit_template_context:
         return 32.0
+    if date_target and "permit" in field and not work_permit_template_context:
+        return 28.0
     if "commissioning_date" in field and design_certificate_context:
         return 24.0
     if date_target and laboratory_report_context and "water" not in field:
@@ -1725,8 +1750,8 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         return 24.0
     if installation_date_target and drawing_context:
         return 28.0
-    if installed_description_target and generic_guarantee_context:
-        return 18.0
+    if installed_description_target and (generic_guarantee_context or product_guarantee_context):
+        return 24.0
     if installed_quantity_target and maintenance_context:
         return 16.0
     if installed_identity_target and planning_context:
@@ -1748,6 +1773,18 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         lower,
     ):
         return 16.0
+    if identity_target and pv_string_reading_context and any(
+        term in requirement for term in ["string", "voltage", "current", "measurement"]
+    ):
+        return 36.0
+    if identity_target and "pv" in field and electrical_measurement_context and any(
+        term in requirement for term in ["string", "voltage", "current", "measurement"]
+    ):
+        return 40.0
+    if identity_target and "pv" in field and any(
+        term in requirement for term in ["string", "voltage", "current", "measurement"]
+    ):
+        return 28.0
     if identity_target and supplier_contact_context:
         return 12.0
     if identity_target and emergency_contact_context:
@@ -1780,6 +1817,10 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         term in lower for term in ["bms", "trend iq", "outstation", "points schedule"]
     ):
         return 18.0
+    if "pv" in field and identity_target and not any(
+        term in lower for term in ["pv", "photovoltaic", "inverter", "solar", "solis"]
+    ):
+        return 24.0
     if "commissioning_date" in field and not any(
         term in lower for term in ["commissioning", "commissioned", "installation certificate"]
     ):
@@ -1788,8 +1829,6 @@ def status_context_penalty(target: TargetSpecification, text: str) -> float:
         term in lower for term in ["model", "model number", "solis"]
     ):
         return 18.0
-    if identity_target and pv_string_reading_context and "string voltage" in requirement:
-        return 24.0
     if "pv_inverter" in field and drawing_context:
         return 18.0
     if "air_conditioning" in field and identity_target and not (
