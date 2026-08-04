@@ -1,0 +1,985 @@
+{
+  "schema_version": "targeted_parsing_recovery_config_v1",
+  "version": "1.0.0",
+  "unit_id": "enfield_unit1",
+  "created_at": "2026-08-04T06:50:40.478812+00:00",
+  "objective": "Bounded targeted deterministic parsing recovery attempt after cached-only evidence expansion concluded.",
+  "constraints": {
+    "max_targets": 6,
+    "max_unique_pages": 30,
+    "no_extraction": true,
+    "no_adjudication": true,
+    "no_ocr": true,
+    "no_vlm": true,
+    "no_model_calls": true,
+    "no_dictionary_changes": true,
+    "no_threshold_changes": true,
+    "no_semantic_changes": true,
+    "no_target_specific_reusable_logic": true
+  },
+  "cache_root": "output\\enfield_unit1_evidence_first_vertical_slice_v1\\page_cache",
+  "inputs": [
+    "output/enfield_unit1_next_evidence_cluster_reselection_v2/",
+    "output/enfield_unit1_next_evidence_cluster_discovery_selection_v1/",
+    "output/enfield_unit1_evidence_coverage_gap_resolution_plan_v1/",
+    "output/enfield_unit1_mechanical_electrical_schedules_cached_evidence_preparation_v1/",
+    "output/enfield_unit1_mechanical_electrical_evidence_escalation_planning_v1/",
+    "output/sprint3_source_ingestion/source_registry.csv",
+    "output/enfield_unit1_source_coverage_pageindex_v1/",
+    "output/enfield_unit1_high_value_section_expansion_v2/"
+  ],
+  "reviewed_candidate_targets": [
+    {
+      "target_id": "trg_9cb4de1e3f2d2873",
+      "field_name": "sprinkler_sprinkler_head_count",
+      "cluster_or_family": "sprinkler_system_attributes",
+      "exact_component": "sprinkler system / sprinkler heads",
+      "exact_requested_attribute": "head count",
+      "value_shape": "integer_count",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 16,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 20,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 21,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 22,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 23,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 24,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 25,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 31,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 41,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 46,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 54,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 60,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 61,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 62,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 63,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 64,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 65,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 66,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 81,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 82,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 83,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 84,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 85,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 86,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 87,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 88,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 89,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 157,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 158,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 159,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 160,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 161,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 162,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 163,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 164,
+          "cache_status": "cached_sparse_text"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 165,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 166,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 167,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 168,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 169,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 54,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 58,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 59,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 67,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 68,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 96,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 97,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 98,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 103,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 104,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 105,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 106,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 107,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 108,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 116,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 117,
+          "cache_status": "cached_text_available"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "no bounded uncached or text-incomplete page range with exact sprinkler head-count evidence; proposed ranges are broad and mostly already cached/text-bearing",
+        "request would be based on component-family occurrence rather than exact attribute evidence"
+      ]
+    },
+    {
+      "target_id": "trg_478740bb3b23e147",
+      "field_name": "sprinkler_sprinkler_installation_date",
+      "cluster_or_family": "sprinkler_system_attributes",
+      "exact_component": "sprinkler system",
+      "exact_requested_attribute": "installation date",
+      "value_shape": "date",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 16,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 20,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 21,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 22,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 23,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 24,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 25,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 31,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 41,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 46,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 54,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 60,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 61,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 62,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 63,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 64,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 65,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 66,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 81,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 82,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 83,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 84,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 85,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 86,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 87,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 88,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 89,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 157,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 158,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 159,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 160,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 161,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 162,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 163,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 164,
+          "cache_status": "cached_sparse_text"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 165,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 166,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 167,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 168,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_e6179c196ae66752",
+          "source_document_name": "Building Manual - Part 3 Building Services.pdf",
+          "page_number": 169,
+          "cache_status": "cached_text_available"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "same broad Part 3 service schedule ranges already reviewed/cached; no exact installed sprinkler date family bounded to <=12 target pages",
+        "date-like cached evidence was wrong-event construction/planning text"
+      ]
+    },
+    {
+      "target_id": "trg_41817d928383095c",
+      "field_name": "number_of_trees",
+      "cluster_or_family": "external_works",
+      "exact_component": "trees / soft landscaping",
+      "exact_requested_attribute": "count of trees",
+      "value_shape": "integer_count",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 4,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 5,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 33,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 54,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 55,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 63,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 78,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 16,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 17,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 23,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 29,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 30,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 31,
+          "cache_status": "cached_text_available"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "strongest soft-landscaping and planning pages are already cached with adequate text",
+        "cached installed element sheet says landscaping consisted of grass seeding, turfing, trees, shrubs and bark mulch but does not include tree count",
+        "remaining evidence likely requires landscape drawing/table visual review rather than deterministic text parsing"
+      ]
+    },
+    {
+      "target_id": "trg_75b5a1d84f166ff3",
+      "field_name": "number_of_demised_car_parking_spaces",
+      "cluster_or_family": "external_works",
+      "exact_component": "demised car parking spaces",
+      "exact_requested_attribute": "count",
+      "value_shape": "integer_count",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 7,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 8,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 15,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 16,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 17,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 18,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 19,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 20,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 29,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 32,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 5,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 33,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 54,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_d219ab1a57a6d6d5",
+          "source_document_name": "Building Manual - Part 4 External Works.pdf",
+          "page_number": 55,
+          "cache_status": "cached_text_available"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "candidate pages are already cached/text-bearing and only provide planning or drawing-reference context",
+        "exact demised-space count is likely a layout annotation requiring visual review or a schedule not bounded by current PageIndex",
+        "target was component_only in prior assessment"
+      ]
+    },
+    {
+      "target_id": "trg_404b6587ef1dcb6e",
+      "field_name": "loading_door_overhead_model_number",
+      "cluster_or_family": "building_fabric_schedules",
+      "exact_component": "overhead loading door / dock loading door",
+      "exact_requested_attribute": "model number/reference",
+      "value_shape": "identifier_or_reference",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 5,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 6,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 9,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 11,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 12,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 13,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 14,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 8,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 9,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_48403a16aee1d4b3",
+          "source_document_name": "Building Manual - Part 6 Appendices.pdf",
+          "page_number": 14,
+          "cache_status": "cached_text_available"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "excluded by current sprint rules because this is a model-number target without visible local component-to-model association",
+        "Part 2 pages 11-14 are cached text-empty under existing PyMuPDF parser; rerunning the same deterministic parser would not be an improved recovery path",
+        "strongest text-bearing pages are index/maintenance guidance, not installed model evidence"
+      ]
+    },
+    {
+      "target_id": "trg_ce7b8144166191d0",
+      "field_name": "space_type_ground_floor_factory_area_value",
+      "cluster_or_family": "property_area_schedule_and_units",
+      "exact_component": "ground floor factory area",
+      "exact_requested_attribute": "area value",
+      "value_shape": "decimal_measurement",
+      "candidate_source_pages": [
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 8,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 16,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_7216bce3ba88ba2d",
+          "source_document_name": "Building Manual - Part 1 General.pdf",
+          "page_number": 17,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 6,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 9,
+          "cache_status": "cached_text_available"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 11,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 12,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 13,
+          "cache_status": "cached_text_empty"
+        },
+        {
+          "source_id": "src_1fd0bf352104ae02",
+          "source_document_name": "Building Manual - Part 2 Building Fabric.pdf",
+          "page_number": 14,
+          "cache_status": "cached_text_empty"
+        }
+      ],
+      "gate_result": "not_selected",
+      "gate_failures": [
+        "Part 1 area/drawing pages and Part 2 page 6/9 are already cached; Part 2 pages 11-14 are text-empty but PageIndex identifies pile-record sheets, not a property area schedule",
+        "related area-unit targets require dictionary clarification, so area-value recovery would remain semantically incomplete",
+        "no bounded uncached area schedule page is identified"
+      ]
+    }
+  ],
+  "selected_targets": [],
+  "selected_pages": [],
+  "parsing_execution": {
+    "execute": false,
+    "reason": "No target satisfied the full selection gate."
+  }
+}
