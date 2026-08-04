@@ -48,6 +48,8 @@ PageType = Literal[
     "maintenance_guidance",
     "index_or_contents",
     "separator_or_cover",
+    "statutory_planning_decision",
+    "blank_unusable",
     "low_value_repetitive",
     "unknown",
 ]
@@ -304,28 +306,33 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
     tags: set[str] = set()
     primary: PageType = "unknown"
     route: Route = "text"
-    if _is_cover_or_separator(normalized):
+    if not normalized:
+        primary, route = "blank_unusable", "deprioritized"
+    elif _is_cover_or_separator(normalized):
         primary, route = "separator_or_cover", "deprioritized"
-    if _is_index_or_contents(normalized):
-        primary, route = "index_or_contents", "text"
-    if _is_maintenance_only(normalized, source_filename):
+    if normalized and _is_index_or_contents(normalized):
+        primary, route = "index_or_contents", "deprioritized"
+    if normalized and _is_maintenance_only(normalized, source_filename):
         primary, route = "maintenance_guidance", "deprioritized"
         tags.add("maintenance_only")
-    if _is_low_value_repetitive(normalized):
+    if normalized and _is_low_value_repetitive(normalized):
         primary, route = "low_value_repetitive", "deprioritized"
         tags.add("duplicate_or_repeated_content")
-    if _is_certificate(normalized):
+    if normalized and _is_planning_decision(normalized):
+        primary, route = "statutory_planning_decision", "text"
+        tags.update({"planning_condition", "statutory_compliance", "required_or_approved_status"})
+    elif normalized and _is_certificate(normalized):
         primary, route = "certificate", "text"
         tags.update({"certificate_date_reference", "statutory_compliance"})
-    elif _is_schedule(normalized):
+    elif normalized and _is_schedule(normalized):
         primary, route = "schedule", "table"
         tags.add("equipment_schedule")
-    elif _is_table(normalized):
+    elif normalized and _is_table(normalized):
         primary, route = "structured_table", "table"
-    if _is_product_datasheet(normalized):
+    if normalized and _is_product_datasheet(normalized):
         primary = "product_datasheet"
         tags.add("manufacturer_model_table")
-    if _is_drawing(normalized):
+    if normalized and _is_drawing(normalized):
         if _drawing_text_extractable(normalized):
             primary, route = "drawing_text_extractable", "drawing_text"
         else:
@@ -336,14 +343,35 @@ def classify_page_text(text: str, *, source_filename: str = "") -> dict[str, Any
         primary = "narrative"
     if primary in {"structured_table", "schedule"}:
         route = "table"
+    evidence_bearing = primary not in {
+        "separator_or_cover",
+        "index_or_contents",
+        "blank_unusable",
+        "low_value_repetitive",
+        "maintenance_guidance",
+        "unknown",
+    }
+    evidence_role = "direct evidence" if evidence_bearing else "navigation only"
+    if primary == "statutory_planning_decision":
+        evidence_role = "supporting/contextual evidence"
+    elif primary == "blank_unusable":
+        evidence_role = "unusable"
+    domains = infer_domains(source_filename, normalized)
+    families = infer_target_families(source_filename, normalized)
+    if primary in {"separator_or_cover", "index_or_contents"}:
+        domains = ["general"]
+        families = ["section_discovery"]
+    elif primary == "blank_unusable":
+        domains = ["unknown"]
+        families = ["section_discovery"]
     return {
         "primary_page_type": primary,
         "secondary_tags": sorted(tags),
         "recommended_route": route,
-        "likely_dictionary_domains": infer_domains(source_filename, normalized),
-        "likely_target_families": infer_target_families(source_filename, normalized),
-        "evidence_bearing": primary
-        not in {"separator_or_cover", "low_value_repetitive", "maintenance_guidance", "unknown"},
+        "likely_dictionary_domains": domains,
+        "likely_target_families": families,
+        "evidence_bearing": evidence_bearing,
+        "evidence_role": evidence_role,
     }
 
 
@@ -384,6 +412,8 @@ def detect_sections(
 def section_title_from_page(page: dict[str, Any]) -> str:
     if page["primary_page_type"] == "index_or_contents":
         return "Index / contents"
+    if page["primary_page_type"] == "statutory_planning_decision":
+        return "Planning decision evidence"
     if page["primary_page_type"] == "certificate":
         return "Certificate / test evidence"
     if page["primary_page_type"] in {"schedule", "structured_table"}:
@@ -1188,6 +1218,27 @@ def _is_certificate(text: str) -> bool:
             "completion certificate",
             "test report",
         ]
+    )
+
+
+def _is_planning_decision(text: str) -> bool:
+    decision_terms = [
+        "planning granted",
+        "local planning authority",
+        "planning permission",
+        "planning approval",
+        "town and country planning act",
+    ]
+    condition_terms = [
+        "shall be submitted",
+        "shall be installed",
+        "hereby approved",
+        "prior to occupation",
+        "prior to superstructure",
+        "condition",
+    ]
+    return any(term in text for term in decision_terms) and any(
+        term in text for term in condition_terms
     )
 
 

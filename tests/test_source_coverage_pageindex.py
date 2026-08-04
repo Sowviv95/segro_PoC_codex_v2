@@ -79,6 +79,11 @@ def test_deterministic_page_classification_rules() -> None:
     examples = {
         "index_or_contents": "Contents 1.0 General 2.0 Roof 3.0 Doors ........ 12",
         "certificate": "Building Control Final Certificate Date 13/03/2020",
+        "statutory_planning_decision": (
+            "Planning granted by the Local Planning Authority. "
+            "The equipment shall be installed prior to occupation as hereby approved."
+        ),
+        "blank_unusable": "",
         "schedule": "Equipment Schedule Item Description Manufacturer Model Reference",
         "structured_table": "Item   Qty   Ref 1 2 3 4 5 6 7 8",
         "drawing_text_extractable": (
@@ -93,6 +98,16 @@ def test_deterministic_page_classification_rules() -> None:
 
     for expected, text in examples.items():
         assert classify_page_text(text)["primary_page_type"] == expected
+
+    index = classify_page_text("Contents 1.0 General 2.0 Roof 3.0 Doors ........ 12")
+    assert index["recommended_route"] == "deprioritized"
+    assert index["evidence_bearing"] is False
+    assert index["evidence_role"] == "navigation only"
+
+    blank = classify_page_text("")
+    assert blank["recommended_route"] == "deprioritized"
+    assert blank["evidence_bearing"] is False
+    assert blank["evidence_role"] == "unusable"
 
 
 def test_index_element_certificate_table_schedule_and_section_detection() -> None:

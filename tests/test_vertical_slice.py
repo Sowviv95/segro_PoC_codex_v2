@@ -149,6 +149,145 @@ def test_dock_leveller_and_fire_alarm_specific_evidence_rank_above_generic_text(
     assert fire_retrieval.results[0].page_start == 4
 
 
+def test_roofing_system_phrase_beats_generic_roof_description() -> None:
+    target = _target(
+        "roof_construction_description",
+        ExpectedDataType.STRING,
+        "Roof construction description",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Description of the Building and Facilities\n"
+                "The construction of a steel frame warehouse with profiled metal clad "
+                "elevations and roof, rooflights.",
+            ),
+            _page(
+                2,
+                "Roof Plan\nBuilt-up curved standing roofing system. "
+                "Class B non-fragile rooflights.",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_certificate_value_page_beats_overleaf_cross_reference() -> None:
+    target = _target(
+        "practical_completion_date",
+        ExpectedDataType.DATE,
+        "Practical completion date",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "1.2.5 - PRACTICAL COMPLETION CERTIFICATE "
+                "Refer to Certificate of Practical Completion dated 23rd April 2020 overleaf.",
+            ),
+            _page(
+                2,
+                "Certificate of Practical Completion\n"
+                "Issue date: 23rd April 2020\n"
+                "Date of practical completion: 5:00pm on 23rd April 2020",
+            ),
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.results[0].page_start == 2
+
+
+def test_building_control_certificate_reference_is_retrievable() -> None:
+    target = _target(
+        "building_control_certificate_reference_date",
+        ExpectedDataType.STRING,
+        "Building Control final certificate reference and date",
+    )
+    pages = {
+        "src-test": [
+            _page(1, "Building Control Final Certificate Date: 13/03/2020 Assent Ref: B152318.")
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status == "evidence_found"
+    assert retrieval.results[0].page_start == 1
+
+
+def test_planning_requirement_does_not_satisfy_installed_model_target() -> None:
+    target = _target(
+        "ev_charger_installed_model_name",
+        ExpectedDataType.STRING,
+        "EV charger installed model",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Planning granted by the Local Planning Authority. Electric vehicle "
+                "charging points shall be installed prior to occupation in accordance "
+                "with approved details.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_certificate_date_does_not_satisfy_generic_equipment_installation_date() -> None:
+    target = _target(
+        "equipment_installation_date",
+        ExpectedDataType.DATE,
+        "Equipment installation date",
+    )
+    pages = {
+        "src-test": [
+            _page(
+                1,
+                "Assent Building Control Ltd Final Certificate Date: 13/03/2020 "
+                "Assent Ref: B152318.",
+            )
+        ]
+    }
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status in {"weak_evidence", "no_relevant_evidence"}
+    assert retrieval.results == []
+
+
+def test_retrieval_deduplicates_page_section_and_text_block_overlap() -> None:
+    target = _target("dock_leveller_count", ExpectedDataType.INTEGER, "Dock Levellers - Count")
+    pages = {"src-test": [_page(1, "Dock Levellers\nThe warehouse has 5No Dock Levellers.")]}
+    registry = {"src-test": _source("src-test", "Building Manual - Part 1 General.pdf")}
+    hierarchy = build_lightweight_hierarchy(pages, registry)
+
+    retrieval = retrieve_evidence(target, hierarchy, pages, registry, max_evidence_chars=1200)
+
+    assert retrieval.retrieval_status == "evidence_found"
+    assert len(retrieval.results) == 1
+
+
 def test_retrieval_bundle_is_bounded_and_preserves_provenance() -> None:
     target = _target("roof_construction_description", ExpectedDataType.STRING, "Roof")
     evidence = RetrievedEvidence(

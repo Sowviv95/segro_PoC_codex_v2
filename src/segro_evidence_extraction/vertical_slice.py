@@ -149,6 +149,8 @@ class RetrievalScoreBreakdown(StrictBaseModel):
     datatype_unit_pattern: float = 0
     certificate_date_pattern: float = 0
     negative_penalty: float = 0
+    status_context_penalty: float = 0
+    cross_reference_penalty: float = 0
     final_score: float = 0
 
 
@@ -1134,13 +1136,14 @@ def retrieve_evidence(
     ordered = sorted(
         scores, key=lambda item: (-item.score, item.source_file, item.page_start, item.node_id)
     )
-    strong = [item for item in ordered if item.score >= MIN_RELEVANCE_SCORE]
+    deduped = deduplicate_overlapping_retrievals(ordered)
+    strong = [item for item in deduped if item.score >= MIN_RELEVANCE_SCORE]
     if strong:
         selected = strong[:3]
         status: Literal["evidence_found", "weak_evidence", "no_relevant_evidence"] = (
             "evidence_found"
         )
-    elif ordered and ordered[0].score >= WEAK_RELEVANCE_SCORE:
+    elif deduped and deduped[0].score >= WEAK_RELEVANCE_SCORE:
         selected = []
         status = "weak_evidence"
     else:
@@ -1154,7 +1157,7 @@ def retrieve_evidence(
         query_concepts=concepts,
         results=ranked,
         retrieval_time_ms=(time.perf_counter() - started) * 1000,
-        top_score=ordered[0].score if ordered else 0,
+        top_score=deduped[0].score if deduped else 0,
     )
 
 
@@ -1186,7 +1189,11 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
             "date",
             "description",
             "finish",
+            "installed",
+            "installation",
             "loading",
+            "manufacturer",
+            "model",
             "number",
             "quantity",
             "reference",
@@ -1198,9 +1205,10 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
     }
     phrase_map = {
         "dock_leveller": ["dock leveller", "dock levellers"],
+        "ev_charger": ["ev charger", "ev charging", "electric vehicle charging"],
         "pv": ["photovoltaic", "pv", "solar panel", "solar panels"],
         "cladding": ["cladding", "profiled metal clad", "wall cladding"],
-        "roof": ["roof", "rooflights", "roof construction"],
+        "roof": ["roof", "rooflights", "roof construction", "roofing system", "roof finish"],
         "frame": ["steel frame", "portal frame", "frame"],
         "planning": ["planning", "permission", "approved use", "use classes"],
         "fire_alarm": [
@@ -1211,6 +1219,7 @@ def query_concepts_for_target(target: TargetSpecification) -> QueryConcepts:
         ],
         "floor": ["floor slab", "concrete slab", "floor construction"],
         "completion": ["practical completion", "completion certificate"],
+        "building_control": ["building control", "final certificate", "assent ref"],
         "construction_date": ["practical completion", "construction", "certificate"],
         "office_area": ["office area", "office floor area", "offices"],
         "wall": ["wall construction", "external wall", "wall cladding"],
@@ -1325,6 +1334,8 @@ def score_node_for_target(
     )
     components.hierarchy_proximity = 0.6 if node.node_type in {"section", "text_block"} else 0.25
     components.negative_penalty = negative_penalty(concepts, haystack, component_hits)
+    components.status_context_penalty = status_context_penalty(target, haystack)
+    components.cross_reference_penalty = cross_reference_penalty(target, haystack)
     raw_score = (
         components.exact_phrase
         + components.token_overlap
@@ -1336,6 +1347,8 @@ def score_node_for_target(
         + components.certificate_date_pattern
         + components.domain_subdomain_match
         - components.negative_penalty
+        - components.status_context_penalty
+        - components.cross_reference_penalty
     )
     if not component_hits and components.title_match == 0:
         raw_score *= 0.55
@@ -1449,6 +1462,77 @@ def negative_penalty(
     if component_hits:
         penalty *= 0.45
     return penalty
+
+
+def status_context_penalty(target: TargetSpecification, text: str) -> float:
+    field = target.expected_field.lower()
+    lower = text.lower()
+    planning_context = any(
+        term in lower
+        for term in [
+            "planning granted",
+            "local planning authority",
+            "planning permission",
+            "hereby approved",
+            "shall be submitted",
+            "shall be installed",
+            "prior to occupation",
+            "prior to superstructure",
+        ]
+    )
+    certificate_context = any(
+        term in lower
+        for term in [
+            "building control",
+            "final certificate",
+            "practical completion",
+            "completion certificate",
+            "air permeability test certificate",
+        ]
+    )
+    installed_identity_target = any(
+        term in field for term in ["model", "manufacturer", "serial"]
+    ) and any(term in field for term in ["installed", "installation", "equipment", "charger"])
+    installation_date_target = "installation_date" in field or (
+        "equipment" in field and "date" in field
+    )
+    if installed_identity_target and planning_context:
+        return 8.0
+    if installation_date_target and (planning_context or certificate_context):
+        return 8.0
+    return 0.0
+
+
+def cross_reference_penalty(target: TargetSpecification, text: str) -> float:
+    lower = text.lower()
+    field = target.expected_field.lower()
+    certificate_or_date_target = (
+        target.expected_data_type == ExpectedDataType.DATE
+        or "certificate" in field
+        or "reference" in field
+    )
+    if certificate_or_date_target and "refer to" in lower and "overleaf" in lower:
+        return 10.0
+    return 0.0
+
+
+def deduplicate_overlapping_retrievals(
+    ordered: Sequence[RetrievedEvidence],
+) -> list[RetrievedEvidence]:
+    retained: list[RetrievedEvidence] = []
+    seen: set[tuple[str, int, int, str]] = set()
+    for item in ordered:
+        key = (
+            item.source_id,
+            item.page_start,
+            item.page_end,
+            normalize_space(item.excerpt.lower())[:500],
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        retained.append(item)
+    return retained
 
 
 def build_evidence_bundle(
